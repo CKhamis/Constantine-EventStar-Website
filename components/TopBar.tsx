@@ -4,6 +4,7 @@ import {Button} from "@/components/ui/button"
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet"
 import Image from "next/image";
 import {DialogTitle} from "@/components/ui/dialog";
+import AccountButton from "@/components/AccountButton";
 
 export default function TopBar() {
     const links = [
@@ -27,7 +28,7 @@ export default function TopBar() {
                 </nav>
             </div>
             <div className="flex flex-row items-center justify-end gap-6">
-                {/*<AccountButton isLoggedIn={isLoggedIn}/>*/}
+                <AccountButton />
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button variant="outline" size="icon" className="shrink-0 md:hidden">
