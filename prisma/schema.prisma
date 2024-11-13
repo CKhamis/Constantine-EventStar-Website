@@ -1,0 +1,107 @@
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Costi Online Accounts
+model User {
+  id              Int      @id @default(autoincrement())
+  date_created    DateTime @default(now())
+  email           String   @unique @db.VarChar(255)
+  enabled         Boolean
+  first_name      String   @db.VarChar(255)
+  is_locked       Boolean
+  last_name       String   @db.VarChar(255)
+  password        String   @db.Text
+  profile_picture Int      @default(1)
+  role            UserRole @default(USER)
+  eventstar       Guest?
+}
+
+// EventStar Schema
+model Guest {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  firstName   String   @db.VarChar(255)
+  lastName    String   @db.VarChar(255)
+  phoneNumber Int
+  email       String
+  discordId   String
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      Int?     @unique
+  event       Event[]
+  rsvp        RSVP[]
+}
+
+model RSVP {
+  id        String       @id @default(uuid())
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  event     Event        @relation(fields: [eventId], references: [id])
+  eventId   String
+  response  RsvpResponse @default(MAYBE)
+  Guest     Guest        @relation(fields: [guestId], references: [id])
+  guestId   String
+}
+
+model Event {
+  id             String         @id @default(uuid())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  title          String         @db.VarChar(255)
+  address        String         @db.VarChar(255)
+  eventStart     DateTime       @db.DateTime()
+  eventEnd       DateTime       @db.DateTime()
+  rsvpDuedate    DateTime       @db.DateTime()
+  description    String         @db.LongText
+  inviteRigidity InviteRigidity
+  eventType      EventType
+  reminderAmount ReminderAmount
+  RSVP           RSVP[]
+  author         Guest          @relation(fields: [authorId], references: [id])
+  authorId       String
+}
+
+// Enums
+enum UserRole {
+  OWNER
+  ADMIN
+  USER
+}
+
+enum RsvpResponse {
+  YES
+  NO
+  MAYBE
+}
+
+enum InviteRigidity {
+  OPEN_INVITE
+  ASK_HOST
+  INVITE_ONLY
+}
+
+enum EventType {
+  PARTY
+  HANGOUT
+  GENERAL_EVENT
+  CEREMONY
+  MEETING
+  CELEBRATION
+}
+
+enum ReminderAmount {
+  OBSESSIVE
+  PUSHY
+  MEDIUM
+  LIGHT
+  ONCE
+  NONE
+}
