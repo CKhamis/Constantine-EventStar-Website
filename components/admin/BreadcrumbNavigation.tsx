@@ -17,9 +17,9 @@ export default function BreadcrumbNavigation(){
         <Breadcrumb>
             <BreadcrumbList>
 
-                <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbItem className="hidden md:block" key="ESMT">
                     <BreadcrumbLink href="/ESMT">
-                        EventStar Management
+                        ESMT
                     </BreadcrumbLink>
                 </BreadcrumbItem>
 
@@ -28,7 +28,7 @@ export default function BreadcrumbNavigation(){
                     index < path.length-1 && index > 0 &&
                     <>
                         <BreadcrumbSeparator className="hidden md:block" />
-                        <BreadcrumbItem className="hidden md:block">
+                        <BreadcrumbItem className="hidden md:block" key={link}>
                             {link.toUpperCase()}
                         </BreadcrumbItem>
                     </>
@@ -37,7 +37,7 @@ export default function BreadcrumbNavigation(){
                 {path.length > 1 && (
                     <>
                         <BreadcrumbSeparator className="hidden md:block"/>
-                        <BreadcrumbItem>
+                        <BreadcrumbItem key={path[path.length-1]}>
                             <BreadcrumbPage>{path[path.length-1].toUpperCase()}</BreadcrumbPage>
                         </BreadcrumbItem>
                     </>
