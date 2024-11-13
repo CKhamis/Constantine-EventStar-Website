@@ -6,6 +6,11 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.top-left-gradient{
+  background: rgba(211,60,200, .01);
+  background: linear-gradient(330deg, rgba(211,60,200,0) 0%, rgba(211,60,200,.1) 100%);
+}
+
 @layer components{
   .hover-underline{
     @apply hover:underline hover:underline-offset-4 hover:opacity-100 opacity-80;

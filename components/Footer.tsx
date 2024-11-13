@@ -16,16 +16,16 @@ export default function Footer(){
                 <div className="mt-4">
                     <p className="text-lg font-bold">You</p>
                     <ul>
-                        <li className="mt-4"><a className="hover-underline" href="">Event Schedule</a></li>
-                        <li className="mt-4"><a className="hover-underline" href="">Upcoming Events</a></li>
-                        <li className="mt-4"><a className="hover-underline" href="">Costifications(TM)</a></li>
+                        <li className="mt-3"><a className="hover-underline" href="">Event Schedule</a></li>
+                        <li className="mt-3"><a className="hover-underline" href="">Upcoming Events</a></li>
+                        <li className="mt-3"><a className="hover-underline" href="">Costifications(TM)</a></li>
                     </ul>
                 </div>
                 <div className="mt-4">
                     <p className="text-lg font-bold">Community</p>
                     <ul>
-                        <li className="mt-4"><a className="hover-underline" href="">Group View</a></li>
-                        <li className="mt-4"><a className="hover-underline" href="">Restaurant Ratings</a></li>
+                        <li className="mt-3"><a className="hover-underline" href="">Group View</a></li>
+                        <li className="mt-3"><a className="hover-underline" href="">Restaurant Ratings</a></li>
                     </ul>
                 </div>
                 <div className="mt-4">
@@ -35,15 +35,15 @@ export default function Footer(){
                     </div>
 
                     <ul>
-                        <li className="mt-4"><a className="hover-underline" href="https://costionline.com/">Home</a>
+                        <li className="mt-3"><a className="hover-underline" href="https://costionline.com/">Home</a>
                         </li>
-                        <li className="mt-4">
+                        <li className="mt-3">
                             <a className="hover-underline" href="https://costionline.com/Projects">Projects</a></li>
-                        <li className="mt-4"><a className="hover-underline" href="https://costionline.com/Wiki">Wiki</a>
+                        <li className="mt-3"><a className="hover-underline" href="https://costionline.com/Wiki">Wiki</a>
                         </li>
-                        <li className="mt-4">
+                        <li className="mt-3">
                             <a className="hover-underline" href="https://costionline.com/Newsroom">Newsroom</a></li>
-                        <li className="mt-4">
+                        <li className="mt-3">
                             <a className="hover-underline" href="https://costionline.com/Minecraft">Minecraft</a></li>
                     </ul>
                 </div>
