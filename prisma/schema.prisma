@@ -31,7 +31,7 @@ model Guest {
   updatedAt   DateTime @updatedAt
   firstName   String   @db.VarChar(255)
   lastName    String   @db.VarChar(255)
-  phoneNumber Int
+  phoneNumber String   @db.VarChar(10)
   email       String
   discordId   String
   user        User?    @relation(fields: [userId], references: [id])
