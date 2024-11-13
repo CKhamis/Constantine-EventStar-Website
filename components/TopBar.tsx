@@ -15,7 +15,7 @@ export default function TopBar() {
     ];
 
     return (
-        <header className="sticky backdrop-blur top-0 h-16 gap-4 border-b bg-background/30 px-4 md:px-6 flex justify-between items-center z-[10]">
+        <header className="sticky backdrop-blur top-0 h-16 gap-4 border-b top-left-gradient px-4 md:px-6 flex justify-between items-center z-[10]">
             <div className="flex flex-row items-center justify-start gap-2">
                 <Link href="/">
                     <Image src={`/icons/Logo.svg`} alt={`Event Star Logo`} width={35} height={35} className="hover-minimize"/>
