@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
     BreadcrumbItem,
     BreadcrumbLink,
@@ -7,42 +7,39 @@ import {
     BreadcrumbSeparator,
     Breadcrumb
 } from "@/components/ui/breadcrumb";
+import React from "react";
 
-export default function BreadcrumbNavigation(){
-
+export default function BreadcrumbNavigation() {
     const path = window.location.pathname.substring(1).split("/");
-    console.log(path);
 
     return (
         <Breadcrumb>
             <BreadcrumbList>
-
                 <BreadcrumbItem className="hidden md:block" key="ESMT">
                     <BreadcrumbLink href="/ESMT">
                         ESMT
                     </BreadcrumbLink>
                 </BreadcrumbItem>
 
-
                 {path.length > 2 && path.map((link, index) => (
-                    index < path.length-1 && index > 0 &&
-                    <>
-                        <BreadcrumbSeparator className="hidden md:block" key={`${link}-separator`} />
-                        <BreadcrumbItem className="hidden md:block" key={link}>
-                            {link.toUpperCase()}
-                        </BreadcrumbItem>
-                    </>
+                    index < path.length - 1 && index > 0 && (
+                        <React.Fragment key={`${link}-${index}`}>
+                            <BreadcrumbSeparator className="hidden md:block" key={`${link}-separator-${index}`} />
+                            <BreadcrumbItem className="hidden md:block" key={`${link}-item-${index}`}>
+                                {link.toUpperCase()}
+                            </BreadcrumbItem>
+                        </React.Fragment>
+                    )
                 ))}
 
                 {path.length > 1 && (
-                    <>
-                        <BreadcrumbSeparator className="hidden md:block" key="last-breadcrumb" />
-                        <BreadcrumbItem key={path[path.length-1]}>
-                            <BreadcrumbPage>{path[path.length-1].toUpperCase()}</BreadcrumbPage>
+                    <React.Fragment key="last-segment">
+                        <BreadcrumbSeparator className="hidden md:block" key="last-separator" />
+                        <BreadcrumbItem key={path[path.length - 1]}>
+                            <BreadcrumbPage>{path[path.length - 1].toUpperCase()}</BreadcrumbPage>
                         </BreadcrumbItem>
-                    </>
+                    </React.Fragment>
                 )}
-
             </BreadcrumbList>
         </Breadcrumb>
     );

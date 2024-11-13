@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import {useState} from "react";
 import { Loader2 } from "lucide-react"
+import AlertMessage from "@/components/AlertMessage";
 
 
 export default function NewGuestForm() {
@@ -32,17 +33,17 @@ export default function NewGuestForm() {
         try{
             setIsLoading(true);
             await axios.post('/api/esmt/guests/new', values);
-            router.push("/ESMT/guests");
+            router.push("/ESMT/guests?message=1");
         }catch(e){
             setIsLoading(false);
-            console.log(typeof e);
-            setError("");
+            setError("OOPS! Something happened :(");
             console.log(e)
         }
     }
 
     return (
         <Form {...form}>
+            <AlertMessage title="Form Error" message={error} code={2} />
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                     control={form.control}
