@@ -27,7 +27,7 @@ export default function BreadcrumbNavigation(){
                 {path.length > 2 && path.map((link, index) => (
                     index < path.length-1 && index > 0 &&
                     <>
-                        <BreadcrumbSeparator className="hidden md:block" />
+                        <BreadcrumbSeparator className="hidden md:block" key={`${link}-separator`} />
                         <BreadcrumbItem className="hidden md:block" key={link}>
                             {link.toUpperCase()}
                         </BreadcrumbItem>
@@ -36,7 +36,7 @@ export default function BreadcrumbNavigation(){
 
                 {path.length > 1 && (
                     <>
-                        <BreadcrumbSeparator className="hidden md:block"/>
+                        <BreadcrumbSeparator className="hidden md:block" key="last-breadcrumb" />
                         <BreadcrumbItem key={path[path.length-1]}>
                             <BreadcrumbPage>{path[path.length-1].toUpperCase()}</BreadcrumbPage>
                         </BreadcrumbItem>
