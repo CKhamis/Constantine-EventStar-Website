@@ -6,11 +6,9 @@ import {useEffect, useState} from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import axios from "axios";
-import { Label } from "@/components/ui/label"
 import {Guest} from "@prisma/client";
 import {Search} from "lucide-react";
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import EditGuestForm from "@/app/ESMT/guests/EditGuestForm";
 
 export default function AdminGuests() {
