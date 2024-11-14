@@ -6,7 +6,12 @@ import {useEffect, useState} from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import axios from "axios";
+import { Label } from "@/components/ui/label"
 import {Guest} from "@prisma/client";
+import {Search} from "lucide-react";
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import EditGuestForm from "@/app/ESMT/guests/EditGuestForm";
 
 export default function AdminGuests() {
     const router = useSearchParams();
@@ -34,6 +39,8 @@ export default function AdminGuests() {
         `${guest.firstName} ${guest.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
+    const handleEditGuest = () => {};
+
     return (
         <>
             <AdminUI>
@@ -41,25 +48,33 @@ export default function AdminGuests() {
                     <AlertMessage title="Guest Creation" message={message} code={1}/>
                     <AlertMessage title="Error Getting Guests" message={error} code={2}/>
                     <h1 className="text-3xl mb-4">All Guests</h1>
-                    <Input
-                        type="search"
-                        placeholder="Search guests..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="max-w-sm mb-4"
-                    />
+                    <div className="relative max-w-sm mb-4">
+                        <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
+                        <Input
+                            type="search"
+                            placeholder="Search guests..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-8"
+                        />
+                    </div>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {filteredGuests.map((guest) => (
-                            <div key={guest.id} className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent">
-                                <Avatar className="h-12 w-12">
-                                    <AvatarImage src={guest.avatarUrl} alt={`${guest.firstName} ${guest.lastName}`}/>
-                                    <AvatarFallback>{guest.firstName[0]}{guest.lastName[0]}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="text-sm font-medium leading-none">{guest.firstName} {guest.lastName}</p>
-                                    <p className="text-sm text-muted-foreground">Guest #{guest.id}</p>
-                                </div>
-                            </div>
+                            <Dialog key={guest.id} onOpenChange={() => handleEditGuest(guest)}>
+                                <DialogTrigger asChild>
+                                    <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer">
+                                        <Avatar className="h-12 w-12">
+                                            <AvatarImage src={guest.avatarUrl} alt={`${guest.firstName} ${guest.lastName}`} />
+                                            <AvatarFallback>{guest.firstName[0]}{guest.lastName[0]}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="text-sm font-medium leading-none">{guest.firstName} {guest.lastName}</p>
+                                            <p className="text-sm text-muted-foreground">{guest.email}</p>
+                                        </div>
+                                    </div>
+                                </DialogTrigger>
+                                <EditGuestForm guest={guest} />
+                            </Dialog>
                         ))}
                     </div>
                 </div>
