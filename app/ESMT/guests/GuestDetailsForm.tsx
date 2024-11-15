@@ -55,7 +55,6 @@ export default function GuestDetailsForm({guest, refresh, addMessage}:Props){
             addMessage({ title: "Unable to Delete Guest", message: "There was an issue deleting guest", icon: 2 });
             console.log(e);
         }
-        refresh();
     }
 
     return (
