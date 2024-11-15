@@ -12,19 +12,16 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import EditGuestForm from "@/app/ESMT/guests/EditGuestForm";
 import * as z from "zod";
 import {editGuestSchema} from "@/components/ValidationSchemas";
+import AlertList from "@/components/AlertList";
 
 export default function AdminGuests() {
     // Create Message
     const router = useSearchParams();
     const createMessageParam = router.get("message");
-    const createMessage = createMessageParam==="1"? "Guest created successfully!" : "";
-
-    // Edit Message
-    const [editMessage, setEditMessage] = useState<React.ReactElement>();
 
     // State
     const [guests, setGuests] = useState<Guest[]>([]);
-    const [error, setError] = useState<string>("");
+    const [alertMessages, setAlertMessages] = useState<{title: string, message: string, icon: 1 | 2 | 3}[]>([{ title: createMessageParam==="1"? "Guest Added" : "", message: createMessageParam==="1"? "Guest created successfully!" : "", icon: 1 }]);
 
     const fetchGuests = async () => {
         try {
@@ -32,17 +29,16 @@ export default function AdminGuests() {
             setGuests(response.data);
         } catch (err) {
             console.error("Error fetching guests:", err);
-            setError("Failed to load guests.");
+            setAlertMessages([...alertMessages, { title: "Catastrophic Error", message: "Unable to fetch list of guests", icon: 2 }]);
         }
     };
 
     async function onEditGuest(values: z.infer<typeof editGuestSchema>) {
-        console.log(values);
         try{
             await axios.post('/api/esmt/guests/edit', values).finally(fetchGuests);
-            setEditMessage(<AlertMessage title="Guest Modification" message={values.firstName + " " + values.lastName + " was modified and saved to server"} code={1}/>);
+            setAlertMessages([...alertMessages, { title: "Guest Modification", message: values.firstName + " " + values.lastName + " was modified and saved to server", icon: 1 }]);
         }catch(e){
-            setEditMessage(<AlertMessage title="Guest Modification" message={"There was an error saving guest details"} code={2}/>);
+            setAlertMessages([...alertMessages, { title: "Guest Modification", message: "There was an error saving guest details", icon: 2 }]);
             console.log(e);
         }
         return null;
@@ -62,9 +58,7 @@ export default function AdminGuests() {
         <>
             <AdminUI>
                 <div className="container mt-4">
-                    <AlertMessage title="Guest Creation" message={createMessage} code={1}/>
-                    {editMessage}
-                    <AlertMessage title="Error Getting Guests" message={error} code={2}/>
+                    <AlertList alerts={alertMessages} />
                     <h1 className="text-3xl mb-4">All Guests</h1>
                     <div className="relative max-w-sm mb-4">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>

@@ -110,7 +110,7 @@ export default function EditGuestForm({guest, onEditGuest}:Props){
                     <DialogFooter className="sm:justify-start">
                         <DialogClose asChild disabled={!isFormValid}>
                             <Button type="submit">
-                                Add Guest
+                                Save
                             </Button>
                         </DialogClose>
                     </DialogFooter>
