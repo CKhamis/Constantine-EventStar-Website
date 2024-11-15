@@ -1,18 +1,13 @@
 "use client"
 import AdminUI from "@/components/admin/AdminUI";
-import AlertMessage from "@/components/AlertMessage";
 import {useSearchParams} from "next/navigation";
 import {useEffect, useState} from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import axios from "axios";
 import {Guest} from "@prisma/client";
 import {Search} from "lucide-react";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog"
-import EditGuestForm from "@/app/ESMT/guests/EditGuestForm";
-import * as z from "zod";
-import {editGuestSchema} from "@/components/ValidationSchemas";
-import AlertList from "@/components/AlertList";
+import GuestDetailsForm from "@/app/ESMT/guests/GuestDetailsForm";
+import AlertList, {alertContent} from "@/components/AlertList";
 
 export default function AdminGuests() {
     // Create Message
@@ -21,7 +16,7 @@ export default function AdminGuests() {
 
     // State
     const [guests, setGuests] = useState<Guest[]>([]);
-    const [alertMessages, setAlertMessages] = useState<{title: string, message: string, icon: 1 | 2 | 3}[]>([{ title: createMessageParam==="1"? "Guest Added" : "", message: createMessageParam==="1"? "Guest created successfully!" : "", icon: 1 }]);
+    const [alertMessages, setAlertMessages] = useState<alertContent[]>([{ title: createMessageParam==="1"? "Guest Added" : "", message: createMessageParam==="1"? "Guest created successfully!" : "", icon: 1 }]);
 
     const fetchGuests = async () => {
         try {
@@ -33,15 +28,8 @@ export default function AdminGuests() {
         }
     };
 
-    async function onEditGuest(values: z.infer<typeof editGuestSchema>) {
-        try{
-            await axios.post('/api/esmt/guests/edit', values).finally(fetchGuests);
-            setAlertMessages([...alertMessages, { title: "Guest Modification", message: values.firstName + " " + values.lastName + " was modified and saved to server", icon: 1 }]);
-        }catch(e){
-            setAlertMessages([...alertMessages, { title: "Guest Modification", message: "There was an error saving guest details", icon: 2 }]);
-            console.log(e);
-        }
-        return null;
+    const addMessage = (message: alertContent)=> {
+        setAlertMessages((prevMessages) => [...prevMessages, message]);
     }
 
     useEffect(() => {
@@ -71,22 +59,8 @@ export default function AdminGuests() {
                         />
                     </div>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {filteredGuests.map((guest) => (
-                            <Dialog key={guest.id}>
-                                <DialogTrigger asChild>
-                                    <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer">
-                                        <Avatar className="h-12 w-12">
-                                            <AvatarImage src={guest.avatarUrl} alt={`${guest.firstName} ${guest.lastName}`} />
-                                            <AvatarFallback>{guest.firstName[0]}{guest.lastName[0]}</AvatarFallback>
-                                        </Avatar>
-                                        <div>
-                                            <p className="text-sm font-medium leading-none">{guest.firstName} {guest.lastName}</p>
-                                            <p className="text-sm text-muted-foreground">{guest.email}</p>
-                                        </div>
-                                    </div>
-                                </DialogTrigger>
-                                <EditGuestForm guest={guest} onEditGuest={onEditGuest}/>
-                            </Dialog>
+                        {filteredGuests.map((guest, index) => (
+                            <GuestDetailsForm guest={guest} key={index} refresh={fetchGuests} addMessage={addMessage} />
                         ))}
                     </div>
                 </div>
