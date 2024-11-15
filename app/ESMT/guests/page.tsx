@@ -60,7 +60,7 @@ export default function AdminGuests() {
                     </div>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {filteredGuests.map((guest, index) => (
-                            <GuestDetailsForm guest={guest} key={index} refresh={fetchGuests} addMessage={addMessage} />
+                            <GuestDetailsForm guest={guest} key={guest.id} refresh={fetchGuests} addMessage={addMessage} />
                         ))}
                     </div>
                 </div>
