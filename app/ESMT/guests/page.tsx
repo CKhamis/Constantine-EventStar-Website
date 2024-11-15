@@ -10,40 +10,60 @@ import {Guest} from "@prisma/client";
 import {Search} from "lucide-react";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import EditGuestForm from "@/app/ESMT/guests/EditGuestForm";
+import * as z from "zod";
+import {editGuestSchema} from "@/components/ValidationSchemas";
 
 export default function AdminGuests() {
+    // Create Message
     const router = useSearchParams();
-    const messageParam = router.get("message");
-    const message = messageParam==="1"? "Guest created successfully!" : "";
+    const createMessageParam = router.get("message");
+    const createMessage = createMessageParam==="1"? "Guest created successfully!" : "";
+
+    // Edit Message
+    const [editMessage, setEditMessage] = useState<React.ReactElement>();
+
+    // State
     const [guests, setGuests] = useState<Guest[]>([]);
     const [error, setError] = useState<string>("");
 
-    useEffect(() => {
-        const fetchGuests = async () => {
-            try {
-                const response = await axios.get("/api/esmt/guests/all");
-                setGuests(response.data);
-            } catch (err) {
-                console.error("Error fetching guests:", err);
-                setError("Failed to load guests.");
-            }
-        };
+    const fetchGuests = async () => {
+        try {
+            const response = await axios.get("/api/esmt/guests/all");
+            setGuests(response.data);
+        } catch (err) {
+            console.error("Error fetching guests:", err);
+            setError("Failed to load guests.");
+        }
+    };
 
+    async function onEditGuest(values: z.infer<typeof editGuestSchema>) {
+        console.log(values);
+        try{
+            await axios.post('/api/esmt/guests/edit', values).finally(fetchGuests);
+            setEditMessage(<AlertMessage title="Guest Modification" message={values.firstName + " " + values.lastName + " was modified and saved to server"} code={1}/>);
+        }catch(e){
+            setEditMessage(<AlertMessage title="Guest Modification" message={"There was an error saving guest details"} code={2}/>);
+            console.log(e);
+        }
+        return null;
+    }
+
+    useEffect(() => {
         fetchGuests();
     }, []);
 
+    // Search
     const [searchTerm, setSearchTerm] = useState('')
     const filteredGuests = guests.filter(guest =>
         `${guest.firstName} ${guest.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
-    const handleEditGuest = () => {};
-
     return (
         <>
             <AdminUI>
                 <div className="container mt-4">
-                    <AlertMessage title="Guest Creation" message={message} code={1}/>
+                    <AlertMessage title="Guest Creation" message={createMessage} code={1}/>
+                    {editMessage}
                     <AlertMessage title="Error Getting Guests" message={error} code={2}/>
                     <h1 className="text-3xl mb-4">All Guests</h1>
                     <div className="relative max-w-sm mb-4">
@@ -58,7 +78,7 @@ export default function AdminGuests() {
                     </div>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {filteredGuests.map((guest) => (
-                            <Dialog key={guest.id} onOpenChange={() => handleEditGuest(guest)}>
+                            <Dialog key={guest.id}>
                                 <DialogTrigger asChild>
                                     <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer">
                                         <Avatar className="h-12 w-12">
@@ -71,13 +91,12 @@ export default function AdminGuests() {
                                         </div>
                                     </div>
                                 </DialogTrigger>
-                                <EditGuestForm guest={guest} />
+                                <EditGuestForm guest={guest} onEditGuest={onEditGuest}/>
                             </Dialog>
                         ))}
                     </div>
                 </div>
             </AdminUI>
         </>
-
     );
 }
