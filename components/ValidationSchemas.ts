@@ -1,5 +1,20 @@
 import z from "zod";
 
+// Enums
+const UserRole = z.enum(["OWNER", "ADMIN", "USER"]);
+const RsvpResponse = z.enum(["YES", "NO", "MAYBE"]);
+const InviteRigidity = z.enum(["OPEN_INVITE", "ASK_HOST", "INVITE_ONLY"]);
+const EventType = z.enum([
+    "PARTY",
+    "HANGOUT",
+    "GENERAL_EVENT",
+    "CEREMONY",
+    "MEETING",
+    "CELEBRATION",
+]);
+const ReminderAmount = z.enum(["OBSESSIVE", "PUSHY", "MEDIUM", "LIGHT", "ONCE", "NONE"]);
+
+// Validation Schemas
 export const uuidSchema = z.object({
     id: z.string().uuid()
 })
@@ -22,5 +37,24 @@ export const editGuestSchema = z.object({
 })
 
 export const createEventSchema = z.object({
-
+    title: z.string().min(1).max(255),
+    address: z.string().max(255, "Address cannot exceed 255 characters").optional(),
+    eventStart: z.date(),
+    eventEnd: z.date(),
+    rsvpDuedate: z.date().optional(),
+    description: z.string().optional(),
+    inviteRigidity: InviteRigidity,
+    eventType: EventType,
+    reminderAmount: ReminderAmount,
+    RSVP: z.array(
+        z.object({
+            id: z.string().uuid().optional(),
+            createdAt: z.date().optional(),
+            updatedAt: z.date().optional(),
+            eventId: z.string().uuid(),
+            response: RsvpResponse,
+            guestId: z.string().uuid(),
+        })
+    ).optional(),
+    authorId: z.string().uuid()
 })

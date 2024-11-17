@@ -8,6 +8,8 @@ import {Guest} from "@prisma/client";
 import {Search} from "lucide-react";
 import GuestDetailsForm from "@/app/ESMT/guests/GuestDetailsForm";
 import AlertList, {alertContent} from "@/components/AlertList";
+import {Button} from "@/components/ui/button";
+import Link from "next/link";
 
 export default function AdminGuests() {
     // Create Message
@@ -47,7 +49,15 @@ export default function AdminGuests() {
             <AdminUI>
                 <div className="container mt-4">
                     <AlertList alerts={alertMessages} />
-                    <h1 className="text-3xl mb-4">All Guests</h1>
+                    <div className="flex justify-between gap-4 mb-4">
+                        <h1 className="text-3xl">All Guests</h1>
+                        <Link href="/ESMT/guests/new">
+                            <Button variant="secondary" className="h-9">
+                                + New Guest
+                            </Button>
+                        </Link>
+                    </div>
+
                     <div className="relative max-w-sm mb-4">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
                         <Input
@@ -59,7 +69,7 @@ export default function AdminGuests() {
                         />
                     </div>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {filteredGuests.map((guest, index) => (
+                        {filteredGuests.map((guest) => (
                             <GuestDetailsForm guest={guest} key={guest.id} refresh={fetchGuests} addMessage={addMessage} />
                         ))}
                     </div>

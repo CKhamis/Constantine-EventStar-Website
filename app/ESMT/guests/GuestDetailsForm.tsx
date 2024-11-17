@@ -15,7 +15,6 @@ import {useForm} from "react-hook-form";
 import {editGuestSchema} from "@/components/ValidationSchemas";
 import * as z from 'zod'
 import {zodResolver} from "@hookform/resolvers/zod";
-import AlertMessage from "@/components/AlertMessage";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {useState} from "react";
 import axios from "axios";
@@ -82,7 +81,6 @@ export default function GuestDetailsForm({guest, refresh, addMessage}:Props){
                     </div>
                 </DialogHeader>
                 <Form {...form}>
-                    <AlertMessage title="Form Error" message={""} code={2} />
                     <form onSubmit={form.handleSubmit(onEditGuest)} className="space-y-8">
                         <FormField
                             control={form.control}
@@ -162,7 +160,7 @@ export default function GuestDetailsForm({guest, refresh, addMessage}:Props){
                             </DialogClose>
                             <Dialog>
                                 <DialogTrigger asChild>
-                                    <Button variant="destructive">
+                                    <Button variant="destructive" className="mb-4">
                                         Delete Guest
                                     </Button>
                                 </DialogTrigger>
