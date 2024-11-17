@@ -16,6 +16,7 @@ import { InviteRigidity, EventType, ReminderAmount } from "@prisma/client";
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import GuestSelectionDialog from "@/components/GuestSelectionDialog";
+import axios from "axios";
 
 export default function NewEventForm() {
     const form = useForm<z.infer<typeof createEventSchema>>({
@@ -31,7 +32,7 @@ export default function NewEventForm() {
             eventType: 'GENERAL_EVENT',
             reminderAmount: 'NONE',
             RSVP: [],
-            authorId: 'd969f400-e226-4eae-ace8-8bcad90a1542' // todo: this is a placeholder
+            authorId: 'fbe4fc73-91b9-4207-a2c3-3778086e17e1' // todo: this is a placeholder
         },
     });
 
@@ -52,13 +53,21 @@ export default function NewEventForm() {
         value,
     }));
 
-    const onSubmit = (values: z.infer<typeof createEventSchema>) => {
-        console.log(values);
-    };
+    async function onSubmit (values: z.infer<typeof createEventSchema>) {
+        try{
+            setIsLoading(true);
+            await axios.post('/api/esmt/events/new', values);
+            // router.push("/ESMT/guests?message=1");
+        }catch(e){
+            setIsLoading(false);
+            setError("OOPS! Something happened :(");
+            console.log(e)
+        }
+    }
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-4">
                 <GuestSelectionDialog onGuestsSelected={(data) => form.setValue("RSVP", data)}/>
 
                 <FormField
@@ -68,7 +77,7 @@ export default function NewEventForm() {
                         <FormItem>
                             <FormLabel>Title</FormLabel>
                             <FormControl>
-                                <Input placeholder="event title" {...field} />
+                                <Input placeholder="Event title" {...field} />
                             </FormControl>
                         </FormItem>
                     )}
@@ -237,29 +246,75 @@ export default function NewEventForm() {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="reminderAmount"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Reminder Amount</FormLabel>
-                            <FormControl>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select reminder amount" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {reminderAmountOptions.map((option) => (
-                                            <SelectItem key={option.value} value={option.value}>
-                                                {option.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                        </FormItem>
-                    )}
-                />
+
+                <div className="flex flex-col md:flex-row justify-between gap-3">
+                    <FormField
+                        control={form.control}
+                        name="reminderAmount"
+                        render={({ field }) => (
+                            <FormItem className="w-full">
+                                <FormLabel>Reminder Amount</FormLabel>
+                                <FormControl>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select reminder amount" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {reminderAmountOptions.map((option) => (
+                                                <SelectItem key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name='rsvpDuedate'
+                        render={({ field }) => (
+                            <FormItem className='flex flex-col items-start mt-2'>
+                                <FormLabel>RSVP Due Date</FormLabel>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant={'outline'}
+                                            className={cn(
+                                                'justify-start text-left font-normal w-full',
+                                                !field.value && 'text-muted-foreground'
+                                            )}
+                                        >
+                                            <CalendarIcon className='mr-2 h-4 w-4' />
+                                            {field.value ? (
+                                                format(field.value, 'PPP hh:mm a')
+                                            ) : (
+                                                <span>Pick a date</span>
+                                            )}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className='w-auto p-0'>
+                                        <Calendar
+                                            mode='single'
+                                            selected={field.value}
+                                            onSelect={field.onChange}
+                                            disabled={(date) =>
+                                                date < new Date()
+                                            }
+                                            initialFocus
+                                        />
+                                        <div className='p-3 border-t border-border'>
+                                            <TimestampPicker setDate={field.onChange} date={field.value} />
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
                 <Button type="submit" disabled={isLoading}>
                     {isLoading && <Loader2 className="animate-spin"/>}
                     Create Event

@@ -37,10 +37,10 @@ model Guest {
   user        User?    @relation(fields: [userId], references: [id])
   userId      Int?     @unique
   event       Event[]
-  rsvp        RSVP[]
+  rsvp        Rsvp[]
 }
 
-model RSVP {
+model Rsvp {
   id        String       @id @default(uuid())
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
@@ -64,7 +64,7 @@ model Event {
   inviteRigidity InviteRigidity
   eventType      EventType
   reminderAmount ReminderAmount
-  RSVP           RSVP[]
+  RSVP           Rsvp[]
   author         Guest          @relation(fields: [authorId], references: [id])
   authorId       String
 }
