@@ -47,14 +47,13 @@ export const createEventSchema = z.object({
     eventType: EventType,
     reminderAmount: ReminderAmount,
     RSVP: z.array(
-        z.object({
-            id: z.string().uuid().optional(),
-            createdAt: z.date().optional(),
-            updatedAt: z.date().optional(),
-            eventId: z.string().uuid(),
-            response: RsvpResponse,
-            guestId: z.string().uuid(),
-        })
+        z.string().uuid(),
     ).optional(),
     authorId: z.string().uuid()
+})
+
+export const createRSVPSchema = z.object({
+    eventId: z.string().uuid(),
+    response: RsvpResponse,
+    guestId: z.string().uuid(),
 })

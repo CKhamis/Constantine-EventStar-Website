@@ -1,9 +1,8 @@
-"use client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import {useForm} from "react-hook-form";
 import * as z from "zod";
 import {createEventSchema} from "@/components/ValidationSchemas";
@@ -12,10 +11,11 @@ import {TimestampPicker} from "@/components/ui/timestamp-picker";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Calendar} from "@/components/ui/calendar";
 import {CalendarIcon, Loader2} from "lucide-react";
-import {useState} from "react";
+import { useState} from "react";
 import { InviteRigidity, EventType, ReminderAmount } from "@prisma/client";
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import GuestSelectionDialog from "@/components/GuestSelectionDialog";
 
 export default function NewEventForm() {
     const form = useForm<z.infer<typeof createEventSchema>>({
@@ -31,10 +31,10 @@ export default function NewEventForm() {
             eventType: 'GENERAL_EVENT',
             reminderAmount: 'NONE',
             RSVP: [],
-            authorId: 'd969f400-e226-4eae-ace8-8bcad90a1542'
+            authorId: 'd969f400-e226-4eae-ace8-8bcad90a1542' // todo: this is a placeholder
         },
-    })
-    const [date, setDate] = useState<Date | null>(null);
+    });
+
     const [error, setError] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -52,7 +52,6 @@ export default function NewEventForm() {
         value,
     }));
 
-
     const onSubmit = (values: z.infer<typeof createEventSchema>) => {
         console.log(values);
     };
@@ -60,6 +59,8 @@ export default function NewEventForm() {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <GuestSelectionDialog onGuestsSelected={(data) => form.setValue("RSVP", data)}/>
+
                 <FormField
                     control={form.control}
                     name="title"
@@ -85,7 +86,7 @@ export default function NewEventForm() {
                     )}
                 />
 
-                <div className="flex flex-row justify-between">
+                <div className="flex flex-col md:flex-row justify-between">
                     <FormField
                         control={form.control}
                         name='eventStart'
@@ -133,7 +134,7 @@ export default function NewEventForm() {
                         name='eventEnd'
                         render={({ field }) => (
                             <FormItem className='flex flex-col items-start'>
-                                <FormLabel>Event End</FormLabel>
+                                <FormLabel className="mt-5 md:mt-0">Event End</FormLabel>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
@@ -261,7 +262,7 @@ export default function NewEventForm() {
                 />
                 <Button type="submit" disabled={isLoading}>
                     {isLoading && <Loader2 className="animate-spin"/>}
-                    Add Guest
+                    Create Event
                 </Button>
             </form>
         </Form>
