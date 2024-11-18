@@ -58,7 +58,7 @@ export async function POST(request: NextRequest){
             data: rsvpData
         });
 
-        //console.log(rsvpResponse);
+        console.log(rsvpResponse);
 
         return NextResponse.json(newEvent, {status: 201});
     } catch (e) {

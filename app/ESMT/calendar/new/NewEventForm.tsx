@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,14 +12,18 @@ import {TimestampPicker} from "@/components/ui/timestamp-picker";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Calendar} from "@/components/ui/calendar";
 import {CalendarIcon, Loader2} from "lucide-react";
-import { useState} from "react";
+import {useState} from "react";
 import { InviteRigidity, EventType, ReminderAmount } from "@prisma/client";
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import GuestSelectionDialog from "@/components/GuestSelectionDialog";
 import axios from "axios";
+import AlertList, {alertContent} from "@/components/AlertList";
+import { useRouter } from 'next/navigation';
 
 export default function NewEventForm() {
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof createEventSchema>>({
         resolver: zodResolver(createEventSchema),
         defaultValues: {
@@ -36,8 +41,8 @@ export default function NewEventForm() {
         },
     });
 
-    const [error, setError] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [alertMessages, setAlertMessages] = useState<alertContent[]>([]);
 
     // Enum formatting
     const eventTypeOptions = Object.values(EventType).map((value) => ({
@@ -45,11 +50,11 @@ export default function NewEventForm() {
         value,
     }));
     const inviteRigidityOptions = Object.values(InviteRigidity).map((value) => ({
-        label: value.replace(/_/g, " "), // Replace underscores with spaces for readability
+        label: value.replace(/_/g, " "),
         value,
     }));
     const reminderAmountOptions = Object.values(ReminderAmount).map((value) => ({
-        label: value.replace(/_/g, " "), // Replace underscores with spaces for readability
+        label: value.replace(/_/g, " "),
         value,
     }));
 
@@ -57,19 +62,20 @@ export default function NewEventForm() {
         try{
             setIsLoading(true);
             await axios.post('/api/esmt/events/new', values);
-            // router.push("/ESMT/guests?message=1");
+            router.push("/ESMT/calendar?message=1");
         }catch(e){
             setIsLoading(false);
-            setError("OOPS! Something happened :(");
             console.log(e)
+            setAlertMessages([...alertMessages, { title: "Catastrophic Error", message: "Unable to save event", icon: 2 }]);
+
         }
     }
 
     return (
         <Form {...form}>
+            <AlertList alerts={alertMessages} />
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-4">
                 <GuestSelectionDialog onGuestsSelected={(data) => form.setValue("RSVP", data)}/>
-
                 <FormField
                     control={form.control}
                     name="title"
