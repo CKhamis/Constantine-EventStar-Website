@@ -16,8 +16,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { format } from 'date-fns'
 
-export const eventTableColumns = (onEdit: (id: string) => void, onDelete: (id: string) => void
-): ColumnDef<Event>[] => [
+export const eventTableColumns = (onEdit: (id: string) => void, onDelete: (id: string) => void, onRowClick: (id: string) => void): ColumnDef<Event>[] => [
     {
         accessorKey: "title",
         header: ({ column }) => {
@@ -139,3 +138,20 @@ export const eventTableColumns = (onEdit: (id: string) => void, onDelete: (id: s
         },
     },
 ]
+
+export const eventTableColumnsWithRowClick = (onEdit: (id: string) => void, onDelete: (id: string) => void, onRowClick: (id: string) => void): ColumnDef<Event>[] => {
+    const columns = eventTableColumns(onEdit, onDelete, onRowClick);
+    return columns.map(column => ({
+        ...column,
+        cell: (props) => (
+            <div onClick={() => {
+                    const id = props.row.getValue("id") as string;
+                    onRowClick(id);
+                }}
+                className="cursor-pointer"
+            >
+                {column.cell && typeof column.cell === "function" ? column.cell(props) : null}
+            </div>
+        )
+    }));
+}
