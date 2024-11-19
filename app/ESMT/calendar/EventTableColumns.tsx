@@ -16,7 +16,8 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { format } from 'date-fns'
 
-export const eventTableColumns: ColumnDef<Event>[] = [
+export const eventTableColumns = (onEdit: (id: string) => void, onDelete: (id: string) => void
+): ColumnDef<Event>[] => [
     {
         accessorKey: "title",
         header: ({ column }) => {
@@ -130,8 +131,8 @@ export const eventTableColumns: ColumnDef<Event>[] = [
                         <DropdownMenuItem>
                             <Link href={"/calendar/view/" + id}>View Invite</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onEdit(id)}>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onDelete(id)}>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

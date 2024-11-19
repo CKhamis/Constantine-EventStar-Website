@@ -34,6 +34,13 @@ export default function AdminCalendar(){
         fetchEvents();
     }, []);
 
+    const onEdit = (id:string) =>{
+        console.log(id)
+    }
+    const onDelete = (id:string) =>{
+        console.log(id)
+    }
+
     return (
         <AdminUI>
             <div className="container mt-4">
@@ -90,7 +97,7 @@ export default function AdminCalendar(){
                 </div>
                 <div className="grid items-start gap-4 lg:grid-cols-3">
                     <div className="grid auto-rows-max items-start lg:col-span-2">
-                        <EventTable columns={eventTableColumns} data={events} />
+                        <EventTable columns={eventTableColumns(onEdit, onDelete)} data={events} />
                     </div>
                     <div className="flex flex-col gap-4 bg-amber-400">
                         <p className="text-2xl font-bold">Page under construction</p>
