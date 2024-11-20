@@ -21,7 +21,6 @@ import {
 import {EventTable} from "@/app/ESMT/calendar/EventTable";
 import {eventTableColumnsWithRowClick} from "@/app/ESMT/calendar/EventTableColumns";
 import axios from "axios";
-import {$Enums, Rsvp} from "@prisma/client"
 import { format } from 'date-fns'
 import {Badge} from "@/components/ui/badge";
 import {
@@ -33,23 +32,8 @@ import {
     DialogTitle
 } from "@/components/ui/dialog";
 import {RSVPGraph} from "@/app/ESMT/calendar/RsvpGraph";
+import {EventWithRsvp} from "@/components/Types";
 
-type EventWithRsvp = {
-    id: string
-    createdAt: Date
-    updatedAt: Date
-    title: string
-    address: string
-    eventStart: Date
-    eventEnd: Date
-    rsvpDuedate: Date
-    description: string
-    inviteRigidity: $Enums.InviteRigidity
-    eventType: $Enums.EventType
-    reminderAmount: $Enums.ReminderAmount
-    authorId: string
-    RSVP: Rsvp[]
-}
 
 export default function AdminCalendar(){
     const router = useSearchParams();
@@ -263,7 +247,7 @@ export default function AdminCalendar(){
 
                                     <div>
                                         <div className="flex flex-row justify-start gap-2 items-center mb-1">
-                                            <LetterText className="h-5 w-5" />
+                                             <LetterText className="h-5 w-5" />
                                             <p>Description</p>
                                         </div>
                                         <p className="text-muted-foreground">{selectedEvent.description ? selectedEvent.description : "No description provided"}</p>
