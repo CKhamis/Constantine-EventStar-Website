@@ -46,7 +46,7 @@ model Rsvp {
   updatedAt DateTime     @updatedAt
   event     Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId   String
-  response  RsvpResponse @default(MAYBE)
+  response  RsvpResponse @default(NO_RESPONSE)
   Guest     Guest        @relation(fields: [guestId], references: [id], onDelete: Cascade)
   guestId   String
 }
@@ -80,6 +80,7 @@ enum RsvpResponse {
   YES
   NO
   MAYBE
+  NO_RESPONSE
 }
 
 enum InviteRigidity {
