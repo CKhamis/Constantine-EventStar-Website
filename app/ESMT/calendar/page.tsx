@@ -8,12 +8,19 @@ import {useSearchParams} from "next/navigation";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {CalendarCheck2, CalendarClock, CalendarHeart, Eye, Pencil, Trash2, User} from "lucide-react";
 import {EventTable} from "@/app/ESMT/calendar/EventTable";
-import {eventTableColumns, eventTableColumnsWithRowClick} from "@/app/ESMT/calendar/EventTableColumns";
+import {eventTableColumnsWithRowClick} from "@/app/ESMT/calendar/EventTableColumns";
 import axios from "axios";
 import {Event} from "@prisma/client"
 import { format } from 'date-fns'
 import {Badge} from "@/components/ui/badge";
-import {RsvpChart} from "@/app/ESMT/calendar/RsvpChart";
+import {
+    Dialog, DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle
+} from "@/components/ui/dialog";
 
 export default function AdminCalendar(){
     // Create Message
@@ -25,8 +32,10 @@ export default function AdminCalendar(){
     const [commonEventType, setCommonEventType] = useState<string>("None");
     const [commonEventTypeCount, setCommonEventTypeCount] = useState<number>(0);
     const [selectedEvent, setSelectedEvent] = useState<Event | null>();
-
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([{ title: createMessageParam==="1"? "Event Created" : "", message: createMessageParam==="1"? "Event created successfully!" : "", icon: 1 }]);
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [eventToDelete, setEventToDelete] = useState<string>("");
 
     const fetchEvents = async () => {
         try {
@@ -75,16 +84,33 @@ export default function AdminCalendar(){
         fetchEvents();
     }, []);
 
-    const onEdit = (id:string) =>{
+    const onEdit = (id:string) => {
         console.log(id)
     }
-    const onDelete = (id:string) =>{
-        console.log(id)
+    const onDelete = (id:string) => {
+        setEventToDelete(id);
+        setDeleteDialogOpen(true);
     }
 
     const onRowClick = (id: string) => {
         setSelectedEvent(events.find(event => event.id === id));
         console.log(selectedEvent)
+    }
+
+    const addMessage = (message: alertContent)=> {
+        setAlertMessages((prevMessages) => [...prevMessages, message]);
+    }
+
+    // Database operations
+    const deleteEvent = async (id: string) => {
+        try{
+            await axios.post('/api/esmt/events/delete', {"id": id}).finally(fetchEvents);
+            setSelectedEvent(null);
+            addMessage({ title: "Event Deleted", message: "Event and all related information including RSVPs was deleted from server", icon: 1 });
+        }catch(e){
+            addMessage({ title: "Unable to Delete Event", message: "There was an issue deleting event", icon: 2 });
+            console.log(e);
+        }
     }
 
     return (
@@ -194,6 +220,28 @@ export default function AdminCalendar(){
                     </div>
                 </div>
             </div>
+
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Are you sure you want to delete this event?</DialogTitle>
+                        <DialogDescription>
+                            This action cannot be undone. This will permanently delete and remove all related information including RSVP statuses.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                        </DialogClose>
+                        <DialogClose asChild>
+                            <Button variant="destructive" onClick={() => {
+                                console.log(`Deleting guest`)
+                                deleteEvent(eventToDelete).then(() => setDeleteDialogOpen(false));
+                            }}>Delete</Button>
+                        </DialogClose>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </AdminUI>
 );
 }
