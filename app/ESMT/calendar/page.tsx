@@ -11,7 +11,7 @@ import {
     CalendarClock,
     CalendarHeart,
     Clock,
-    Eye,
+    Eye, LetterText,
     MapPin,
     Pencil,
     Trash2,
@@ -245,16 +245,31 @@ export default function AdminCalendar(){
                                         <Badge variant="outline">{selectedEvent.inviteRigidity}</Badge>
                                         <Badge variant="outline">{selectedEvent.reminderAmount}</Badge>
                                     </div>
-                                    <div className="flex flex-row justify-start gap-2 items-center">
-                                        <MapPin className="h-5 w-5"/>
-                                        <p>{selectedEvent.address ? selectedEvent.address : "None provided"}</p>
+                                    <div>
+                                        <div className="flex flex-row justify-start gap-2 items-center mb-1">
+                                            <MapPin className="h-5 w-5"/>
+                                            <p>Location</p>
+                                        </div>
+                                        <p className="text-muted-foreground">{selectedEvent.address ? selectedEvent.address : "None provided"}</p>
                                     </div>
-                                    <div className="flex flex-row justify-start gap-2 items-center">
-                                        <Clock className="h-5 w-5"/>
-                                        <p>{format(selectedEvent.eventStart, "MM/dd/yyyy h:mm a")} - {format(selectedEvent.eventEnd, "MM/dd/yyyy h:mm a")}</p>
+
+                                    <div>
+                                        <div className="flex flex-row justify-start gap-2 items-center mb-1">
+                                            <Clock className="h-5 w-5"/>
+                                            <p>Date / Time</p>
+                                        </div>
+                                        <p className="text-muted-foreground">{format(selectedEvent.eventStart, "MM/dd/yyyy h:mm a")} - {format(selectedEvent.eventEnd, "MM/dd/yyyy h:mm a")}</p>
                                     </div>
-                                    <p>{selectedEvent.description ? selectedEvent.description : "No description provided"}</p>
-                                    <div className="flex flex-row justify-start gap-2 items-center mt-4">
+
+                                    <div>
+                                        <div className="flex flex-row justify-start gap-2 items-center mb-1">
+                                            <LetterText className="h-5 w-5" />
+                                            <p>Description</p>
+                                        </div>
+                                        <p className="text-muted-foreground">{selectedEvent.description ? selectedEvent.description : "No description provided"}</p>
+                                    </div>
+
+                                    <div className="flex flex-row justify-start gap-2 items-center">
                                         <Users className="h-5 w-5"/>
                                         <p>RSVP Status</p>
                                     </div>
@@ -272,7 +287,7 @@ export default function AdminCalendar(){
                     <DialogHeader>
                         <DialogTitle>Are you sure you want to delete this event?</DialogTitle>
                         <DialogDescription>
-                            This action cannot be undone. This will permanently delete and remove all related information including RSVP statuses.
+                        This action cannot be undone. This will permanently delete and remove all related information including RSVP statuses.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
