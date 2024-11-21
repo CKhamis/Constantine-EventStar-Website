@@ -9,7 +9,6 @@ import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
-import {RSVPGraph} from "@/app/ESMT/calendar/RsvpGraph";
 import RsvpPannel from "@/app/calendar/view/[eventId]/RsvpPannel";
 
 interface Props{

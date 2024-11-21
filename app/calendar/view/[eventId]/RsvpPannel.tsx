@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import axios from "axios";
+import {Check, X} from "lucide-react";
 
 const FormSchema = z.object({
     eventId: z.string(),
@@ -15,7 +17,7 @@ const FormSchema = z.object({
     rsvp: z.enum(['YES', 'NO', 'MAYBE']).optional(),
 })
 
-export default function RsvpPannel({ eventId = '', guestId = '' }: { eventId: string; guestId: string }) {
+export default function RsvpPannel({ eventId , guestId }: { eventId: string; guestId: string }) {
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
     const form = useForm<FormData>({
@@ -28,26 +30,27 @@ export default function RsvpPannel({ eventId = '', guestId = '' }: { eventId: st
     })
 
     async function onSubmit(data: FormData) {
-        // setSubmitStatus('loading')
-        // //const result = await axios.post(data)
-        // if (result.success) {
-        //     setSubmitStatus('success')
-        // } else {
-        //     setSubmitStatus('error')
-        //     if (result.errors) {
-        //         Object.keys(result.errors).forEach((key) => {
-        //             form.setError(key as keyof FormData, {
-        //                 type: 'server',
-        //                 message: result.errors[key]?.[0],
-        //             })
-        //         })
-        //     }
-        // }
+        setSubmitStatus('loading')
+        try{
+            const result = await axios.post("/api/events/rsvp/" + data.eventId, {guestId: data.guestId, response: data.rsvp})
+            setSubmitStatus('success')
+        }catch (e){
+            setSubmitStatus('error')
+            if (result.errors) {
+                Object.keys(result.errors).forEach((key) => {
+                    form.setError(key as keyof FormData, {
+                        type: 'server',
+                        message: result.errors[key]?.[0],
+                    })
+                })
+            }
+        }
+        //console.log(data);
     }
 
     return (
         <Card>
-            <CardHeader>
+            <CardHeader className="mb-0 pb-0">
                 <CardTitle className="text-2xl font-bold">RSVP Status</CardTitle>
             </CardHeader>
             <CardContent>
@@ -78,16 +81,18 @@ export default function RsvpPannel({ eventId = '', guestId = '' }: { eventId: st
                             )}
                         />
 
-                        <Button type="submit" disabled={submitStatus === 'loading'}>
-                            {submitStatus === 'loading' ? 'Submitting...' : 'Submit RSVP'}
-                        </Button>
+                        <div className="flex flex-row gap-4 items-center justify-start">
+                            <Button type="submit" disabled={submitStatus === 'loading'}>
+                                {submitStatus === 'loading' ? 'Submitting...' : 'Save'}
+                            </Button>
 
-                        {submitStatus === 'success' && (
-                            <p className="text-green-600">RSVP submitted successfully!</p>
-                        )}
-                        {submitStatus === 'error' && (
-                            <p className="text-red-600">An error occurred. Please try again.</p>
-                        )}
+                            {submitStatus === 'success' && (
+                                <Check className="h-4 w-4" />
+                            )}
+                            {submitStatus === 'error' && (
+                                <X className="h-4 w-4" />
+                            )}
+                        </div>
                     </form>
                 </Form>
             </CardContent>
