@@ -24,6 +24,12 @@ export const rsvpSchema = z.object({
     response: RsvpResponse
 })
 
+export const rsvpFormSchema = z.object({
+    guestId: z.string().uuid(),
+    eventId: z.string().uuid(),
+    response: RsvpResponse
+})
+
 export const createGuestSchema = z.object({
     firstName: z.string().min(1).max(255),
     lastName: z.string().max(255),

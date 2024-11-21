@@ -1,70 +1,72 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import axios from "axios";
-import {Check, X} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import axios from "axios"
+import { Check, X } from 'lucide-react'
+import {rsvpFormSchema} from "@/components/ValidationSchemas";
 
-const FormSchema = z.object({
-    eventId: z.string(),
-    guestId: z.string(),
-    rsvp: z.enum(['YES', 'NO', 'MAYBE']).optional(),
-})
-
-export default function RsvpPannel({ eventId , guestId }: { eventId: string; guestId: string }) {
+export default function RsvpPanel({ eventId, guestId }: { eventId: string; guestId: string }) {
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
-    const form = useForm<FormData>({
-        resolver: zodResolver(FormSchema),
+    const form = useForm<z.infer<typeof rsvpFormSchema>>({
+        resolver: zodResolver(rsvpFormSchema),
         defaultValues: {
             eventId,
             guestId,
-            rsvp: undefined,
+            response: undefined,
         },
     })
 
-    async function onSubmit(data: FormData) {
-        setSubmitStatus('loading')
-        try{
-            const result = await axios.post("/api/events/rsvp/" + data.eventId, {guestId: data.guestId, response: data.rsvp})
-            setSubmitStatus('success')
-        }catch (e){
-            setSubmitStatus('error')
-            if (result.errors) {
-                Object.keys(result.errors).forEach((key) => {
-                    form.setError(key as keyof FormData, {
-                        type: 'server',
-                        message: result.errors[key]?.[0],
-                    })
-                })
+    useEffect(() => {
+        const fetchCurrentRsvp = async () => {
+            try {
+                const response = await axios.post(`/api/events/rsvp/view/${eventId}`, { id: guestId });
+                const currentRsvp = response.data.response;
+                if (currentRsvp && currentRsvp !== 'NO_RESPONSE') {
+                    form.setValue('response', currentRsvp);
+                }
+            } catch (error) {
+                console.error('Error fetching current RSVP status:', error);
+                setSubmitStatus('error')
             }
         }
-        //console.log(data);
+
+        fetchCurrentRsvp()
+    }, [])
+
+    async function onSubmit(data: z.infer<typeof rsvpFormSchema>) {
+        setSubmitStatus('loading')
+        try {
+            await axios.post(`/api/events/rsvp/edit/${data.eventId}`, {response: data.response, eventId: eventId, guestId: guestId})
+            setSubmitStatus('success')
+        } catch (e) {
+            setSubmitStatus('error')
+        } finally {
+            setTimeout(() => setSubmitStatus('idle'), 3000)
+        }
     }
 
     return (
         <Card>
-            <CardHeader className="mb-0 pb-0">
+            <CardHeader className="mb-2 pb-0">
                 <CardTitle className="text-2xl font-bold">RSVP Status</CardTitle>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <input type="hidden" {...form.register('eventId')} />
-                        <input type="hidden" {...form.register('guestId')} />
-
                         <FormField
                             control={form.control}
-                            name="rsvp"
+                            name="response"
                             render={({ field }) => (
                                 <FormItem>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select your RSVP status" />
@@ -87,10 +89,10 @@ export default function RsvpPannel({ eventId , guestId }: { eventId: string; gue
                             </Button>
 
                             {submitStatus === 'success' && (
-                                <Check className="h-4 w-4" />
+                                <Check className="h-4 w-4 text-green-500" />
                             )}
                             {submitStatus === 'error' && (
-                                <X className="h-4 w-4" />
+                                <X className="h-4 w-4 text-red-500" />
                             )}
                         </div>
                     </form>
@@ -99,3 +101,4 @@ export default function RsvpPannel({ eventId , guestId }: { eventId: string; gue
         </Card>
     )
 }
+

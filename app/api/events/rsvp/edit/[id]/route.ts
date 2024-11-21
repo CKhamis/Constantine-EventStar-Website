@@ -21,7 +21,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         const rsvp = await prisma.rsvp.findFirst({
             where: {
                 eventId:id,
-                guestId: body.id
+                guestId: body.guestId
             }
         });
 
