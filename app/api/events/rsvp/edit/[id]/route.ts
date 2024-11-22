@@ -9,10 +9,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const body = await request.json();
     const validation = rsvpSchema.safeParse(body);
 
-    console.log(id)
-    console.log(body.guestId)
-    console.log(body.response)
-
     if(!validation.success){
         return NextResponse.json(validation.error.format(), {status: 400});
     }

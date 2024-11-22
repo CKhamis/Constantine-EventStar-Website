@@ -1,8 +1,7 @@
-import AdminUI from "@/components/admin/AdminUI";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {ChevronLeft, Clock, LetterText, MapPin, TriangleAlert, Users} from "lucide-react";
+import {ChevronLeft, Clock, LetterText, MapPin, TriangleAlert} from "lucide-react";
 import {EventWithRsvp} from "@/components/Types";
 import axios from "axios";
 import TopBar from "@/components/TopBar";
@@ -10,6 +9,7 @@ import Footer from "@/components/Footer";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import RsvpPannel from "@/app/calendar/view/[eventId]/RsvpPannel";
+import GuestList from "@/app/calendar/view/[eventId]/GuestList";
 
 interface Props{
     params: {
@@ -92,14 +92,7 @@ export default async function ViewEventPage({params}: Props){
                         </div>
                         <div className="flex flex-col gap-4 mb-4">
                             <RsvpPannel eventId={eventData.id} guestId={'fbe4fc73-91b9-4207-a2c3-3778086e17e1'}/>
-                            <Card>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                                    <CardTitle className="text-2xl font-medium">Event Details</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                <p>Please select an event to view details</p>
-                                </CardContent>
-                            </Card>
+                            <GuestList eventId={eventData.id} guestId={'fbe4fc73-91b9-4207-a2c3-3778086e17e1'} />
                         </div>
                     </div>
                 </div>

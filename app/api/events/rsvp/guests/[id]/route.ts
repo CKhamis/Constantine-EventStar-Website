@@ -1,26 +1,20 @@
-import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
+import prisma from "@/prisma/client";
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
-    const { id } = params;
+    const { id } = await params;
 
     try {
-        const event = await prisma.event.findUnique({
+        const rsvps = await prisma.rsvp.findMany({
             where: {
-                id: id,
+                eventId: id,
             },
             include: {
-                RSVP: false,
+                Guest: true
             },
         });
 
-        if (!event) {
-            return NextResponse.json({ error: "Event not found" }, { status: 404 });
-        }
-
-        return NextResponse.json(event, { status: 200 });
+        return NextResponse.json(rsvps, { status: 200 });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error: "An error occurred while fetching the event" }, { status: 500 });

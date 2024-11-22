@@ -13,7 +13,8 @@ import { Check, X } from 'lucide-react'
 import {rsvpFormSchema} from "@/components/ValidationSchemas";
 
 export default function RsvpPanel({ eventId, guestId }: { eventId: string; guestId: string }) {
-    const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+    const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [focus, setFocus] = useState<boolean>(false);
 
     const form = useForm<z.infer<typeof rsvpFormSchema>>({
         resolver: zodResolver(rsvpFormSchema),
@@ -31,6 +32,8 @@ export default function RsvpPanel({ eventId, guestId }: { eventId: string; guest
                 const currentRsvp = response.data.response;
                 if (currentRsvp && currentRsvp !== 'NO_RESPONSE') {
                     form.setValue('response', currentRsvp);
+                }else{
+                    setFocus(true);
                 }
             } catch (error) {
                 console.error('Error fetching current RSVP status:', error);
@@ -46,6 +49,7 @@ export default function RsvpPanel({ eventId, guestId }: { eventId: string; guest
         try {
             await axios.post(`/api/events/rsvp/edit/${data.eventId}`, {response: data.response, eventId: eventId, guestId: guestId})
             setSubmitStatus('success')
+            setFocus(false);
         } catch (e) {
             setSubmitStatus('error')
         } finally {
@@ -54,7 +58,7 @@ export default function RsvpPanel({ eventId, guestId }: { eventId: string; guest
     }
 
     return (
-        <Card>
+        <Card className={!focus? '' : 'transition-all animate-pulse top-left-gradient shadow-md focus-border'}>
             <CardHeader className="mb-2 pb-0">
                 <CardTitle className="text-2xl font-bold">RSVP Status</CardTitle>
             </CardHeader>
