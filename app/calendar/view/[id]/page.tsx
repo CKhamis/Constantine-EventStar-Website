@@ -8,17 +8,19 @@ import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
-import RsvpPannel from "@/app/calendar/view/[eventId]/RsvpPannel";
-import GuestList from "@/app/calendar/view/[eventId]/GuestList";
+import RsvpPannel from "@/app/calendar/view/[id]/RsvpPannel";
+import GuestList from "@/app/calendar/view/[id]/GuestList";
 
-interface Props{
-    params: {
-        eventId: string;
-    }
+type Params = Promise<{ id: string }>
+
+export async function generateMetadata(props: { params: Params }):Promise<string> {
+    const params = await props.params
+    return params.id
 }
 
-export default async function ViewEventPage({params}: Props){
-    const {eventId} = await params;
+export default async function ViewEventPage(props: { params: Params }){
+    const params = await props.params
+    const eventId = params.id;
 
     async function fetchEvent() {
         try {

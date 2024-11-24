@@ -1,11 +1,20 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
-import {rsvpSchema, uuidSchema} from "@/components/ValidationSchemas";
+import {rsvpSchema} from "@/components/ValidationSchemas";
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
-    const { id } = params;
+type Params = Promise<{ id: string }>
+
+export async function generateMetadata(props: { params: Params }):Promise<string> {
+    const params = await props.params
+    return params.id
+}
+
+export async function POST(request: Request, props: { params: Params }) {
+    const params = await props.params
+    const id = params.id;
+
     const body = await request.json();
     const validation = rsvpSchema.safeParse(body);
 

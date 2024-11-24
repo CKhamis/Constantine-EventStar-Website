@@ -4,9 +4,18 @@ import {rsvpSchema, uuidSchema} from "@/components/ValidationSchemas";
 
 const prisma = new PrismaClient();
 
+type Params = Promise<{ id: string }>
+
+export async function generateMetadata(props: { params: Params }):Promise<string> {
+    const params = await props.params
+    return params.id
+}
+
 // THIS IS A POST FUNCTION!!!
-export async function POST(request: Request, { params }: { params: { id: string } }) {
-    const { id } = params;
+export async function POST(request: Request, props: { params: Params }) {
+    const params = await props.params
+    const id = params.id;
+
     const body = await request.json();
     const validation = uuidSchema.safeParse(body);
 

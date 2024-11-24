@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
 import prisma from "@/prisma/client";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-    const { id } = await params;
+type Params = Promise<{ id: string }>
+
+export async function generateMetadata(props: { params: Params }):Promise<string> {
+    const params = await props.params
+    return params.id
+}
+
+export async function GET(request: Request, props: { params: Params }) {
+    const params = await props.params
+    const id = params.id;
 
     try {
         const rsvps = await prisma.rsvp.findMany({
