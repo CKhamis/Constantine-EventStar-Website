@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from 'next/navigation'
 import axios from "axios"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -30,7 +29,6 @@ interface EditEventFormProps {
 }
 
 export default function EditEventForm({ eventId }: EditEventFormProps) {
-    const router = useRouter()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([])
     const [rsvpGuests, setRsvpGuests] = useState<RsvpWithGuest[]>([])
@@ -54,39 +52,14 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
     })
 
     useEffect(() => {
-        async function fetchEventData() {
-            try {
-                const [eventInfo, rsvpGuests] = await Promise.all([
-                    fetchEventInfo(),
-                    fetchRsvpGuests()
-                ]);
 
-                if (eventInfo) {
-                    setRsvpGuests(rsvpGuests || [])
-                    form.reset({
-                        ...eventInfo,
-                        id: eventId,
-                        eventStart: new Date(eventInfo.eventStart),
-                        eventEnd: new Date(eventInfo.eventEnd),
-                        rsvpDuedate: new Date(eventInfo.rsvpDuedate),
-                        RSVP: rsvpGuests.map((rsvp:RsvpWithGuest) => rsvp.Guest.id) || []
-                    })
-
-                } else {
-                    setAlertMessages([...alertMessages, { title: "Error", message: "Event not found", icon: 2 }])
-                }
-            } catch (error) {
-                console.error("Error fetching event data:", error)
-                setAlertMessages([...alertMessages, { title: "Error", message: "Failed to load event data", icon: 2 }])
-            }
-        }
 
         fetchEventData()
     }, [eventId, form, alertMessages])
 
     async function fetchEventInfo() {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/view/${eventId}`)
+            const response = await axios.get(`/api/events/view/${eventId}`)
             return response.data
         } catch (err) {
             console.error("Error fetching event:", err)
@@ -96,7 +69,7 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
 
     async function fetchRsvpGuests() {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/rsvp/guests/${eventId}`)
+            const response = await axios.get(`/api/events/rsvp/guests/${eventId}`)
             return response.data
         } catch (err) {
             console.error("Error fetching RSVP guests:", err)
@@ -105,16 +78,41 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
     }
 
     async function onSubmit(values: z.infer<typeof editEventSchema>) {
-        console.log(values)
         try {
             setIsLoading(true)
-
-            // await axios.post(`/api/esmt/events/edit/${eventId}`, values)
-            // router.push("/ESMT/calendar?message=2")
+            await axios.post(`/api/esmt/events/edit`, values)
+            fetchEventData().then(() => setIsLoading(false))
         } catch (e) {
             setIsLoading(false)
             console.log(e)
             setAlertMessages([...alertMessages, { title: "Error", message: "Unable to update event", icon: 2 }])
+        }
+    }
+
+    async function fetchEventData() {
+        try {
+            const [eventInfo, rsvpGuests] = await Promise.all([
+                fetchEventInfo(),
+                fetchRsvpGuests()
+            ]);
+
+            if (eventInfo) {
+                setRsvpGuests(rsvpGuests || [])
+                form.reset({
+                    ...eventInfo,
+                    id: eventId,
+                    eventStart: new Date(eventInfo.eventStart),
+                    eventEnd: new Date(eventInfo.eventEnd),
+                    rsvpDuedate: new Date(eventInfo.rsvpDuedate),
+                    RSVP: rsvpGuests.map((rsvp:RsvpWithGuest) => rsvp.Guest.id) || []
+                })
+
+            } else {
+                setAlertMessages([...alertMessages, { title: "Error", message: "Event not found", icon: 2 }])
+            }
+        } catch (error) {
+            console.error("Error fetching event data:", error)
+            setAlertMessages([...alertMessages, { title: "Error", message: "Failed to load event data", icon: 2 }])
         }
     }
 

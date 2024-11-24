@@ -1,41 +1,83 @@
 import { PrismaClient } from '@prisma/client';
 import {NextRequest, NextResponse} from "next/server";
-import {editGuestSchema} from "@/components/ValidationSchemas";
+import {editEventSchema} from "@/components/ValidationSchemas";
 
 
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest){
     const body = await request.json();
-    const validation = editGuestSchema.safeParse(body);
 
+    body.eventStart = new Date(body.eventStart);
+    body.eventEnd = new Date(body.eventEnd);
+    if (body.rsvpDuedate) {
+        body.rsvpDuedate = new Date(body.rsvpDuedate);
+    }
+
+    const validation = editEventSchema.safeParse(body);
     if(!validation.success){
         return NextResponse.json(validation.error.format(), {status: 400});
     }
 
     try {
-        // Check if guest exists
-        const existingGuest = await prisma.guest.findUnique({
+        // Check if event exists
+        const existingEvent = await prisma.event.findUnique({
             where: { id: body.id },
         });
 
-        if (!existingGuest) {
-            return NextResponse.json({ message: "Guest not found" }, { status: 404 });
+        if (!existingEvent) {
+            return NextResponse.json({ message: "Event not found" }, { status: 404 });
         }
 
-        // Update the guest
-        const updatedGuest = await prisma.guest.update({
+        // Update Event details
+        const updatedEvent = await prisma.event.update({
             where: { id: body.id },
             data: {
-                firstName: body.firstName,
-                lastName: body.lastName,
-                email: body.email,
-                discordId: body.discordId,
-                phoneNumber: body.phoneNumber,
+                title: body.title,
+                address: body.address,
+                eventStart: body.eventStart,
+                eventEnd: body.eventEnd,
+                rsvpDuedate: body.rsvpDuedate,
+                description: body.description,
+                inviteRigidity: body.inviteRigidity,
+                eventType: body.eventType,
+                reminderAmount: body.reminderAmount,
+                authorId: body.authorId,
             },
         });
 
-        return NextResponse.json(updatedGuest, { status: 202 });
+        // Add or remove existing invites
+        const currentRsvps = await prisma.rsvp.findMany({
+            where: { eventId: body.id },
+            select: { guestId: true },
+        });
+
+        const currentGuestIds = currentRsvps.map(rsvp => rsvp.guestId);
+
+        // Determine RSVPs to delete and add
+        const toDelete = currentGuestIds.filter((id:string) => !body.RSVP.includes(id));
+        const toAdd = body.RSVP.filter((id:string) => !currentGuestIds.includes(id));
+
+        // Delete RSVPs
+        if (toDelete.length > 0) {
+            await prisma.rsvp.deleteMany({
+                where: {
+                    eventId: body.id,
+                    guestId: { in: toDelete },
+                },
+            });
+        }
+
+        // Add new RSVPs
+        if (toAdd.length > 0) {
+            const newRsvps = toAdd.map((guestId:string) => ({
+                guestId,
+                eventId: body.id,
+            }));
+            await prisma.rsvp.createMany({ data: newRsvps });
+        }
+
+        return NextResponse.json(updatedEvent, { status: 202 });
     } catch (e) {
         console.error(e);
         return NextResponse.json({ message: "An error occurred" }, { status: 500 });
