@@ -1,4 +1,5 @@
 "use client";
+
 import {
     BreadcrumbItem,
     BreadcrumbLink,
@@ -7,10 +8,15 @@ import {
     BreadcrumbSeparator,
     Breadcrumb
 } from "@/components/ui/breadcrumb";
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 export default function BreadcrumbNavigation() {
-    const path = window.location.pathname.substring(1).split("/");
+    const [path, setPath] = useState<string[]>([]);
+
+    useEffect(() => {
+        const currentPath = window.location.pathname.substring(1).split("/");
+        setPath(currentPath);
+    }, []);
 
     return (
         <Breadcrumb>
