@@ -3,8 +3,16 @@ import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-    const { id } = params;
+type Params = Promise<{ id: string }>
+
+export async function generateMetadata(props: { params: Params }):Promise<string> {
+    const params = await props.params
+    return params.id
+}
+
+export async function GET(request: Request, props: { params: Params }) {
+    const params = await props.params
+    const id = params.id;
 
     try {
         const event = await prisma.event.findUnique({

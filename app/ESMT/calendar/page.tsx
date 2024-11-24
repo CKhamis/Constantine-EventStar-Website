@@ -105,9 +105,6 @@ export default function AdminCalendar(){
         fetchEvents();
     }, []);
 
-    const onEdit = (id:string) => {
-        console.log(id)
-    }
     const onDelete = (id:string) => {
         setEventToDelete(id);
         setDeleteDialogOpen(true);
@@ -190,7 +187,7 @@ export default function AdminCalendar(){
                 </div>
                 <div className="grid items-start gap-4 lg:grid-cols-3">
                     <div className="grid auto-rows-max items-start lg:col-span-2 mb-4">
-                        <EventTable columns={eventTableColumnsWithRowClick(onEdit, onDelete, onRowClick)} data={events} />
+                        <EventTable columns={eventTableColumnsWithRowClick(onDelete, onRowClick)} data={events} />
                     </div>
                     <div className="flex flex-col gap-4 mb-4">
                         <Card>
@@ -205,9 +202,11 @@ export default function AdminCalendar(){
                                                 </Button>
                                             </Link>
 
-                                            <Button variant="outline" size="icon" onClick={() => onEdit(selectedEvent.id)}>
-                                                <Pencil/>
-                                            </Button>
+                                            <Link href={"/ESMT/calendar/" + selectedEvent.id}>
+                                                <Button variant="outline" size="icon">
+                                                    <Pencil/>
+                                                </Button>
+                                            </Link>
 
                                             <div className="flex flex-row gap-4 justify-end">
                                                 <Button variant="outline" size="icon" onClick={() => onDelete(selectedEvent.id)}>

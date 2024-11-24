@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { format } from 'date-fns'
 
-export const eventTableColumns = (onEdit: (id: string) => void, onDelete: (id: string) => void, onRowClick: (id: string) => void): ColumnDef<Event>[] => [
+export const eventTableColumns = (onDelete: (id: string) => void, onRowClick: (id: string) => void): ColumnDef<Event>[] => [
     {
         accessorKey: "title",
         header: ({ column }) => {
@@ -130,7 +130,7 @@ export const eventTableColumns = (onEdit: (id: string) => void, onDelete: (id: s
                         <DropdownMenuItem>
                             <Link href={"/calendar/view/" + id}>View Invite</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onEdit(id)}>Edit</DropdownMenuItem>
+                        <DropdownMenuItem><Link href={"/ESMT/calendar/" + id}>Edit</Link></DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onDelete(id)}>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -139,8 +139,8 @@ export const eventTableColumns = (onEdit: (id: string) => void, onDelete: (id: s
     },
 ]
 
-export const eventTableColumnsWithRowClick = (onEdit: (id: string) => void, onDelete: (id: string) => void, onRowClick: (id: string) => void): ColumnDef<Event>[] => {
-    const columns = eventTableColumns(onEdit, onDelete, onRowClick);
+export const eventTableColumnsWithRowClick = (onDelete: (id: string) => void, onRowClick: (id: string) => void): ColumnDef<Event>[] => {
+    const columns = eventTableColumns(onDelete, onRowClick);
     return columns.map(column => ({
         ...column,
         cell: (props) => (

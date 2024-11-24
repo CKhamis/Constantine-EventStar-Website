@@ -11,11 +11,12 @@ import { Guest } from "@prisma/client"
 
 interface GuestSelectionDialogProps {
     onGuestsSelected: (selectedGuestIds: string[]) => void
+    initialSelectedGuests?: string[]
 }
 
-export default function GuestSelectionDialog({ onGuestsSelected }: GuestSelectionDialogProps) {
+export default function GuestSelectionDialog({ onGuestsSelected, initialSelectedGuests = [] }: GuestSelectionDialogProps) {
     const [guests, setGuests] = useState<Guest[]>([])
-    const [selectedGuests, setSelectedGuests] = useState<Set<string>>(new Set())
+    const [selectedGuests, setSelectedGuests] = useState<Set<string>>(new Set(initialSelectedGuests))
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -36,6 +37,10 @@ export default function GuestSelectionDialog({ onGuestsSelected }: GuestSelectio
 
         fetchGuests()
     }, [])
+
+    useEffect(() => {
+        setSelectedGuests(new Set(initialSelectedGuests))
+    }, [initialSelectedGuests])
 
     const handleGuestToggle = (guestId: string) => {
         setSelectedGuests(prev => {
@@ -65,8 +70,8 @@ export default function GuestSelectionDialog({ onGuestsSelected }: GuestSelectio
                     Select Guests
                     {selectedGuests.size > 0 && (
                         <span className="ml-2 bg-primary text-primary-foreground rounded-full px-2 py-1 text-xs font-semibold">
-              {selectedGuests.size}
-            </span>
+                            {selectedGuests.size}
+                        </span>
                     )}
                 </Button>
             </DialogTrigger>
@@ -124,3 +129,4 @@ export default function GuestSelectionDialog({ onGuestsSelected }: GuestSelectio
         </Dialog>
     )
 }
+

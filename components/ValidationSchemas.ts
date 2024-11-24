@@ -63,8 +63,19 @@ export const createEventSchema = z.object({
     authorId: z.string().uuid()
 })
 
-export const createRSVPSchema = z.object({
-    eventId: z.string().uuid(),
-    response: RsvpResponse,
-    guestId: z.string().uuid(),
+export const editEventSchema = z.object({
+    id: z.string().uuid(),
+    title: z.string().min(1).max(255),
+    address: z.string().max(255, "Address cannot exceed 255 characters").optional(),
+    eventStart: z.date(),
+    eventEnd: z.date(),
+    rsvpDuedate: z.date().optional(),
+    description: z.string().optional(),
+    inviteRigidity: InviteRigidity,
+    eventType: EventType,
+    reminderAmount: ReminderAmount,
+    RSVP: z.array(
+        z.string().uuid(),
+    ).optional(),
+    authorId: z.string().uuid()
 })

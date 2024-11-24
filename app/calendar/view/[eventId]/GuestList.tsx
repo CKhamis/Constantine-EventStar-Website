@@ -59,7 +59,7 @@ export default async function GuestList({guestId, eventId}: Props) {
                                 </div>
                             ))}
                             {rsvpYesCount===0? (
-                                <p className="text-center mt-9 mb-6 font-bold">None</p>
+                                <p className="text-center mt-9 mb-6 font-bold">None confirmed</p>
                             ) : (<></>)}
                         </TabsContent>
                         <TabsContent value="no">
@@ -120,7 +120,7 @@ export default async function GuestList({guestId, eventId}: Props) {
                 </CardFooter>
             </Card>
         );
-    } catch (e) {
+    } catch (e) { //todo: implement error screen
         return (
             <>
 
