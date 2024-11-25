@@ -24,7 +24,8 @@ export default async function ViewEventPage(props: { params: Params }){
 
     async function fetchEvent() {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/view/${eventId}`);            return response.data;
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/view/${eventId}`);
+            return response.data;
         } catch (err) {
             console.error("Error fetching event:", err);
             return null;

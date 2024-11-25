@@ -16,7 +16,7 @@ import {useState} from "react";
 import { InviteRigidity, EventType, ReminderAmount } from "@prisma/client";
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import GuestSelectionDialog from "@/components/GuestSelectionDialog";
+import GuestSelection from "./GuestSelection";
 import axios from "axios";
 import AlertList, {alertContent} from "@/components/AlertList";
 import { useRouter } from 'next/navigation';
@@ -75,7 +75,7 @@ export default function NewEventForm() {
         <Form {...form}>
             <AlertList alerts={alertMessages} />
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-4">
-                <GuestSelectionDialog onGuestsSelected={(data) => form.setValue("RSVP", data)}/>
+                <GuestSelection onGuestsSelected={(data) => form.setValue("RSVP", data)}/>
                 <FormField
                     control={form.control}
                     name="title"
