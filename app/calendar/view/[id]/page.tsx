@@ -50,7 +50,7 @@ export default async function ViewEventPage(props: { params: Params }){
                         <div className="grid auto-rows-max items-start lg:col-span-2 mb-4">
                             <Card>
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                                    <CardTitle className="text-2xl font-bold">{eventData.title}</CardTitle>
+                                    <CardTitle className="text-4xl font-bold">{eventData.title}</CardTitle>
                                     <div className="flex flex-row gap-4">
                                         <Link href="/calendar">
                                             <Button variant="outline" size="icon">
