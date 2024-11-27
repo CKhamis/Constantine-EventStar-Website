@@ -2,15 +2,14 @@
 
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Event } from "@prisma/client";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { EventWithResponse } from "@/components/Types";
+import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
 import Link from "next/link";
 
-export const eventTableColumns: ColumnDef<Event>[] = [
+export const eventTableColumns: ColumnDef<EventWithResponse>[] = [
     {
         accessorKey: "title",
         header: ({ column }) => (
@@ -73,6 +72,30 @@ export const eventTableColumns: ColumnDef<Event>[] = [
         cell: ({ row }) => {
             const inviteRigidity = row.getValue("inviteRigidity") as string;
             return <div className="flex flex-row justify-center"><Badge variant="outline">{inviteRigidity}</Badge></div>;
+        },
+    },
+    {
+        accessorKey: "response",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Response
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+        cell: ({ row }) => {
+            const response = row.getValue("response") as string;
+            if(response === "NO_RESPONSE"){
+                return <div className="flex flex-row justify-center"><Badge variant="destructive">Unanswered</Badge></div>;
+            }else if(response === "YES"){
+                return <div className="flex flex-row justify-center"><Badge variant="default">Yes</Badge></div>;
+            }else if(response === "NO"){
+                return <div className="flex flex-row justify-center"><Badge variant="outline">No</Badge></div>;
+            }else {
+                return <div className="flex flex-row justify-center"><Badge variant="secondary">Maybe</Badge></div>;
+            }
         },
     },
     {

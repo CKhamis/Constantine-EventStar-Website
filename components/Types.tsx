@@ -1,4 +1,8 @@
-import {$Enums, EventType, InviteRigidity, ReminderAmount, Rsvp} from "@prisma/client";
+import {$Enums, Event, EventType, InviteRigidity, ReminderAmount, Rsvp} from "@prisma/client";
+
+export type EventWithResponse = Event & {
+    response: string;
+}
 
 export type RsvpWithEvent = {
     "id": string,

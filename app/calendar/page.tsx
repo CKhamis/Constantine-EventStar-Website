@@ -2,7 +2,7 @@ import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
 import {
     CalendarCheck2,
-    Clock, Eye,
+    Clock,
     LetterText, MapPin, TicketCheck,
 } from "lucide-react";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
@@ -13,9 +13,8 @@ import {format} from "date-fns";
 import axios from "axios";
 import {Progress} from "@/components/ui/progress";
 import {RsvpWithEvent} from "@/components/Types";
-import {eventTableColumns} from "@/app/calendar/CalendarTableColumns";
 import {EventTable} from "@/app/calendar/EventTable";
-import { Event } from "@prisma/client"
+import { EventWithResponse } from "@/components/Types";
 
 export default async function Calendar(){
     const guestId = "fbe4fc73-91b9-4207-a2c3-3778086e17e1"; //todo: placeholder
@@ -32,7 +31,7 @@ export default async function Calendar(){
 
     try{
         const eventList:RsvpWithEvent[] = await fetchEvent();
-        const eventsOnly:Event[] = eventList.map(rsvp => rsvp.event);
+        const eventsOnly:EventWithResponse[] = eventList.map((rsvp) => ({...rsvp.event, response: rsvp.response}));
 
         // Event Analysis
         const today = new Date();
