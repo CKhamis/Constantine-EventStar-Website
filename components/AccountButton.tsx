@@ -9,9 +9,11 @@ import {Button} from "./ui/button";
 import {CircleUser,} from "lucide-react"
 import Link from "next/link"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {auth} from "@/auth";
 
-export default function AccountButton(){
-    const session:boolean = false;
+export default async function AccountButton(){
+    const session = await auth();
+
     if(session){
         return (
             <DropdownMenu>
