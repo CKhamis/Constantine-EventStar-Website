@@ -58,9 +58,9 @@ export const createEventSchema = z.object({
     eventType: EventType,
     reminderAmount: ReminderAmount,
     RSVP: z.array(
-        z.string().uuid(),
+        z.string(),
     ).optional(),
-    authorId: z.string().uuid()
+    authorId: z.string()
 })
 
 export const editEventSchema = z.object({

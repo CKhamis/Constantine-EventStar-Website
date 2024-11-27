@@ -16,7 +16,7 @@ export async function POST(request: NextRequest){
 
     try {
         // Check if guest exists
-        const existingGuest = await prisma.guest.findUnique({
+        const existingGuest = await prisma.user.findUnique({
             where: { id: body.id },
         });
 
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest){
         }
 
         // delete the guest
-        const deletedGuest = await prisma.guest.delete({
+        const deletedGuest = await prisma.user.delete({
             where: { id: body.id },
         });
 

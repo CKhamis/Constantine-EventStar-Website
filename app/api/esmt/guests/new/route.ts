@@ -13,7 +13,7 @@ export async function POST(request: NextRequest){
         return NextResponse.json(validation.error.format(), {status: 400});
     }
 
-    const newGuest = await prisma.guest.create({
+    const newGuest = await prisma.user.create({
         data: {firstName: body.firstName, lastName: body.lastName, email: body.email, discordId: body.discordId, phoneNumber: body.phoneNumber},
     })
     return NextResponse.json(newGuest, {status: 201});

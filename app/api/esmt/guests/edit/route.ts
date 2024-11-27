@@ -15,7 +15,7 @@ export async function POST(request: NextRequest){
 
     try {
         // Check if guest exists
-        const existingGuest = await prisma.guest.findUnique({
+        const existingGuest = await prisma.user.findUnique({
             where: { id: body.id },
         });
 
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest){
         }
 
         // Update the guest
-        const updatedGuest = await prisma.guest.update({
+        const updatedGuest = await prisma.user.update({
             where: { id: body.id },
             data: {
                 firstName: body.firstName,

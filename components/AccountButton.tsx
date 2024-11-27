@@ -31,7 +31,7 @@ export default function AccountButton(){
                     <DropdownMenuSeparator/>
                     <form>
                         <DropdownMenuItem>
-                            <Button variant="ghost" type="submit" className="h-5 p-0">Log Out</Button>
+                            <Link href="/api/auth/signout?callbackUrl=/"><Button variant="ghost" type="submit" className="h-5 p-0">Log Out</Button></Link>
                         </DropdownMenuItem>
                     </form>
                 </DropdownMenuContent>
@@ -49,7 +49,7 @@ export default function AccountButton(){
                 <DropdownMenuContent align="end">
                     <DropdownMenuItem><Link href="/">Register</Link></DropdownMenuItem>
                     <DropdownMenuSeparator/>
-                    <DropdownMenuItem><Link href="/login">Sign In</Link></DropdownMenuItem>
+                    <DropdownMenuItem><Link href="/api/auth/signin">Login</Link></DropdownMenuItem>
                     <DropdownMenuItem><Link href="https://costionline.com/SignUp">Sign Up</Link></DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

@@ -21,8 +21,9 @@ export async function POST(request: NextRequest){
     }
 
     try {
+        console.log(body.authorId)
         // Check if guest exists
-        const existingGuest = await prisma.guest.findUnique({
+        const existingGuest = await prisma.user.findUnique({
             where: { id: body.authorId },
         });
 
