@@ -10,7 +10,7 @@ export type RsvpWithEvent = {
     "updatedAt": Date,
     "eventId": string,
     "response": string,
-    "guestId": string,
+    "userId": string,
     "event": {
         "id": string,
         "createdAt": Date,

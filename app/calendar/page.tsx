@@ -17,11 +17,11 @@ import {EventTable} from "@/app/calendar/EventTable";
 import { EventWithResponse } from "@/components/Types";
 
 export default async function Calendar(){
-    const guestId = "fbe4fc73-91b9-4207-a2c3-3778086e17e1"; //todo: placeholder
+    const userId = "cm41sn2190001yi2tdt5eieoc"; //todo: placeholder
 
     async function fetchEvent() {
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/upcoming`, {id: guestId});
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/upcoming`, {id: userId});
             return response.data;
         } catch (err) {
             console.error("Error fetching event:", err);
@@ -36,7 +36,7 @@ export default async function Calendar(){
         // Event Analysis
         const today = new Date();
         const completeResponsesCount = eventList.filter((rsvp) => rsvp.response !== "NO_RESPONSE").length;
-        const nextRSVP = eventList.filter((rsvp) => new Date(rsvp.event.eventEnd) > today && rsvp.response !== "NO").sort((a, b) => new Date(a.event.eventEnd).getTime() - new Date(b.event.eventEnd).getTime())[0] || null;
+        const nextRSVP = eventList.filter((rsvp) => new Date(rsvp.event.eventEnd) >= today && rsvp.response !== "NO").sort((a, b) => new Date(a.event.eventEnd).getTime() - new Date(b.event.eventEnd).getTime())[0] || null;
         const responseCounts:{YES?:number, MAYBE?:number, NO?:number, NO_RESPONSE?:number} = eventList.reduce((counts, rsvp) => {
             counts[rsvp.response] = (counts[rsvp.response] || 0) + 1;
             return counts;
