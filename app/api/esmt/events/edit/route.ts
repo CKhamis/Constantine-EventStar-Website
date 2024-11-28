@@ -49,29 +49,29 @@ export async function POST(request: NextRequest){
         // Add or remove existing invites
         const currentRsvps = await prisma.rsvp.findMany({
             where: { eventId: body.id },
-            select: { guestId: true },
+            select: { userId: true },
         });
 
-        const currentGuestIds = currentRsvps.map(rsvp => rsvp.guestId);
+        const currentUserIds = currentRsvps.map(rsvp => rsvp.userId);
 
         // Determine RSVPs to delete and add
-        const toDelete = currentGuestIds.filter((id:string) => !body.RSVP.includes(id));
-        const toAdd = body.RSVP.filter((id:string) => !currentGuestIds.includes(id));
+        const toDelete = currentUserIds.filter((id:string) => !body.RSVP.includes(id));
+        const toAdd = body.RSVP.filter((id:string) => !currentUserIds.includes(id));
 
         // Delete RSVPs
         if (toDelete.length > 0) {
             await prisma.rsvp.deleteMany({
                 where: {
                     eventId: body.id,
-                    guestId: { in: toDelete },
+                    userId: { in: toDelete },
                 },
             });
         }
 
         // Add new RSVPs
         if (toAdd.length > 0) {
-            const newRsvps = toAdd.map((guestId:string) => ({
-                guestId,
+            const newRsvps = toAdd.map((userId:string) => ({
+                userId,
                 eventId: body.id,
             }));
             await prisma.rsvp.createMany({ data: newRsvps });

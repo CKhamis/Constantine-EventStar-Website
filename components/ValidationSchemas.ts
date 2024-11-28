@@ -62,9 +62,9 @@ export const createEventSchema = z.object({
     eventType: EventType,
     reminderAmount: ReminderAmount,
     RSVP: z.array(
-        z.string().uuid(),
+        z.string().cuid(),
     ).optional(),
-    authorId: z.string().uuid()
+    authorId: z.string().cuid()
 })
 
 export const editEventSchema = z.object({
@@ -79,7 +79,7 @@ export const editEventSchema = z.object({
     eventType: EventType,
     reminderAmount: ReminderAmount,
     RSVP: z.array(
-        z.string().uuid(),
+        z.string().cuid(),
     ).optional(),
-    authorId: z.string().uuid()
+    authorId: z.string().cuid()
 })

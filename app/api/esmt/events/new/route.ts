@@ -21,16 +21,16 @@ export async function POST(request: NextRequest){
     }
 
     try {
-        // Check if guest exists
-        const existingGuest = await prisma.guest.findUnique({
+        // Check if user exists
+        const existingUser = await prisma.user.findUnique({
             where: { id: body.authorId },
         });
 
-        if (!existingGuest) {
-            return NextResponse.json({ message: "Guest not found" }, { status: 404 }); //todo: test if this ever runs
+        if (!existingUser) {
+            return NextResponse.json({ message: "User not found" }, { status: 404 }); //todo: test if this ever runs
         }
 
-        console.log("User exists: " + existingGuest.firstName)
+        console.log("User exists: " + existingUser.firstName)
 
         // Create Event
         const newEvent = await prisma.event.create({
@@ -49,8 +49,8 @@ export async function POST(request: NextRequest){
         });
 
         // Create RSVPs
-        const rsvpData = body.RSVP.map((guest:string) => {
-            return { guestId: guest, eventId: newEvent.id };
+        const rsvpData = body.RSVP.map((user:string) => {
+            return { userId: user, eventId: newEvent.id };
         });
 
         // console.log(rsvpData);
