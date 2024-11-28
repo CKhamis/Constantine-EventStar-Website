@@ -12,7 +12,7 @@ import axios from "axios"
 import { Check, X } from 'lucide-react'
 import {rsvpFormSchema} from "@/components/ValidationSchemas";
 
-export default function RsvpPanel({ eventId, guestId }: { eventId: string; guestId: string }) {
+export default function RsvpPanel({ eventId, userId }: { eventId: string; userId: string }) {
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [focus, setFocus] = useState<boolean>(false);
 
@@ -20,7 +20,7 @@ export default function RsvpPanel({ eventId, guestId }: { eventId: string; guest
         resolver: zodResolver(rsvpFormSchema),
         defaultValues: {
             eventId,
-            guestId,
+            userId: userId,
             response: undefined,
         },
     })
@@ -28,7 +28,7 @@ export default function RsvpPanel({ eventId, guestId }: { eventId: string; guest
     useEffect(() => {
         const fetchCurrentRsvp = async () => {
             try {
-                const response = await axios.post(`/api/events/rsvp/view/${eventId}`, { id: guestId });
+                const response = await axios.post(`/api/events/rsvp/view/${eventId}`, { id: userId });
                 const currentRsvp = response.data.response;
                 if (currentRsvp && currentRsvp !== 'NO_RESPONSE') {
                     form.setValue('response', currentRsvp);
@@ -47,7 +47,7 @@ export default function RsvpPanel({ eventId, guestId }: { eventId: string; guest
     async function onSubmit(data: z.infer<typeof rsvpFormSchema>) {
         setSubmitStatus('loading')
         try {
-            await axios.post(`/api/events/rsvp/edit/${data.eventId}`, {response: data.response, eventId: eventId, guestId: guestId})
+            await axios.post(`/api/events/rsvp/edit/${data.eventId}`, {response: data.response, eventId: eventId, userId: userId})
             setSubmitStatus('success')
             setFocus(false);
         } catch (e) {

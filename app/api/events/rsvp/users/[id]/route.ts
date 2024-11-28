@@ -18,7 +18,7 @@ export async function GET(request: Request, props: { params: Params }) {
                 eventId: id,
             },
             include: {
-                Guest: true
+                User: true
             },
         });
 

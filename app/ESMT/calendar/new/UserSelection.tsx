@@ -9,14 +9,13 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Users } from 'lucide-react'
 import { Guest } from "@prisma/client"
 
-interface GuestSelectionDialogProps {
+interface Props {
     onGuestsSelected: (selectedGuestIds: string[]) => void
-    initialSelectedGuests?: string[]
 }
 
-export default function GuestSelectionDialog({ onGuestsSelected, initialSelectedGuests = [] }: GuestSelectionDialogProps) {
-    const [guests, setGuests] = useState<Guest[]>([])
-    const [selectedGuests, setSelectedGuests] = useState<Set<string>>(new Set(initialSelectedGuests))
+export default function UserSelection({ onGuestsSelected }: Props) {
+    const [users, setUsers] = useState<Guest[]>([])
+    const [selectedGuests, setSelectedGuests] = useState<Set<string>>(new Set())
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -25,8 +24,8 @@ export default function GuestSelectionDialog({ onGuestsSelected, initialSelected
         const fetchGuests = async () => {
             try {
                 setIsLoading(true)
-                const response = await axios.get("/api/esmt/guests/all")
-                setGuests(response.data)
+                const response = await axios.get("/api/esmt/users/all")
+                setUsers(response.data)
                 setIsLoading(false)
             } catch (err) {
                 console.error("Error fetching users:", err)
@@ -37,10 +36,6 @@ export default function GuestSelectionDialog({ onGuestsSelected, initialSelected
 
         fetchGuests()
     }, [])
-
-    useEffect(() => {
-        setSelectedGuests(new Set(initialSelectedGuests))
-    }, [initialSelectedGuests])
 
     const handleGuestToggle = (guestId: string) => {
         setSelectedGuests(prev => {
@@ -70,8 +65,8 @@ export default function GuestSelectionDialog({ onGuestsSelected, initialSelected
                     Select Guests
                     {selectedGuests.size > 0 && (
                         <span className="ml-2 bg-primary text-primary-foreground rounded-full px-2 py-1 text-xs font-semibold">
-                            {selectedGuests.size}
-                        </span>
+              {selectedGuests.size}
+            </span>
                     )}
                 </Button>
             </DialogTrigger>
@@ -90,7 +85,7 @@ export default function GuestSelectionDialog({ onGuestsSelected, initialSelected
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-4">
-                            {guests.map(guest => (
+                            {users.map(guest => (
                                 <div
                                     key={guest.id}
                                     className={`flex flex-col items-center p-4 border rounded-lg cursor-pointer transition-all duration-200 ease-in-out ${
@@ -129,4 +124,3 @@ export default function GuestSelectionDialog({ onGuestsSelected, initialSelected
         </Dialog>
     )
 }
-

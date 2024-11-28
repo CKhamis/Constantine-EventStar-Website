@@ -16,7 +16,7 @@ import {useState} from "react";
 import { InviteRigidity, EventType, ReminderAmount } from "@prisma/client";
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import GuestSelection from "./GuestSelection";
+import UserSelection from "./UserSelection";
 import axios from "axios";
 import AlertList, {alertContent} from "@/components/AlertList";
 import { useRouter } from 'next/navigation';
@@ -37,7 +37,7 @@ export default function NewEventForm() {
             eventType: 'GENERAL_EVENT',
             reminderAmount: 'NONE',
             RSVP: [],
-            authorId: 'fbe4fc73-91b9-4207-a2c3-3778086e17e1' // todo: this is a placeholder
+            authorId: 'cm41snefs0003yi2tdixt8rg7' // todo: this is a placeholder
         },
     });
 
@@ -75,7 +75,7 @@ export default function NewEventForm() {
         <Form {...form}>
             <AlertList alerts={alertMessages} />
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-4">
-                <GuestSelection onGuestsSelected={(data) => form.setValue("RSVP", data)}/>
+                <UserSelection onGuestsSelected={(data) => form.setValue("RSVP", data)}/>
                 <FormField
                     control={form.control}
                     name="title"

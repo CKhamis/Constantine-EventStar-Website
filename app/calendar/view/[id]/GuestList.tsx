@@ -1,20 +1,20 @@
 import axios from "axios";
-import {RsvpWithGuest} from "@/components/Types";
+import {RsvpWithUser} from "@/components/Types";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
 interface Props{
-    guestId: string,
+    userId: string,
     eventId: string,
 }
 
 // TODO: Make levels in displaying information here
-export default async function GuestList({guestId, eventId}: Props) {
+export default async function GuestList({userId, eventId}: Props) {
 
     async function fetchEvent() {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/rsvp/guests/${eventId}`);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/events/rsvp/users/${eventId}`);
             return response.data;
         } catch (err) {
             console.error("Error fetching event:", err);
@@ -23,8 +23,8 @@ export default async function GuestList({guestId, eventId}: Props) {
     }
 
     try{
-        const rawRsvpData:RsvpWithGuest[] = await fetchEvent();
-        const rsvpData:RsvpWithGuest[] = rawRsvpData.filter((rsvp) => rsvp.Guest.id !== guestId);
+        const rawRsvpData:RsvpWithUser[] = await fetchEvent();
+        const rsvpData:RsvpWithUser[] = rawRsvpData.filter((rsvp) => rsvp.User.id !== userId);
 
         const rsvpYesCount = rsvpData.filter((rsvp) => rsvp.response === "YES").length;
         const rsvpNoCount = rsvpData.filter((rsvp) => rsvp.response === "NO").length;
@@ -49,12 +49,12 @@ export default async function GuestList({guestId, eventId}: Props) {
                             {rsvpData.filter((rsvp) => rsvp.response === "YES").map(rsvp => (
                                 <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer" key={rsvp.id}>
                                     <Avatar className="h-12 w-12">
-                                        <AvatarImage src={rsvp.Guest.avatarUrl} alt={`${rsvp.Guest.firstName} ${rsvp.Guest.lastName}`}/>
-                                        <AvatarFallback>{rsvp.Guest.firstName[0]}{rsvp.Guest.lastName[0]}</AvatarFallback>
+                                        {rsvp.User.image && <AvatarImage src={rsvp.User.image} alt={`${rsvp.User.firstName} ${rsvp.User.lastName}`}/>}
+                                        <AvatarFallback>{rsvp.User.firstName[0]}{rsvp.User.lastName[0]}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="text-sm font-medium leading-none">{rsvp.Guest.firstName} {rsvp.Guest.lastName}</p>
-                                        <p className="text-sm text-muted-foreground">{rsvp.Guest.email}</p>
+                                        <p className="text-sm font-medium leading-none">{rsvp.User.firstName} {rsvp.User.lastName}</p>
+                                        <p className="text-sm text-muted-foreground">{rsvp.User.email}</p>
                                     </div>
                                 </div>
                             ))}
@@ -66,12 +66,12 @@ export default async function GuestList({guestId, eventId}: Props) {
                             {rsvpData.filter((rsvp) => rsvp.response === "NO").map(rsvp => (
                                 <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer" key={rsvp.id}>
                                     <Avatar className="h-12 w-12">
-                                        <AvatarImage src={rsvp.Guest.avatarUrl} alt={`${rsvp.Guest.firstName} ${rsvp.Guest.lastName}`}/>
-                                        <AvatarFallback>{rsvp.Guest.firstName[0]}{rsvp.Guest.lastName[0]}</AvatarFallback>
+                                        {rsvp.User.image && <AvatarImage src={rsvp.User.image} alt={`${rsvp.User.firstName} ${rsvp.User.lastName}`}/>}
+                                        <AvatarFallback>{rsvp.User.firstName[0]}{rsvp.User.lastName[0]}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="text-sm font-medium leading-none">{rsvp.Guest.firstName} {rsvp.Guest.lastName}</p>
-                                        <p className="text-sm text-muted-foreground">{rsvp.Guest.email}</p>
+                                        <p className="text-sm font-medium leading-none">{rsvp.User.firstName} {rsvp.User.lastName}</p>
+                                        <p className="text-sm text-muted-foreground">{rsvp.User.email}</p>
                                     </div>
                                 </div>
                             ))}
@@ -83,12 +83,12 @@ export default async function GuestList({guestId, eventId}: Props) {
                             {rsvpData.filter((rsvp) => rsvp.response === "MAYBE").map(rsvp => (
                                 <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer" key={rsvp.id}>
                                     <Avatar className="h-12 w-12">
-                                        <AvatarImage src={rsvp.Guest.avatarUrl} alt={`${rsvp.Guest.firstName} ${rsvp.Guest.lastName}`}/>
-                                        <AvatarFallback>{rsvp.Guest.firstName[0]}{rsvp.Guest.lastName[0]}</AvatarFallback>
+                                        {rsvp.User.image && <AvatarImage src={rsvp.User.image} alt={`${rsvp.User.firstName} ${rsvp.User.lastName}`}/>}
+                                        <AvatarFallback>{rsvp.User.firstName[0]}{rsvp.User.lastName[0]}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="text-sm font-medium leading-none">{rsvp.Guest.firstName} {rsvp.Guest.lastName}</p>
-                                        <p className="text-sm text-muted-foreground">{rsvp.Guest.email}</p>
+                                        <p className="text-sm font-medium leading-none">{rsvp.User.firstName} {rsvp.User.lastName}</p>
+                                        <p className="text-sm text-muted-foreground">{rsvp.User.email}</p>
                                     </div>
                                 </div>
                             ))}
@@ -100,12 +100,12 @@ export default async function GuestList({guestId, eventId}: Props) {
                             {rsvpData.filter((rsvp) => rsvp.response === "NO_RESPONSE").map(rsvp => (
                                 <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer" key={rsvp.id}>
                                     <Avatar className="h-12 w-12">
-                                        <AvatarImage src={rsvp.Guest.avatarUrl} alt={`${rsvp.Guest.firstName} ${rsvp.Guest.lastName}`}/>
-                                        <AvatarFallback>{rsvp.Guest.firstName[0]}{rsvp.Guest.lastName[0]}</AvatarFallback>
+                                        {rsvp.User.image && <AvatarImage src={rsvp.User.image} alt={`${rsvp.User.firstName} ${rsvp.User.lastName}`}/>}
+                                        <AvatarFallback>{rsvp.User.firstName[0]}{rsvp.User.lastName[0]}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="text-sm font-medium leading-none">{rsvp.Guest.firstName} {rsvp.Guest.lastName}</p>
-                                        <p className="text-sm text-muted-foreground">{rsvp.Guest.email}</p>
+                                        <p className="text-sm font-medium leading-none">{rsvp.User.firstName} {rsvp.User.lastName}</p>
+                                        <p className="text-sm text-muted-foreground">{rsvp.User.email}</p>
                                     </div>
                                 </div>
                             ))}
@@ -123,7 +123,6 @@ export default async function GuestList({guestId, eventId}: Props) {
     } catch (e) { //todo: implement error screen
         return (
             <>
-
             </>
         );
     }

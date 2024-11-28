@@ -16,13 +16,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { TimestampPicker } from "@/components/ui/timestamp-picker"
-import GuestSelectionDialog from "@/components/GuestSelectionDialog"
+import UserSelection from "./UserSelection"
 import AlertList, { alertContent } from "@/components/AlertList"
 import { cn } from '@/lib/utils'
 
 import { editEventSchema } from "@/components/ValidationSchemas"
 import { InviteRigidity, EventType, ReminderAmount } from "@prisma/client"
-import {RsvpWithGuest} from "@/components/Types";
+import {RsvpWithUser} from "@/components/Types";
 
 interface EditEventFormProps {
     eventId: string
@@ -31,7 +31,7 @@ interface EditEventFormProps {
 export default function EditEventForm({ eventId }: EditEventFormProps) {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([])
-    const [rsvpGuests, setRsvpGuests] = useState<RsvpWithGuest[]>([])
+    const [rsvpGuests, setRsvpGuests] = useState<RsvpWithUser[]>([])
 
     const form = useForm<z.infer<typeof editEventSchema>>({
         resolver: zodResolver(editEventSchema),
@@ -67,9 +67,9 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
         }
     }
 
-    async function fetchRsvpGuests() {
+    async function fetchRsvpUsers() {
         try {
-            const response = await axios.get(`/api/events/rsvp/guests/${eventId}`)
+            const response = await axios.get(`/api/events/rsvp/users/${eventId}`)
             return response.data
         } catch (err) {
             console.error("Error fetching RSVP users:", err)
@@ -93,7 +93,7 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
         try {
             const [eventInfo, rsvpGuests] = await Promise.all([
                 fetchEventInfo(),
-                fetchRsvpGuests()
+                fetchRsvpUsers()
             ]);
 
             if (eventInfo) {
@@ -104,7 +104,7 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
                     eventStart: new Date(eventInfo.eventStart),
                     eventEnd: new Date(eventInfo.eventEnd),
                     rsvpDuedate: new Date(eventInfo.rsvpDuedate),
-                    RSVP: rsvpGuests.map((rsvp:RsvpWithGuest) => rsvp.Guest.id) || []
+                    RSVP: rsvpGuests.map((rsvp:RsvpWithUser) => rsvp.User.id) || []
                 })
 
             } else {
@@ -134,7 +134,7 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
         <Form {...form}>
             <AlertList alerts={alertMessages} />
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-4">
-                <GuestSelectionDialog initialSelectedGuests={rsvpGuests.map(rsvp => rsvp.Guest.id)} onGuestsSelected={(data) => form.setValue("RSVP", data)}/>
+                <UserSelection initialSelectedGuests={rsvpGuests.map(rsvp => rsvp.User.id)} onGuestsSelected={(data) => form.setValue("RSVP", data)}/>
                 <FormField
                     control={form.control}
                     name="id"

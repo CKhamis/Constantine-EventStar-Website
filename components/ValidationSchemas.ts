@@ -24,12 +24,12 @@ export const cuidSchema = z.object({
 })
 
 export const rsvpSchema = z.object({
-    guestId: z.string().uuid(),
+    userId: z.string().cuid(),
     response: RsvpResponse
 })
 
 export const rsvpFormSchema = z.object({
-    guestId: z.string().uuid(),
+    userId: z.string().cuid(),
     eventId: z.string().uuid(),
     response: RsvpResponse
 })

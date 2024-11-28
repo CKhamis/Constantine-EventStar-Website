@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
-import {rsvpSchema, uuidSchema} from "@/components/ValidationSchemas";
+import {cuidSchema} from "@/components/ValidationSchemas";
 
 const prisma = new PrismaClient();
 
@@ -16,11 +16,12 @@ export async function POST(request: Request, props: { params: Params }) {
     const params = await props.params
     const id = params.id;
 
-    const body = await request.json();
-    const validation = uuidSchema.safeParse(body);
 
-    console.log(id)
-    console.log(body.guestId)
+
+    const body = await request.json();
+    const validation = cuidSchema.safeParse(body);
+
+    console.log(id + " " + body.id);
 
     if(!validation.success){
         return NextResponse.json(validation.error.format(), {status: 400});
@@ -30,7 +31,7 @@ export async function POST(request: Request, props: { params: Params }) {
         const rsvp = await prisma.rsvp.findFirst({
             where: {
                 eventId:id,
-                guestId: body.id
+                userId: body.id
             }
         });
 

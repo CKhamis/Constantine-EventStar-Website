@@ -94,8 +94,8 @@ export default async function ViewEventPage(props: { params: Params }){
                             </Card>
                         </div>
                         <div className="flex flex-col gap-4 mb-4">
-                            <RsvpPannel eventId={eventData.id} guestId={'fbe4fc73-91b9-4207-a2c3-3778086e17e1'}/>
-                            <GuestList eventId={eventData.id} guestId={'fbe4fc73-91b9-4207-a2c3-3778086e17e1'} />
+                            <RsvpPannel eventId={eventData.id} userId={'cm41sn2190001yi2tdt5eieoc'}/>
+                            <GuestList eventId={eventData.id} userId={'cm41sn2190001yi2tdt5eieoc'} />
                         </div>
                     </div>
                 </div>
