@@ -2,9 +2,8 @@ import AdminUI from "@/components/admin/AdminUI";
 
 export default function AdminCalendar(){
     return (
-        <>
-            <AdminUI />
-        </>
-
+        <AdminUI>
+            ESMT home
+        </AdminUI>
     );
 }

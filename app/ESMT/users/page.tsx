@@ -4,26 +4,26 @@ import {useSearchParams} from "next/navigation";
 import {useEffect, useState} from 'react'
 import { Input } from "@/components/ui/input"
 import axios from "axios";
-import {Guest} from "@prisma/client";
+import {User} from "@prisma/client";
 import {Search} from "lucide-react";
-import GuestDetailsForm from "@/app/ESMT/guests/GuestDetailsForm";
 import AlertList, {alertContent} from "@/components/AlertList";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
+import UserDetailsForm from "@/app/ESMT/users/UserDetailsForm";
 
-export default function AdminGuests() {
+export default function AdminUsers() {
     // Create Message
     const router = useSearchParams();
     const createMessageParam = router.get("message");
 
     // State
-    const [guests, setGuests] = useState<Guest[]>([]);
-    const [alertMessages, setAlertMessages] = useState<alertContent[]>([{ title: createMessageParam==="1"? "Guest Added" : "", message: createMessageParam==="1"? "Guest created successfully!" : "", icon: 1 }]);
+    const [users, setUsers] = useState<User[]>([]);
+    const [alertMessages, setAlertMessages] = useState<alertContent[]>([{ title: createMessageParam==="1"? "User Added" : "", message: createMessageParam==="1"? "User created successfully!" : "", icon: 1 }]);
 
-    const fetchGuests = async () => {
+    const fetchUsers = async () => {
         try {
-            const response = await axios.get("/api/esmt/guests/all");
-            setGuests(response.data);
+            const response = await axios.get("/api/esmt/users/all");
+            setUsers(response.data);
         } catch (err) {
             console.error("Error fetching users:", err);
             setAlertMessages([...alertMessages, { title: "Catastrophic Error", message: "Unable to fetch list of users", icon: 2 }]);
@@ -35,13 +35,13 @@ export default function AdminGuests() {
     }
 
     useEffect(() => {
-        fetchGuests();
+        fetchUsers();
     }, []);
 
     // Search
     const [searchTerm, setSearchTerm] = useState('')
-    const filteredGuests = guests.filter(guest =>
-        `${guest.firstName} ${guest.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredUsers = users.filter(user =>
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (
@@ -50,10 +50,10 @@ export default function AdminGuests() {
                 <div className="container mt-4">
                     <AlertList alerts={alertMessages} />
                     <div className="flex justify-between gap-4 mb-4">
-                        <h1 className="text-3xl">All Guests</h1>
-                        <Link href="/ESMT/guests/new">
+                        <h1 className="text-3xl">All Users</h1>
+                        <Link href="/ESMT/users/new">
                             <Button variant="secondary" className="h-9">
-                                + New Guest
+                                + New User
                             </Button>
                         </Link>
                     </div>
@@ -62,15 +62,15 @@ export default function AdminGuests() {
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
                         <Input
                             type="search"
-                            placeholder="Search guests..."
+                            placeholder="Search users..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="pl-8"
                         />
                     </div>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {filteredGuests.map((guest) => (
-                            <GuestDetailsForm guest={guest} key={guest.id} refresh={fetchGuests} addMessage={addMessage} />
+                        {filteredUsers.map((user) => (
+                            <UserDetailsForm user={user} key={user.id} refresh={fetchUsers} addMessage={addMessage} />
                         ))}
                     </div>
                 </div>

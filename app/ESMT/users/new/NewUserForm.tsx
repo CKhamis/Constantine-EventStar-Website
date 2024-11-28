@@ -14,7 +14,7 @@ import { Loader2 } from "lucide-react"
 import AlertMessage from "@/components/AlertMessage";
 
 
-export default function NewGuestForm() {
+export default function NweUserForm() {
     const router = useRouter();
     const form = useForm<z.infer<typeof createUserSchema>>({
         resolver: zodResolver(createUserSchema),
@@ -32,8 +32,8 @@ export default function NewGuestForm() {
     async function onSubmit(values: z.infer<typeof createUserSchema>) {
         try{
             setIsLoading(true);
-            await axios.post('/api/esmt/guests/new', values);
-            router.push("/ESMT/guests?message=1");
+            await axios.post('/api/esmt/users/new', values);
+            router.push("/ESMT/users?message=1");
         }catch(e){
             setIsLoading(false);
             setError("OOPS! Something happened :(");
@@ -113,7 +113,7 @@ export default function NewGuestForm() {
                 />
                 <Button type="submit" disabled={isLoading}>
                     {isLoading && <Loader2 className="animate-spin"/>}
-                    Add Guest
+                    Add User
                 </Button>
             </form>
         </Form>
