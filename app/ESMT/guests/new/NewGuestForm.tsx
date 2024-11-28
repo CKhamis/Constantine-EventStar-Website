@@ -6,7 +6,7 @@ import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import {createGuestSchema} from "@/components/ValidationSchemas";
+import {createUserSchema} from "@/components/ValidationSchemas";
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import {useState} from "react";
@@ -16,8 +16,8 @@ import AlertMessage from "@/components/AlertMessage";
 
 export default function NewGuestForm() {
     const router = useRouter();
-    const form = useForm<z.infer<typeof createGuestSchema>>({
-        resolver: zodResolver(createGuestSchema),
+    const form = useForm<z.infer<typeof createUserSchema>>({
+        resolver: zodResolver(createUserSchema),
         defaultValues: {
             firstName: '',
             lastName: '',
@@ -29,7 +29,7 @@ export default function NewGuestForm() {
     const [error, setError] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    async function onSubmit(values: z.infer<typeof createGuestSchema>) {
+    async function onSubmit(values: z.infer<typeof createUserSchema>) {
         try{
             setIsLoading(true);
             await axios.post('/api/esmt/guests/new', values);

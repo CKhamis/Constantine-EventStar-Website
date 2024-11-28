@@ -72,7 +72,7 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
             const response = await axios.get(`/api/events/rsvp/guests/${eventId}`)
             return response.data
         } catch (err) {
-            console.error("Error fetching RSVP guests:", err)
+            console.error("Error fetching RSVP users:", err)
             return null
         }
     }

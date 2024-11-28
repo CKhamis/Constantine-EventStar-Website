@@ -12,7 +12,7 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Guest} from "@prisma/client";
 import {useForm} from "react-hook-form";
-import {editGuestSchema} from "@/components/ValidationSchemas";
+import {editUserSchema} from "@/components/ValidationSchemas";
 import * as z from 'zod'
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -27,15 +27,15 @@ interface Props {
 }
 
 export default function GuestDetailsForm({guest, refresh, addMessage}:Props){
-    const form = useForm<z.infer<typeof editGuestSchema>>({
-        resolver: zodResolver(editGuestSchema),
+    const form = useForm<z.infer<typeof editUserSchema>>({
+        resolver: zodResolver(editUserSchema),
         defaultValues: {...guest}
     });
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const isFormValid = form.formState.isValid;
 
-    async function onEditGuest(values: z.infer<typeof editGuestSchema>) {
+    async function onEditGuest(values: z.infer<typeof editUserSchema>) {
         try{
             await axios.post('/api/esmt/guests/edit', values).finally(refresh);
             addMessage({ title: "Guest Modification", message: values.firstName + " " + values.lastName + " was modified and saved to server", icon: 1 });

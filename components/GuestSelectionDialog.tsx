@@ -29,8 +29,8 @@ export default function GuestSelectionDialog({ onGuestsSelected, initialSelected
                 setGuests(response.data)
                 setIsLoading(false)
             } catch (err) {
-                console.error("Error fetching guests:", err)
-                setError("Failed to load guests. Please try again.")
+                console.error("Error fetching users:", err)
+                setError("Failed to load users. Please try again.")
                 setIsLoading(false)
             }
         }

@@ -25,8 +25,8 @@ export default function AdminGuests() {
             const response = await axios.get("/api/esmt/guests/all");
             setGuests(response.data);
         } catch (err) {
-            console.error("Error fetching guests:", err);
-            setAlertMessages([...alertMessages, { title: "Catastrophic Error", message: "Unable to fetch list of guests", icon: 2 }]);
+            console.error("Error fetching users:", err);
+            setAlertMessages([...alertMessages, { title: "Catastrophic Error", message: "Unable to fetch list of users", icon: 2 }]);
         }
     };
 
