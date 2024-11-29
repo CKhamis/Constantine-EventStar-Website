@@ -6,20 +6,22 @@ import {
     DropdownMenuTrigger
 } from "./ui/dropdown-menu";
 import {Button} from "./ui/button";
-import {CircleUser,} from "lucide-react"
+import {CircleUser, PersonStanding,} from "lucide-react"
 import Link from "next/link"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {auth} from "@/auth";
 
-export default function AccountButton(){
-    const session:boolean = false;
+export default async function AccountButton(){
+    const session = await auth();
     if(session){
         return (
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="secondary" size="icon" className="rounded-full">
                         <Avatar className="hidden h-9 w-9 sm:flex">
-                            <AvatarImage src="/icons/Logo.svg" alt="Avatar" />
-                            <AvatarFallback>SD</AvatarFallback>
+                            {session.user?.image && <AvatarImage src={session.user.image} alt={`${session.user.name}`}/>}
+                            {session.user && <AvatarFallback>{session.user.name}</AvatarFallback>}
+                            <AvatarFallback><PersonStanding /></AvatarFallback>
                         </Avatar>
                     </Button>
                 </DropdownMenuTrigger>
@@ -31,7 +33,7 @@ export default function AccountButton(){
                     <DropdownMenuSeparator/>
                     <form>
                         <DropdownMenuItem>
-                            <Button variant="ghost" type="submit" className="h-5 p-0">Log Out</Button>
+                            <Link href={"/api/auth/signout?callbackUrl=/"}><Button variant="ghost" type="submit" className="h-5 p-0">Log Out</Button></Link>
                         </DropdownMenuItem>
                     </form>
                 </DropdownMenuContent>
@@ -49,7 +51,7 @@ export default function AccountButton(){
                 <DropdownMenuContent align="end">
                     <DropdownMenuItem><Link href="/">Register</Link></DropdownMenuItem>
                     <DropdownMenuSeparator/>
-                    <DropdownMenuItem><Link href="/login">Sign In</Link></DropdownMenuItem>
+                    <DropdownMenuItem><Link href="/api/auth/signin">Sign In</Link></DropdownMenuItem>
                     <DropdownMenuItem><Link href="https://costionline.com/SignUp">Sign Up</Link></DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
