@@ -24,12 +24,12 @@ const data = {
       items: [],
     },
     {
-      title: "Guests",
-      url: "/ESMT/guests",
+      title: "Users",
+      url: "/ESMT/users",
       items: [
         {
-          title: "+ Add Guest",
-          url: "/ESMT/guests/new",
+          title: "+ Add User",
+          url: "/ESMT/users/new",
         },
       ],
     },

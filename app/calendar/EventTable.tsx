@@ -102,7 +102,10 @@ export function EventTable<TData, TValue>({data}: EventTableProps<TData, TValue>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                <TableCell
+                                    colSpan={table.getHeaderGroups()?.[0]?.headers?.length || 1}
+                                    className="h-24 text-center"
+                                >
                                     No results.
                                 </TableCell>
                             </TableRow>
