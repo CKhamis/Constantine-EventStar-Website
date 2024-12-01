@@ -6,6 +6,9 @@ import GitHub from "@auth/core/providers/github";
 const prisma = new PrismaClient();
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+    session: {
+        strategy: "jwt", // Use JWT session strategy
+    },
     adapter: PrismaAdapter(prisma),
     providers: [GitHub],
 })

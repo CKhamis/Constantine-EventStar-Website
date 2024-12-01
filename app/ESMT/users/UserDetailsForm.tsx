@@ -7,7 +7,6 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {User} from "@prisma/client";
@@ -19,6 +18,7 @@ import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, Form
 import {useState} from "react";
 import axios from "axios";
 import {alertContent} from "@/components/AlertList";
+import AvatarIcon from "@/components/AvatarIcon";
 
 interface Props {
     user: User;
@@ -66,10 +66,7 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
         <Dialog key={user.id} open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
                 <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer">
-                    <Avatar className="h-12 w-12">
-                        {user.image && <AvatarImage src={user.image} alt={`${user.name}`}/>}
-                        <AvatarFallback>{user.name? user.name[0] : "?"}</AvatarFallback>
-                    </Avatar>
+                    <AvatarIcon name={user.name} image={user.image} />
                     <div>
                         <p className="text-sm font-medium leading-none">{user.name}</p>
                         <p className="text-sm text-muted-foreground">{user.email}</p>
@@ -79,10 +76,7 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
             <DialogContent className="sm:max-w-[425px]" >
                 <DialogHeader>
                     <div className="flex flex-col items-center space-y-4">
-                        <Avatar className="h-24 w-24">
-                            {user.image && <AvatarImage src={user.image} alt={`${user.name}`}/>}
-                            <AvatarFallback>{user.name? user.name[0] : "?"}</AvatarFallback>
-                        </Avatar>
+                        <AvatarIcon name={user.name} image={user.image} />
                         <DialogTitle className="text-2xl font-semibold">Edit User Details</DialogTitle>
                     </div>
                 </DialogHeader>
@@ -162,7 +156,7 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
                                         <DialogTitle>Are you sure you want to delete this user?</DialogTitle>
                                         <DialogDescription>
                                             This action cannot be undone. This will permanently delete
-                                            {` ${user.firstName} ${user.lastName}`} and remove all related information including invite history, profile information, contact info, and more.
+                                            {` ${user.name}`} and remove all related information including invite history, profile information, contact info, and more.
                                         </DialogDescription>
                                     </DialogHeader>
                                     <DialogFooter>
