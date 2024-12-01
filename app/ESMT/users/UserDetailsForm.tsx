@@ -30,12 +30,11 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
     const form = useForm<z.infer<typeof editUserSchema>>({
         resolver: zodResolver(editUserSchema),
         defaultValues: {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email?? undefined,
-            discordId: user.discordId,
+            name: user.name ?? "no name",
+            email: user.email?? "",
+            discordId: user.discordId ?? "",
             id: user.id,
-            phoneNumber: user.phoneNumber
+            phoneNumber: user.phoneNumber ?? ""
         }
     });
 
@@ -45,7 +44,7 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
     async function onEditUser(values: z.infer<typeof editUserSchema>) {
         try{
             await axios.post('/api/esmt/users/edit', values).finally(refresh);
-            addMessage({ title: "User Modification", message: values.firstName + " " + values.lastName + " was modified and saved to server", icon: 1 });
+            addMessage({ title: "User Modification", message: values.name + " was modified and saved to server", icon: 1 });
         }catch(e){
             addMessage({ title: "User Modification", message: "There was an error saving user details", icon: 2});
             console.log(e);
@@ -68,11 +67,11 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
             <DialogTrigger asChild>
                 <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer">
                     <Avatar className="h-12 w-12">
-                        {user.image && <AvatarImage src={user.image} alt={`${user.firstName} ${user.lastName}`}/>}
-                        <AvatarFallback>{user.firstName[0]}{user.lastName[0]}</AvatarFallback>
+                        {user.image && <AvatarImage src={user.image} alt={`${user.name}`}/>}
+                        <AvatarFallback>{user.name? user.name[0] : "?"}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <p className="text-sm font-medium leading-none">{user.firstName} {user.lastName}</p>
+                        <p className="text-sm font-medium leading-none">{user.name}</p>
                         <p className="text-sm text-muted-foreground">{user.email}</p>
                     </div>
                 </div>
@@ -81,8 +80,8 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
                 <DialogHeader>
                     <div className="flex flex-col items-center space-y-4">
                         <Avatar className="h-24 w-24">
-                            {user.image && <AvatarImage src={user.image} alt={`${user.firstName} ${user.lastName}`}/>}
-                            <AvatarFallback>{user?.firstName[0]}{user?.lastName[0]}</AvatarFallback>
+                            {user.image && <AvatarImage src={user.image} alt={`${user.name}`}/>}
+                            <AvatarFallback>{user.name? user.name[0] : "?"}</AvatarFallback>
                         </Avatar>
                         <DialogTitle className="text-2xl font-semibold">Edit User Details</DialogTitle>
                     </div>
@@ -91,27 +90,14 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
                     <form onSubmit={form.handleSubmit(onEditUser)} className="space-y-8">
                         <FormField
                             control={form.control}
-                            name="firstName"
+                            name="name"
                             render={({field}) => (
                                 <FormItem>
-                                    <FormLabel>First name</FormLabel>
+                                    <FormLabel>First and Last Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Terence" {...field} />
+                                        <Input placeholder="Terence Bird" {...field} />
                                     </FormControl>
                                     <FormDescription>This field is required.</FormDescription>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="lastName"
-                            render={({field}) => (
-                                <FormItem>
-                                    <FormLabel>Last name</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Bird" {...field} />
-                                    </FormControl>
                                     <FormMessage/>
                                 </FormItem>
                             )}

@@ -37,7 +37,7 @@ export default function NewEventForm() {
             eventType: 'GENERAL_EVENT',
             reminderAmount: 'NONE',
             RSVP: [],
-            authorId: 'cm41snefs0003yi2tdixt8rg7' // todo: this is a placeholder
+            authorId: 'cm42h2fe20000axjmwmjmmmso' // todo: this is a placeholder
         },
     });
 

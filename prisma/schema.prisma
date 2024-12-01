@@ -32,13 +32,11 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  firstName     String    @db.VarChar(255)
-  lastName      String    @db.VarChar(255)
-  phoneNumber   String    @db.VarChar(10)
-  discordId     String
+  phoneNumber   String?   @db.VarChar(10)
+  discordId     String?
   event         Event[]
   rsvp          Rsvp[]
-  role          UserRole?
+  role          UserRole  @default(USER)
 
   accounts Account[]
   sessions Session[]

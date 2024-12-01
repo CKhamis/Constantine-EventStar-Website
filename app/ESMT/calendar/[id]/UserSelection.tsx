@@ -107,11 +107,11 @@ export default function UserSelection({ onGuestsSelected, initialSelectedGuests 
                                     }}
                                 >
                                     <Avatar className="w-16 h-16 mb-2">
-                                        <AvatarImage src={guest.avatarUrl || undefined} alt={`${guest.firstName} ${guest.lastName}`} />
-                                        <AvatarFallback>{guest.firstName[0]}{guest.lastName[0]}</AvatarFallback>
+                                        <AvatarImage src={guest.image || undefined} alt={`${guest.name}`} />
+                                        <AvatarFallback>{guest.name? guest.name[0] : "?"}</AvatarFallback>
                                     </Avatar>
                                     <div className="text-center">
-                                        <p className="font-medium">{guest.firstName} {guest.lastName}</p>
+                                        <p className="font-medium">{guest.name}</p>
                                         <p className="text-sm text-muted-foreground">{guest.email}</p>
                                     </div>
                                 </div>

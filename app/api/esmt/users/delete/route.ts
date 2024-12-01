@@ -24,6 +24,7 @@ export async function POST(request: NextRequest){
             return NextResponse.json({ message: "User not found" }, { status: 404 });
         }
 
+        console.log(body.id)
         // delete the user
         const deletedUser = await prisma.user.delete({
             where: { id: body.id },

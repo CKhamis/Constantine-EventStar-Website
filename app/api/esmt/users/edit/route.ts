@@ -27,9 +27,7 @@ export async function POST(request: NextRequest){
         const updatedUser = await prisma.user.update({
             where: { id: body.id },
             data: {
-                firstName: body.firstName,
-                lastName: body.lastName,
-                name: body.firstName + ' ' + body.lastName,
+                name: body.name,
                 email: body.email,
                 discordId: body.discordId,
                 phoneNumber: body.phoneNumber,

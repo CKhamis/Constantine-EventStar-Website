@@ -35,8 +35,7 @@ export const rsvpFormSchema = z.object({
 })
 
 export const createUserSchema = z.object({
-    firstName: z.string().min(1).max(255),
-    lastName: z.string().max(255),
+    name: z.string().min(1).max(255),
     phoneNumber: z.string().max(10, "Format should be: 5058425662"),
     email: z.string().email().max(255).optional().or(z.literal("")),
     discordId: z.string().max(255),
@@ -44,8 +43,7 @@ export const createUserSchema = z.object({
 
 export const editUserSchema = z.object({
     id: z.string().cuid(),
-    firstName: z.string().min(1).max(255),
-    lastName: z.string().max(255),
+    name: z.string().min(1).max(255),
     phoneNumber: z.string().max(10, "Format should be: 5058425662"),
     email: z.string().email().max(255).optional().or(z.literal("")),
     discordId: z.string().max(255),

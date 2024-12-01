@@ -49,11 +49,11 @@ export default async function GuestList({userId, eventId}: Props) {
                             {rsvpData.filter((rsvp) => rsvp.response === "YES").map(rsvp => (
                                 <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer" key={rsvp.id}>
                                     <Avatar className="h-12 w-12">
-                                        {rsvp.User.image && <AvatarImage src={rsvp.User.image} alt={`${rsvp.User.firstName} ${rsvp.User.lastName}`}/>}
-                                        <AvatarFallback>{rsvp.User.firstName[0]}{rsvp.User.lastName[0]}</AvatarFallback>
+                                        {rsvp.User.image && <AvatarImage src={rsvp.User.image} alt={`${rsvp.User.name}`}/>}
+                                        <AvatarFallback>{rsvp.User.name? rsvp.User.name[0] : "?"}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="text-sm font-medium leading-none">{rsvp.User.firstName} {rsvp.User.lastName}</p>
+                                        <p className="text-sm font-medium leading-none">{rsvp.User.name}</p>
                                         <p className="text-sm text-muted-foreground">{rsvp.User.email}</p>
                                     </div>
                                 </div>
@@ -66,11 +66,11 @@ export default async function GuestList({userId, eventId}: Props) {
                             {rsvpData.filter((rsvp) => rsvp.response === "NO").map(rsvp => (
                                 <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer" key={rsvp.id}>
                                     <Avatar className="h-12 w-12">
-                                        {rsvp.User.image && <AvatarImage src={rsvp.User.image} alt={`${rsvp.User.firstName} ${rsvp.User.lastName}`}/>}
-                                        <AvatarFallback>{rsvp.User.firstName[0]}{rsvp.User.lastName[0]}</AvatarFallback>
+                                        {rsvp.User.image && <AvatarImage src={rsvp.User.image} alt={`${rsvp.User.name}`}/>}
+                                        <AvatarFallback>{rsvp.User.name? rsvp.User.name[0] : "?"}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="text-sm font-medium leading-none">{rsvp.User.firstName} {rsvp.User.lastName}</p>
+                                        <p className="text-sm font-medium leading-none">{rsvp.User.name}</p>
                                         <p className="text-sm text-muted-foreground">{rsvp.User.email}</p>
                                     </div>
                                 </div>
@@ -83,11 +83,11 @@ export default async function GuestList({userId, eventId}: Props) {
                             {rsvpData.filter((rsvp) => rsvp.response === "MAYBE").map(rsvp => (
                                 <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer" key={rsvp.id}>
                                     <Avatar className="h-12 w-12">
-                                        {rsvp.User.image && <AvatarImage src={rsvp.User.image} alt={`${rsvp.User.firstName} ${rsvp.User.lastName}`}/>}
-                                        <AvatarFallback>{rsvp.User.firstName[0]}{rsvp.User.lastName[0]}</AvatarFallback>
+                                        {rsvp.User.image && <AvatarImage src={rsvp.User.image} alt={`${rsvp.User.name}`}/>}
+                                        <AvatarFallback>{rsvp.User.name? rsvp.User.name[0] : "?"}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="text-sm font-medium leading-none">{rsvp.User.firstName} {rsvp.User.lastName}</p>
+                                        <p className="text-sm font-medium leading-none">{rsvp.User.name}</p>
                                         <p className="text-sm text-muted-foreground">{rsvp.User.email}</p>
                                     </div>
                                 </div>
@@ -100,11 +100,11 @@ export default async function GuestList({userId, eventId}: Props) {
                             {rsvpData.filter((rsvp) => rsvp.response === "NO_RESPONSE").map(rsvp => (
                                 <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer" key={rsvp.id}>
                                     <Avatar className="h-12 w-12">
-                                        {rsvp.User.image && <AvatarImage src={rsvp.User.image} alt={`${rsvp.User.firstName} ${rsvp.User.lastName}`}/>}
-                                        <AvatarFallback>{rsvp.User.firstName[0]}{rsvp.User.lastName[0]}</AvatarFallback>
+                                        {rsvp.User.image && <AvatarImage src={rsvp.User.image} alt={`${rsvp.User.name}`}/>}
+                                        <AvatarFallback>{rsvp.User.name? rsvp.User.name[0] : "?"}</AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <p className="text-sm font-medium leading-none">{rsvp.User.firstName} {rsvp.User.lastName}</p>
+                                        <p className="text-sm font-medium leading-none">{rsvp.User.name}</p>
                                         <p className="text-sm text-muted-foreground">{rsvp.User.email}</p>
                                     </div>
                                 </div>

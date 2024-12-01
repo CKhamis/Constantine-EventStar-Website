@@ -19,8 +19,7 @@ export default function NweUserForm() {
     const form = useForm<z.infer<typeof createUserSchema>>({
         resolver: zodResolver(createUserSchema),
         defaultValues: {
-            firstName: '',
-            lastName: '',
+            name: '',
             phoneNumber: '',
             email: '',
             discordId: '',
@@ -47,27 +46,14 @@ export default function NweUserForm() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                     control={form.control}
-                    name="firstName"
+                    name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>First name</FormLabel>
+                            <FormLabel>First & Last Name</FormLabel>
                             <FormControl>
-                                <Input placeholder="John" {...field} />
+                                <Input placeholder="Terence Bird" {...field} />
                             </FormControl>
                             <FormDescription>This field is required.</FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Last name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Doe" {...field} />
-                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}

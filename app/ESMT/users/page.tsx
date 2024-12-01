@@ -41,7 +41,7 @@ export default function AdminUsers() {
     // Search
     const [searchTerm, setSearchTerm] = useState('')
     const filteredUsers = users.filter(user =>
-        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+        `${user.name}`.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (
