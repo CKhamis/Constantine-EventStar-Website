@@ -9,7 +9,6 @@ export async function POST(request: NextRequest){
     const body = await request.json();
     const validation = cuidSchema.safeParse(body);
 
-    console.log(body);
     if(!validation.success){
         return NextResponse.json(validation.error.format(), {status: 400});
     }
@@ -24,7 +23,6 @@ export async function POST(request: NextRequest){
             return NextResponse.json({ message: "User not found" }, { status: 404 });
         }
 
-        console.log(body.id)
         // delete the user
         const deletedUser = await prisma.user.delete({
             where: { id: body.id },
