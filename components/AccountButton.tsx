@@ -13,20 +13,21 @@ import {auth} from "@/auth";
 
 export default async function AccountButton(){
     const session = await auth();
-    if(session){
+    if(session && session.user){
+        console.log(session.user);
         return (
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="secondary" size="icon" className="rounded-full">
                         <Avatar className="hidden h-9 w-9 sm:flex">
-                            {session.user?.image && <AvatarImage src={session.user.image} alt={`${session.user.name}`}/>}
+                            {session.user.image && <AvatarImage src={session.user.image} alt={`${session.user.name}`}/>}
                             {session.user && <AvatarFallback>{session.user.name}</AvatarFallback>}
                             <AvatarFallback><PersonStanding /></AvatarFallback>
                         </Avatar>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>{}</DropdownMenuLabel>
+                    <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
                     <DropdownMenuSeparator/>
                     <DropdownMenuItem>Settings</DropdownMenuItem>
                     <DropdownMenuItem>Support</DropdownMenuItem>

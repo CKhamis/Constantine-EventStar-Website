@@ -1,8 +1,8 @@
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
 interface Props{
-    name: string | null
-    image: string | null
+    name?: string | null
+    image?: string | null
 }
 export default function AvatarIcon({name, image}: Props){
     const initials = () => {
