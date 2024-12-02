@@ -4,17 +4,17 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Users } from 'lucide-react'
-import { Guest } from "@prisma/client"
+import { User } from "@prisma/client"
+import AvatarIcon from "@/components/AvatarIcon";
 
 interface Props {
     onGuestsSelected: (selectedGuestIds: string[]) => void
 }
 
 export default function UserSelection({ onGuestsSelected }: Props) {
-    const [users, setUsers] = useState<Guest[]>([])
+    const [users, setUsers] = useState<User[]>([])
     const [selectedGuests, setSelectedGuests] = useState<Set<string>>(new Set())
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
@@ -101,13 +101,9 @@ export default function UserSelection({ onGuestsSelected }: Props) {
                                         }
                                     }}
                                 >
-                                    <Avatar className="w-16 h-16 mb-2">
-                                        <AvatarImage src={guest.avatarUrl || undefined} alt={`${guest.firstName} ${guest.lastName}`} />
-                                        <AvatarFallback>{guest.firstName[0]}{guest.lastName[0]}</AvatarFallback>
-                                    </Avatar>
+                                    <AvatarIcon image={guest.image} name={guest.name} />
                                     <div className="text-center">
-                                        <p className="font-medium">{guest.firstName} {guest.lastName}</p>
-                                        <p className="text-sm text-muted-foreground">{guest.email}</p>
+                                        <p className="font-medium">{guest.name}</p>
                                     </div>
                                 </div>
                             ))}
