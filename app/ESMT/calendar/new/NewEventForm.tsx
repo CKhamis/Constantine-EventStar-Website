@@ -21,7 +21,7 @@ import axios from "axios";
 import AlertList, {alertContent} from "@/components/AlertList";
 import { useRouter } from 'next/navigation';
 
-export default function NewEventForm() {
+export default function NewEventForm({userId}: {userId: string}) {
     const router = useRouter();
 
     const form = useForm<z.infer<typeof createEventSchema>>({
@@ -37,7 +37,7 @@ export default function NewEventForm() {
             eventType: 'GENERAL_EVENT',
             reminderAmount: 'NONE',
             RSVP: [],
-            authorId: 'cm42h2fe20000axjmwmjmmmso' // todo: this is a placeholder
+            authorId: userId
         },
     });
 

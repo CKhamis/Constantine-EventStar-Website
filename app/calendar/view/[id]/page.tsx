@@ -8,8 +8,9 @@ import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
-import RsvpPannel from "@/app/calendar/view/[id]/RsvpPannel";
+import RsvpPanel from "@/app/calendar/view/[id]/RsvpPanel";
 import GuestList from "@/app/calendar/view/[id]/GuestList";
+import {auth} from "@/auth";
 
 type Params = Promise<{ id: string }>
 
@@ -19,6 +20,12 @@ export async function generateMetadata(props: { params: Params }):Promise<string
 }
 
 export default async function ViewEventPage(props: { params: Params }){
+    const session = await auth();
+
+    if (!session || !session.user || !session.user.id){
+        return (<>login to view page</>)
+    }
+
     const params = await props.params
     const eventId = params.id;
 
@@ -94,15 +101,16 @@ export default async function ViewEventPage(props: { params: Params }){
                             </Card>
                         </div>
                         <div className="flex flex-col gap-4 mb-4">
-                            <RsvpPannel eventId={eventData.id} userId={'cm41sn2190001yi2tdt5eieoc'}/>
-                            <GuestList eventId={eventData.id} userId={'cm41sn2190001yi2tdt5eieoc'} />
+                            <RsvpPanel eventId={eventData.id} userId={session.user.id}/>
+                            <GuestList eventId={eventData.id} userId={session.user.id} />
                         </div>
                     </div>
                 </div>
                 <Footer/>
             </>
         );
-    } catch (_) {
+    } catch (e) {
+        console.log(e);
         return (
             <>
                 <TopBar/>

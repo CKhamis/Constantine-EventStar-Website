@@ -15,9 +15,16 @@ import {Progress} from "@/components/ui/progress";
 import {RsvpWithEvent} from "@/components/Types";
 import {EventTable} from "@/app/calendar/EventTable";
 import { EventWithResponse } from "@/components/Types";
+import { auth } from "@/auth";
 
 export default async function Calendar(){
-    const userId = "cm41sn2190001yi2tdt5eieoc"; //todo: placeholder
+    const session = await auth();
+
+    if (!session || !session.user || !session.user.id){
+        return (<>login to view page</>)
+    }
+
+    const userId = session.user.id;
 
     async function fetchEvent() {
         try {

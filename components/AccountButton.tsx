@@ -14,7 +14,6 @@ import {auth} from "@/auth";
 export default async function AccountButton(){
     const session = await auth();
     if(session && session.user){
-        console.log(session.user);
         return (
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
