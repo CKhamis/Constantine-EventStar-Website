@@ -1,11 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 import {NextRequest, NextResponse} from "next/server";
 import {editUserSchema} from "@/components/ValidationSchemas";
+import {auth} from "@/auth";
 
 
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest){
+    const session =  await auth();
+
+    if(!session || !session.user || session.user.role !== "ADMIN"){
+        return NextResponse.json("Approved login required", {status: 401});
+    }
+
     const body = await request.json();
     const validation = editUserSchema.safeParse(body);
 

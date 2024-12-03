@@ -1,13 +1,19 @@
 import { PrismaClient } from '@prisma/client';
 import {NextRequest, NextResponse} from "next/server";
 import {editEventSchema} from "@/components/ValidationSchemas";
+import {auth} from "@/auth";
 
 
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest){
-    const body = await request.json();
+    const session =  await auth();
 
+    if(!session || !session.user || session.user.role !== "ADMIN"){
+        return NextResponse.json("Approved login required", {status: 401});
+    }
+
+    const body = await request.json();
     body.eventStart = new Date(body.eventStart);
     body.eventEnd = new Date(body.eventEnd);
     if (body.rsvpDuedate) {
@@ -20,9 +26,12 @@ export async function POST(request: NextRequest){
     }
 
     try {
-        // Check if event exists
+        // Check if event exists and is owned by logged in user
         const existingEvent = await prisma.event.findUnique({
-            where: { id: body.id },
+            where: {
+                id: body.id,
+                authorId: session.user.id
+            },
         });
 
         if (!existingEvent) {
