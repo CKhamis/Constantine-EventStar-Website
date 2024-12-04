@@ -24,13 +24,6 @@ export const cuidSchema = z.object({
 })
 
 export const rsvpSchema = z.object({
-    userId: z.string().cuid(),
-    response: RsvpResponse
-})
-
-export const rsvpFormSchema = z.object({
-    userId: z.string().cuid(),
-    eventId: z.string().uuid(),
     response: RsvpResponse
 })
 

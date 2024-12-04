@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
 import {rsvpSchema} from "@/components/ValidationSchemas";
+import {auth} from "@/auth";
 
 const prisma = new PrismaClient();
 
@@ -12,8 +13,14 @@ export async function generateMetadata(props: { params: Params }):Promise<string
 }
 
 export async function POST(request: Request, props: { params: Params }) {
+    const session =  await auth();
+
+    if(!session || !session.user){
+        return NextResponse.json("Please sign in", {status: 401});
+    }
+
     const params = await props.params
-    const id = params.id;
+    const eventId = params.id;
 
     const body = await request.json();
     const validation = rsvpSchema.safeParse(body);
@@ -25,8 +32,8 @@ export async function POST(request: Request, props: { params: Params }) {
     try {
         const rsvp = await prisma.rsvp.findFirst({
             where: {
-                eventId:id,
-                userId: body.userId
+                eventId:eventId,
+                userId: session.user.id
             }
         });
 

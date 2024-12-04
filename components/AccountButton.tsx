@@ -49,8 +49,6 @@ export default async function AccountButton(){
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuItem><Link href="/">Register</Link></DropdownMenuItem>
-                    <DropdownMenuSeparator/>
                     <DropdownMenuItem><Link href="/api/auth/signin">Sign In</Link></DropdownMenuItem>
                     <DropdownMenuItem><Link href="https://costionline.com/SignUp">Sign Up</Link></DropdownMenuItem>
                 </DropdownMenuContent>

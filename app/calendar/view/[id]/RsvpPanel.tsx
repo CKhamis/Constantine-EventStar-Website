@@ -10,17 +10,15 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import axios from "axios"
 import { Check, X } from 'lucide-react'
-import {rsvpFormSchema} from "@/components/ValidationSchemas";
+import {rsvpSchema} from "@/components/ValidationSchemas";
 
-export default function RsvpPanel({ eventId, userId }: { eventId: string; userId: string }) {
+export default function RsvpPanel({ eventId }: { eventId: string }) {
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [focus, setFocus] = useState<boolean>(false);
 
-    const form = useForm<z.infer<typeof rsvpFormSchema>>({
-        resolver: zodResolver(rsvpFormSchema),
+    const form = useForm<z.infer<typeof rsvpSchema>>({
+        resolver: zodResolver(rsvpSchema),
         defaultValues: {
-            eventId,
-            userId: userId,
             response: undefined,
         },
     })
@@ -28,7 +26,7 @@ export default function RsvpPanel({ eventId, userId }: { eventId: string; userId
     useEffect(() => {
         const fetchCurrentRsvp = async () => {
             try {
-                const response = await axios.post(`/api/events/rsvp/view/${eventId}`, { id: userId });
+                const response = await axios.post(`/api/events/rsvp/view/${eventId}`);
                 const currentRsvp = response.data.response;
                 if (currentRsvp && currentRsvp !== 'NO_RESPONSE') {
                     form.setValue('response', currentRsvp);
@@ -44,13 +42,14 @@ export default function RsvpPanel({ eventId, userId }: { eventId: string; userId
         fetchCurrentRsvp()
     }, [])
 
-    async function onSubmit(data: z.infer<typeof rsvpFormSchema>) {
+    async function onSubmit(data: z.infer<typeof rsvpSchema>) {
         setSubmitStatus('loading')
         try {
-            await axios.post(`/api/events/rsvp/edit/${data.eventId}`, {response: data.response, eventId: eventId, userId: userId})
+            await axios.post(`/api/events/rsvp/edit/${eventId}`, {response: data.response})
             setSubmitStatus('success')
             setFocus(false);
         } catch (e) {
+            console.log(e);
             setSubmitStatus('error')
         } finally {
             setTimeout(() => setSubmitStatus('idle'), 3000)

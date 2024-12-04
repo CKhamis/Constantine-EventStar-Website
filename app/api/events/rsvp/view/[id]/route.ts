@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
-import {cuidSchema} from "@/components/ValidationSchemas";
+import {auth} from "@/auth";
 
 const prisma = new PrismaClient();
 
@@ -13,25 +13,20 @@ export async function generateMetadata(props: { params: Params }):Promise<string
 
 // THIS IS A POST FUNCTION!!!
 export async function POST(request: Request, props: { params: Params }) {
-    const params = await props.params
-    const id = params.id;
+    const session =  await auth();
 
-
-
-    const body = await request.json();
-    const validation = cuidSchema.safeParse(body);
-
-    console.log(id + " " + body.id);
-
-    if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+    if(!session || !session.user){
+        return NextResponse.json("Please sign in", {status: 401});
     }
+
+    const params = await props.params
+    const eventId = params.id;
 
     try {
         const rsvp = await prisma.rsvp.findFirst({
             where: {
-                eventId:id,
-                userId: body.id
+                eventId: eventId,
+                userId: session.user.id
             }
         });
 
