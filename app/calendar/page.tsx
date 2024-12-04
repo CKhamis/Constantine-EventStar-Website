@@ -15,7 +15,7 @@ import {Progress} from "@/components/ui/progress";
 import {RsvpWithEvent} from "@/components/Types";
 import {EventTable} from "@/app/calendar/EventTable";
 import { EventWithResponse } from "@/components/Types";
-import { auth } from "@/auth";
+import {auth} from "@/auth";
 
 export default async function Calendar(){
     const session = await auth();

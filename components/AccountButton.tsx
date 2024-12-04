@@ -27,15 +27,22 @@ export default async function AccountButton(){
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
+                    {session.user.role === "ADMIN"?
+                        <>
+                            <DropdownMenuSeparator/>
+                            <Link href={"/ESMT"}><DropdownMenuItem>ESMT</DropdownMenuItem></Link>
+                        </>
+                        :
+                        <></>
+                    }
+
                     <DropdownMenuSeparator/>
                     <DropdownMenuItem>Settings</DropdownMenuItem>
                     <DropdownMenuItem>Support</DropdownMenuItem>
                     <DropdownMenuSeparator/>
-                    <form>
-                        <DropdownMenuItem>
-                            <Link href={"/api/auth/signout?callbackUrl=/"}><Button variant="ghost" type="submit" className="h-5 p-0">Log Out</Button></Link>
-                        </DropdownMenuItem>
-                    </form>
+                    <Link href={"/api/auth/signout?callbackUrl=/"}>
+                        <DropdownMenuItem>Log Out</DropdownMenuItem>
+                    </Link>
                 </DropdownMenuContent>
             </DropdownMenu>
         );
