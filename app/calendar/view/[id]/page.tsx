@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {ChevronLeft, Clock, LetterText, MapPin, TriangleAlert} from "lucide-react";
+import {CalendarPlus, ChevronLeft, Clock, LetterText, MapPin, TriangleAlert} from "lucide-react";
 import {EventWithRsvp} from "@/components/Types";
 import axios from "axios";
 import TopBar from "@/components/TopBar";
@@ -59,9 +59,9 @@ export default async function ViewEventPage(props: { params: Params }){
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                                     <CardTitle className="text-4xl font-bold">{eventData.title}</CardTitle>
                                     <div className="flex flex-row gap-4">
-                                        <Link href="/calendar">
+                                        <Link target="_blank" href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventData.title)}&dates=${encodeURIComponent(eventData.eventStart + '/' + eventData.eventEnd)}&details=${encodeURIComponent(eventData.description)}&location=${encodeURIComponent(eventData.address)}`}>
                                             <Button variant="outline" size="icon">
-                                                <ChevronLeft/>
+                                                <CalendarPlus />
                                             </Button>
                                         </Link>
                                     </div>
