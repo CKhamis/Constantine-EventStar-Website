@@ -13,7 +13,7 @@ import {redirect} from "next/navigation";
 export default async function AdminUI({children}: PropsWithChildren){
     const session = await auth();
 
-    if (!session || !session.user || !session.user.id){
+    if (!session || !session.user || !session.user.id || session.user.role !== "ADMIN"){
         redirect("/api/auth/signin");
     }
 
