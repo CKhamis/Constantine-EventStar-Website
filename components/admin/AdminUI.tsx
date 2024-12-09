@@ -7,8 +7,16 @@ import {
 import {SideBar} from "./SideBar";
 import BreadcrumbNavigation from "@/components/admin/BreadcrumbNavigation";
 import {PropsWithChildren} from "react";
+import {auth} from "@/auth";
+import {redirect} from "next/navigation";
 
-export default function AdminUI({children}: PropsWithChildren){
+export default async function AdminUI({children}: PropsWithChildren){
+    const session = await auth();
+
+    if (!session || !session.user || !session.user.id){
+        redirect("/api/auth/signin");
+    }
+
     return (
         <>
             <SidebarProvider>

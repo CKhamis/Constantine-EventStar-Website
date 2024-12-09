@@ -16,12 +16,14 @@ import {RsvpWithEvent} from "@/components/Types";
 import {EventTable} from "@/app/calendar/EventTable";
 import { EventWithResponse } from "@/components/Types";
 import {auth} from "@/auth";
+import {redirect} from "next/navigation";
+
 
 export default async function Calendar(){
     const session = await auth();
 
     if (!session || !session.user || !session.user.id){
-        return (<>login to view page</>)
+        redirect("/api/auth/signin");
     }
 
     const userId = session.user.id;
