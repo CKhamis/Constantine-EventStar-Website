@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import {EventType, PrismaClient} from '@prisma/client';
 import {NextRequest, NextResponse} from "next/server";
 import {editEventSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
@@ -41,7 +41,18 @@ export async function POST(request: NextRequest){
         // Update Event details
         const updatedEvent = await prisma.event.update({
             where: { id: body.id },
-            data: {...body},
+            data: {
+                title: body.title,
+                address: body.address,
+                eventStart: body.eventStart,
+                eventEnd: body.eventEnd,
+                rsvpDuedate: body.rsvpDuedate,
+                description: body.description,
+                inviteRigidity: body.inviteRigidity,
+                eventType: body.eventType,
+                reminderAmount: body.reminderAmount,
+                backgroundStyle: body.backgroundStyle,
+            },
         });
 
         // Add or remove existing invites

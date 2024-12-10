@@ -1,5 +1,4 @@
 "use client"
-import AdminUI from "@/components/admin/AdminUI";
 import AlertList, {alertContent} from "@/components/AlertList";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
@@ -190,7 +189,7 @@ export default function AdminCalendar(){
                         <EventTable columns={eventTableColumnsWithRowClick(onDelete, onRowClick)} data={events} />
                     </div>
                     <div className="flex flex-col gap-4 mb-4">
-                        <Card>
+                        <Card style={{ background: selectedEvent ? selectedEvent.backgroundStyle : `` }}>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                                 {selectedEvent?
                                     <>

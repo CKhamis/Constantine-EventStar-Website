@@ -1,7 +1,6 @@
 import axios from "axios";
 import {RsvpWithUser} from "@/components/Types";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import AvatarIcon from "@/components/AvatarIcon";
 
@@ -33,7 +32,7 @@ export default async function GuestList({userId, eventId}: Props) {
         const rsvpNoneCount = rsvpData.filter((rsvp) => rsvp.response === "NO_RESPONSE").length;
 
         return (
-            <Card>
+            <Card className="glass-dark">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold">Guest List</CardTitle>
                     <CardDescription>View guests who are invited and are attending this event. This list shows other members who have responded to the RSVP</CardDescription>

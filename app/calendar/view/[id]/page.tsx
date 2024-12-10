@@ -55,7 +55,7 @@ export default async function ViewEventPage(props: { params: Params }){
                     </div>
                     <div className="grid items-start gap-4 lg:grid-cols-3 mt-5">
                         <div className="grid auto-rows-max items-start lg:col-span-2 mb-4">
-                            <Card>
+                            <Card className="glass-dark">
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                                     <CardTitle className="text-4xl font-bold">{eventData.title}</CardTitle>
                                     <div className="flex flex-row gap-4">
@@ -101,7 +101,7 @@ export default async function ViewEventPage(props: { params: Params }){
                             </Card>
                         </div>
                         <div className="flex flex-col gap-4 mb-4">
-                            <RsvpPanel eventId={eventData.id} />
+                            <RsvpPanel eventId={eventData.id} backgroundStyle={eventData.backgroundStyle}/>
                             <GuestList eventId={eventData.id} userId={session.user.id} />
                         </div>
                     </div>

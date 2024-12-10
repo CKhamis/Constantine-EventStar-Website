@@ -12,7 +12,7 @@ import axios from "axios"
 import { Check, X } from 'lucide-react'
 import {rsvpSchema} from "@/components/ValidationSchemas";
 
-export default function RsvpPanel({ eventId }: { eventId: string }) {
+export default function RsvpPanel({ eventId, backgroundStyle }: { eventId: string, backgroundStyle: string }) {
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [focus, setFocus] = useState<boolean>(false);
 
@@ -24,6 +24,8 @@ export default function RsvpPanel({ eventId }: { eventId: string }) {
     })
 
     useEffect(() => {
+
+
         const fetchCurrentRsvp = async () => {
             try {
                 const response = await axios.post(`/api/events/rsvp/view/${eventId}`);
@@ -38,6 +40,8 @@ export default function RsvpPanel({ eventId }: { eventId: string }) {
                 setSubmitStatus('error')
             }
         }
+
+        document.querySelector("body")!.style.background = backgroundStyle;
 
         fetchCurrentRsvp()
     }, [])
@@ -57,7 +61,7 @@ export default function RsvpPanel({ eventId }: { eventId: string }) {
     }
 
     return (
-        <Card className={!focus? '' : 'transition-all animate-pulse top-left-gradient shadow-md focus-border'}>
+        <Card className={!focus? 'glass-dark' : 'transition-all animate-pulse top-left-gradient shadow-md focus-border backdrop-blur-xl'}>
             <CardHeader className="mb-2 pb-0">
                 <CardTitle className="text-2xl font-bold">RSVP Status</CardTitle>
             </CardHeader>

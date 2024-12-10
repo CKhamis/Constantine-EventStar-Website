@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils'
 import { editEventSchema } from "@/components/ValidationSchemas"
 import { InviteRigidity, EventType, ReminderAmount } from "@prisma/client"
 import {RsvpWithUser} from "@/components/Types";
+import {GradientPicker} from "@/components/ui/GradientPicker";
 
 interface EditEventFormProps {
     eventId: string
@@ -39,6 +40,7 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
             id: eventId,
             title: '',
             address: '',
+            backgroundStyle: '#333',
             eventStart: new Date(),
             eventEnd: new Date(),
             rsvpDuedate: new Date(),
@@ -104,6 +106,7 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
                     eventStart: new Date(eventInfo.eventStart),
                     eventEnd: new Date(eventInfo.eventEnd),
                     rsvpDuedate: new Date(eventInfo.rsvpDuedate),
+                    backgroundStyle: eventInfo.backgroundStyle,
                     RSVP: rsvpGuests.map((rsvp:RsvpWithUser) => rsvp.User.id) || []
                 })
 
@@ -166,6 +169,20 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
                             <FormLabel>Address</FormLabel>
                             <FormControl>
                                 <Input placeholder="123 Terence Street" {...field} />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="backgroundStyle"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Background Style</FormLabel>
+                            <br />
+                            <FormControl>
+                                <GradientPicker {...field} />
                             </FormControl>
                         </FormItem>
                     )}

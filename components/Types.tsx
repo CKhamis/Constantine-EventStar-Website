@@ -30,6 +30,7 @@ export type RsvpWithEvent = {
 
 export type EventWithRsvp = {
     id: string
+    backgroundStyle: string
     createdAt: Date
     updatedAt: Date
     title: string

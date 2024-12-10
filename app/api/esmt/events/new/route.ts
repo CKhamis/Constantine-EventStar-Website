@@ -39,19 +39,7 @@ export async function POST(request: NextRequest){
 
         // Create Event
         const newEvent = await prisma.event.create({
-            data: {
-                title: body.title,
-                backgroundStyle: body.backgroundStyle,
-                address: body.address,
-                eventStart: body.eventStart,
-                eventEnd: body.eventEnd,
-                rsvpDuedate: body.rsvpDuedate,
-                description: body.description,
-                inviteRigidity: body.inviteRigidity,
-                eventType: body.eventType,
-                reminderAmount: body.reminderAmount,
-                authorId: body.authorId,
-            }
+            data: {...body}
         });
 
         // Create RSVPs
