@@ -26,7 +26,7 @@ export default async function AccountButton(){
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
+                    <Link href="/profile"><DropdownMenuLabel>{session.user.name}</DropdownMenuLabel></Link>
                     {session.user.role === "ADMIN"?
                         <>
                             <DropdownMenuSeparator/>
@@ -36,9 +36,7 @@ export default async function AccountButton(){
                         <></>
                     }
 
-                    <DropdownMenuSeparator/>
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                    <DropdownMenuItem>Support</DropdownMenuItem>
+                    <Link href="/profile"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
                     <DropdownMenuSeparator/>
                     <Link href={"/api/auth/signout?callbackUrl=/"}>
                         <DropdownMenuItem>Log Out</DropdownMenuItem>
