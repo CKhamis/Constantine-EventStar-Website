@@ -41,6 +41,7 @@ export async function POST(request: NextRequest){
         const newEvent = await prisma.event.create({
             data: {
                 title: body.title,
+                backgroundStyle: body.backgroundStyle,
                 address: body.address,
                 eventStart: body.eventStart,
                 eventEnd: body.eventEnd,

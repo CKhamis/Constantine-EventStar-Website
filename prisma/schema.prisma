@@ -101,21 +101,24 @@ model Rsvp {
 }
 
 model Event {
-  id             String         @id @default(uuid())
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  title          String         @db.VarChar(255)
-  address        String         @db.VarChar(255)
-  eventStart     DateTime       @db.DateTime()
-  eventEnd       DateTime       @db.DateTime()
-  rsvpDuedate    DateTime       @db.DateTime()
-  description    String         @db.LongText
-  inviteRigidity InviteRigidity
-  eventType      EventType
-  reminderAmount ReminderAmount
-  RSVP           Rsvp[]
-  author         User           @relation(fields: [authorId], references: [id])
-  authorId       String
+  id              String         @id @default(uuid())
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  // imageName       String
+  // imageData       Bytes
+  backgroundStyle String
+  title           String         @db.VarChar(255)
+  address         String         @db.VarChar(255)
+  eventStart      DateTime       @db.DateTime()
+  eventEnd        DateTime       @db.DateTime()
+  rsvpDuedate     DateTime       @db.DateTime()
+  description     String         @db.LongText
+  inviteRigidity  InviteRigidity
+  eventType       EventType
+  reminderAmount  ReminderAmount
+  RSVP            Rsvp[]
+  author          User           @relation(fields: [authorId], references: [id])
+  authorId        String
 }
 
 // Enums

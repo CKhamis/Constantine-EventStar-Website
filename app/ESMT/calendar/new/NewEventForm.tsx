@@ -20,6 +20,7 @@ import UserSelection from "./UserSelection";
 import axios from "axios";
 import AlertList, {alertContent} from "@/components/AlertList";
 import { useRouter } from 'next/navigation';
+import {GradientPicker} from "@/components/ui/GradientPicker";
 
 export default function NewEventForm({userId}: {userId: string}) {
     const router = useRouter();
@@ -28,6 +29,7 @@ export default function NewEventForm({userId}: {userId: string}) {
         resolver: zodResolver(createEventSchema),
         defaultValues: {
             title: '',
+            backgroundStyle: '#000',
             address: '',
             eventStart: new Date(),
             eventEnd: new Date(),
@@ -96,6 +98,20 @@ export default function NewEventForm({userId}: {userId: string}) {
                             <FormLabel>Address</FormLabel>
                             <FormControl>
                                 <Input placeholder="123 Terence Street" {...field} />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="backgroundStyle"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Background Style</FormLabel>
+                            <br />
+                            <FormControl>
+                                <GradientPicker {...field} />
                             </FormControl>
                         </FormItem>
                     )}

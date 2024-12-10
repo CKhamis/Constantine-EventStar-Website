@@ -44,6 +44,7 @@ export const editUserSchema = z.object({
 
 export const createEventSchema = z.object({
     title: z.string().min(1).max(255),
+    backgroundStyle: z.string().min(1).max(255),
     address: z.string().max(255, "Address cannot exceed 255 characters").optional(),
     eventStart: z.date(),
     eventEnd: z.date(),
@@ -55,12 +56,13 @@ export const createEventSchema = z.object({
     RSVP: z.array(
         z.string().cuid(),
     ).optional(),
-    authorId: z.string().cuid()
+    authorId: z.string().cuid(),
 })
 
 export const editEventSchema = z.object({
     id: z.string().uuid(),
     title: z.string().min(1).max(255),
+    backgroundStyle: z.string().min(1).max(255),
     address: z.string().max(255, "Address cannot exceed 255 characters").optional(),
     eventStart: z.date(),
     eventEnd: z.date(),

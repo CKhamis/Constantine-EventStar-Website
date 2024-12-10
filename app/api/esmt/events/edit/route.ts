@@ -41,18 +41,7 @@ export async function POST(request: NextRequest){
         // Update Event details
         const updatedEvent = await prisma.event.update({
             where: { id: body.id },
-            data: {
-                title: body.title,
-                address: body.address,
-                eventStart: body.eventStart,
-                eventEnd: body.eventEnd,
-                rsvpDuedate: body.rsvpDuedate,
-                description: body.description,
-                inviteRigidity: body.inviteRigidity,
-                eventType: body.eventType,
-                reminderAmount: body.reminderAmount,
-                authorId: body.authorId,
-            },
+            data: {...body},
         });
 
         // Add or remove existing invites
