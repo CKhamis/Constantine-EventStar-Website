@@ -23,14 +23,17 @@ export function GradientPicker({
     className?: string
 }) {
     const solids = [
-        '#E2E2E2',
+        '#000',
+        '#333',
+        '#5C6784',
+        '#0D2C54',
+        '#244F26',
+        '#042A2B',
+        '#200116',
         '#ff75c3',
         '#ffa647',
-        '#ffe83f',
-        '#9fff5b',
-        '#70e2ff',
         '#cd93ff',
-        '#09203f',
+        '#613DC1',
     ]
 
     const gradients = [
@@ -53,10 +56,12 @@ export function GradientPicker({
     ]
 
     const images = [
-        'url(https://images.unsplash.com/photo-1691200099282-16fd34790ade?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2532&q=90)',
-        'url(https://images.unsplash.com/photo-1691226099773-b13a89a1d167?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2532&q=90',
+        "url('/backgrounds/ASAS Grid.webp')",
+        "url('/backgrounds/ES Grid.webp')",
+        "url('/backgrounds/Logo Grid.webp')",
+        "url('/backgrounds/Logo Radial.webp')",
+        "url('/backgrounds/Green Grid.webp')",
         'url(https://images.unsplash.com/photo-1688822863426-8c5f9b257090?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2532&q=90)',
-        'url(https://images.unsplash.com/photo-1691225850735-6e4e51834cad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2532&q=90)',
     ]
 
     const defaultTab = useMemo(() => {

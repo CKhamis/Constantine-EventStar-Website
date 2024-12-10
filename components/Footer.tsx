@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Footer(){
     return (
-        <footer className="w-full border-t top-left-gradient" style={{
+        <footer className="w-full border-t glass-dark" style={{
             backgroundImage: `url('/tiles/ES & Logo Dark.svg')`,
             backgroundSize: '120px'
         }}>
