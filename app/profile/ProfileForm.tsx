@@ -9,10 +9,14 @@ import {Button} from "@/components/ui/button";
 import axios from "axios";
 import AlertList, {alertContent} from "@/components/AlertList";
 import {useState} from "react";
+import {User} from "@prisma/client";
 
+export interface Props{
+    user: User;
+    refresh: () => void;
+}
 
-
-export default function ProfileForm({user}: {user: {name: string, email: string, discordId: string, id: string, phoneNumber: string, createdAt: string, updatedAt: string}}) {
+export default function ProfileForm({user, refresh}: Props) {
     const form = useForm<z.infer<typeof editUserSchema>>({
         resolver: zodResolver(editUserSchema),
         defaultValues: {
@@ -30,7 +34,7 @@ export default function ProfileForm({user}: {user: {name: string, email: string,
 
     async function onEditUser(values: z.infer<typeof editUserSchema>) {
         try{
-            await axios.post('/api/users/edit', values);
+            await axios.post('/api/users/edit', values).finally(refresh);
             addMessage({ title: "User Modification", message: values.name + " was modified and saved to server. Refresh to see changes", icon: 1 });
         }catch(e){
             addMessage({ title: "User Modification", message: "There was an error saving user details", icon: 2});
