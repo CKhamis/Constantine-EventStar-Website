@@ -9,12 +9,15 @@ import { useState } from "react";
 import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import {LoadingIcon} from "@/components/LoadingIcon";
+import {EventTable} from "@/app/profile/EventTable";
+import {EventWithResponse} from "@/components/Types";
 
 export interface Props{
     sessionUser: User;
+    eventList: EventWithResponse[];
 }
 
-export default function DynamicContent({sessionUser}: Props) {
+export default function DynamicContent({sessionUser, eventList}: Props) {
     const [user, setUser] = useState<User>(sessionUser);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -75,7 +78,7 @@ export default function DynamicContent({sessionUser}: Props) {
                         <p className="text-2xl font-bold mb-4">Profile Information</p>
                         <ProfileForm user={user} refresh={refresh}/>
                     </TabsContent>
-                    <TabsContent value="events">Change your password here.</TabsContent>
+                    <TabsContent value="events"><EventTable data={eventList} /></TabsContent>
                     <TabsContent value="settings">Change your settings here.</TabsContent>
                 </Tabs>
             </div>
