@@ -20,7 +20,7 @@ export default async function ProfilePage() {
                     <h1 className="text-3xl">User Profile</h1>
                     <Badge>{session.user.role}</Badge>
                 </div>
-                <DynamicContent/>
+                <DynamicContent sessionUser={session.user}/>
             </div>
             <Footer/>
         </>

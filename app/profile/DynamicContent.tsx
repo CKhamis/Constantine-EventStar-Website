@@ -5,13 +5,18 @@ import AvatarIcon from "@/components/AvatarIcon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileForm from "@/app/profile/ProfileForm";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import {LoadingIcon} from "@/components/LoadingIcon";
 
-export default function DynamicContent() {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+export interface Props{
+    sessionUser: User;
+}
+
+export default function DynamicContent({sessionUser}: Props) {
+    const [user, setUser] = useState<User>(sessionUser);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const refresh = async () => {
@@ -27,26 +32,10 @@ export default function DynamicContent() {
         }
     };
 
-    useEffect(() => {
-        refresh();
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center gap-4">
-                <p className="font-semibold text-2xl">Now Loading</p>
-            </div>
-        );
-    }
-
-    if (!user) {
-        // This would never run
-        return null;
-    }
-
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
             <div className="md:col-span-1 flex flex-col gap-5">
+                {loading? <LoadingIcon size="lg" /> : ""}
                 <Card>
                     <CardHeader>
                         <div className="flex flex-row justify-between items-center gap-4">
