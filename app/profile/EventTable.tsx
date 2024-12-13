@@ -52,7 +52,7 @@ export function EventTable<TData, TValue>({data}: EventTableProps<TData, TValue>
     return (
         <>
             <div className="flex flex-row justify-between items-center mb-4">
-                <h4 className="text-xl font-bold">Events</h4>
+                <p className="text-2xl font-bold">Events</p>
                 <div className="relative max-w-sm">
                     <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
                     <Input
@@ -66,7 +66,7 @@ export function EventTable<TData, TValue>({data}: EventTableProps<TData, TValue>
                     />
                 </div>
             </div>
-            <div className="rounded-md border overflow-x-auto">
+            <div className="rounded-md border overflow-x-auto glass-dark">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

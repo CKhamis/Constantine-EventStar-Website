@@ -68,7 +68,7 @@ export default function DynamicContent({sessionUser, eventList}: Props) {
                 </Card>
             </div>
             <div className="md:col-span-2 mb-5">
-                <Tabs defaultValue="profile" className="w-[400px]">
+                <Tabs defaultValue="profile">
                     <TabsList>
                         <TabsTrigger value="profile">Profile</TabsTrigger>
                         <TabsTrigger value="events">Events</TabsTrigger>
@@ -78,7 +78,9 @@ export default function DynamicContent({sessionUser, eventList}: Props) {
                         <p className="text-2xl font-bold mb-4">Profile Information</p>
                         <ProfileForm user={user} refresh={refresh}/>
                     </TabsContent>
-                    <TabsContent value="events"><EventTable data={eventList} /></TabsContent>
+                    <TabsContent value="events">
+                        <EventTable data={eventList}/>
+                    </TabsContent>
                     <TabsContent value="settings">Change your settings here.</TabsContent>
                 </Tabs>
             </div>
