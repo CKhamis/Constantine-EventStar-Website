@@ -53,5 +53,6 @@ export type RsvpWithUser = {
     eventId: string,
     response: string,
     guestId: string,
+    arrival: Date,
     User: User
 }

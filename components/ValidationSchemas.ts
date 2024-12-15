@@ -27,6 +27,11 @@ export const rsvpSchema = z.object({
     response: RsvpResponse
 })
 
+export const rsvpArrivalSchema = z.object({
+    id: z.string().cuid(),
+    arrivalTime: z.date().optional(),
+})
+
 export const createUserSchema = z.object({
     name: z.string().min(1).max(255),
     phoneNumber: z.string().max(10, "Format should be: 5058425662"),

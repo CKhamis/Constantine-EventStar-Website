@@ -11,6 +11,7 @@ import {format} from "date-fns";
 import RsvpPanel from "@/app/calendar/view/[id]/RsvpPanel";
 import GuestList from "@/app/calendar/view/[id]/GuestList";
 import {auth} from "@/auth";
+import AdminAttendanceLog from "@/app/calendar/view/[id]/AdminAttendanceLog";
 
 type Params = Promise<{ id: string }>
 
@@ -60,10 +61,12 @@ export default async function ViewEventPage(props: { params: Params }){
                                     <CardTitle className="text-4xl font-bold">{eventData.title}</CardTitle>
                                     <div className="flex flex-row gap-4">
                                         <Link target="_blank" href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventData.title)}&dates=${encodeURIComponent(eventData.eventStart + '/' + eventData.eventEnd)}&details=${encodeURIComponent(eventData.description)}&location=${encodeURIComponent(eventData.address)}`}>
-                                            <Button variant="outline" size="icon">
+                                            <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
                                                 <CalendarPlus />
+                                                Add to Calendar
                                             </Button>
                                         </Link>
+                                        {session.user.role === "ADMIN" && <AdminAttendanceLog eventId={eventId}/>}
                                     </div>
                                 </CardHeader>
                                 <CardContent>

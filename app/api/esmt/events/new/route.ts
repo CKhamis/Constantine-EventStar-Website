@@ -36,10 +36,21 @@ export async function POST(request: NextRequest){
             return NextResponse.json({ message: "User not found" }, { status: 404 });
         }
 
-
         // Create Event
         const newEvent = await prisma.event.create({
-            data: {...body}
+            data: {
+                title: body.title,
+                address: body.address,
+                eventStart: body.eventStart,
+                eventEnd: body.eventEnd,
+                rsvpDuedate: body.rsvpDuedate,
+                description: body.description,
+                inviteRigidity: body.inviteRigidity,
+                eventType: body.eventType,
+                reminderAmount: body.reminderAmount,
+                backgroundStyle: body.backgroundStyle,
+                authorId: body.authorId,
+            }
         });
 
         // Create RSVPs
