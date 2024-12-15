@@ -1,7 +1,8 @@
 import {$Enums, Event, User, EventType, InviteRigidity, ReminderAmount, Rsvp} from "@prisma/client";
 
 export type EventWithResponse = Event & {
-    response: string;
+    response: string,
+    arrival: Date,
 }
 
 export type RsvpWithEvent = {
@@ -11,7 +12,7 @@ export type RsvpWithEvent = {
     "eventId": string,
     "response": string,
     "userId": string,
-    "arrival": Date,
+    "arrival": string,
     "event": {
         "id": string,
         "createdAt": Date,

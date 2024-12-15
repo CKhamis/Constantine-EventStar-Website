@@ -24,7 +24,7 @@ export default async function ProfilePage() {
     }
 
     const eventList:RsvpWithEvent[] = await fetchEvents();
-    const eventsOnly:EventWithResponse[] = eventList.map((rsvp) => ({...rsvp.event, response: rsvp.response}));
+    const eventsOnly:EventWithResponse[] = eventList.map((rsvp) => ({...rsvp.event, response: rsvp.response, arrival: rsvp.arrival}));
 
     return (
         <>

@@ -40,7 +40,7 @@ export default async function Calendar(){
 
     try{
         const eventList:RsvpWithEvent[] = await fetchEvent();
-        const eventsOnly:EventWithResponse[] = eventList.map((rsvp) => ({...rsvp.event, response: rsvp.response}));
+        const eventsOnly:EventWithResponse[] = eventList.map((rsvp) => ({...rsvp.event, response: rsvp.response, arrival: rsvp.arrival}));
 
         // Event Analysis
         const today = new Date();

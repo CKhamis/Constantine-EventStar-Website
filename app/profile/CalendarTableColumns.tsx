@@ -75,6 +75,22 @@ export const eventTableColumns: ColumnDef<EventWithResponse>[] = [
         },
     },
     {
+        accessorKey: "rsvpDuedate",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Respond By
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+        cell: ({ row }) => {
+            const date = row.getValue("rsvpDuedate") as Date;
+            return format(date, "MM/dd/yyyy h:mm a");
+        },
+    },
+    {
         accessorKey: "inviteRigidity",
         header: ({ column }) => (
             <Button
@@ -127,28 +143,28 @@ export const eventTableColumns: ColumnDef<EventWithResponse>[] = [
         ),
         cell: ({ row }) => {
             const arrival = row.getValue("arrival") as string;
-            const start = new Date(row.getValue("eventStart"));
-            const end = new Date(row.getValue("eventEnd"));
+            const eventEnd = new Date(row.getValue("eventEnd"));
             const today = new Date();
             const response = row.getValue("response") as string;
 
-            console.log("Arrival: " + arrival);
-            console.log("rn: " + today);
-            console.log("Start: " + start);
-            console.log("End: " + end);
-
             if(response === "YES"){
+                console.log("guest said they were going. Arrived at: " + arrival);
+                // Expected attendance
                 if (arrival) {
-                    return <div className="flex flex-row justify-center"><Badge variant="secondary">Went</Badge></div>;
-                } else if (today < end) {
+                    return <div className="flex flex-row justify-center"><Badge variant="secondary">Attended</Badge></div>;
+                } else if(today < eventEnd) {
                     return <div className="flex flex-row justify-center"><Badge variant="outline">Pending</Badge></div>;
                 } else {
-                    return <div className="flex flex-row justify-center"><Badge variant="destructive">Skipped</Badge></div>;
+                    return <div className="flex flex-row justify-center"><Badge variant="destructive">No-Show</Badge></div>;
                 }
             }else{
-                return <div className="flex flex-row justify-center"><Badge variant="outline">--</Badge></div>;
+                // Unexpected attendance
+                if (arrival) {
+                    return <div className="flex flex-row justify-center"><Badge variant="destructive">Unannounced</Badge></div>;
+                } else {
+                    return <div className="flex flex-row justify-center"><Badge variant="outline">Skipped</Badge></div>;
+                }
             }
-
         },
     },
     {
