@@ -67,7 +67,7 @@ export function EventTable<TData, TValue>({data}: EventTableProps<TData, TValue>
                 </div>
             </div>
             <div className="rounded-md border overflow-x-auto">
-                <Table>
+                <Table className="glass-dark">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>

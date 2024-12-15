@@ -11,7 +11,7 @@ import {format} from "date-fns";
 import RsvpPanel from "@/app/calendar/view/[id]/RsvpPanel";
 import GuestList from "@/app/calendar/view/[id]/GuestList";
 import {auth} from "@/auth";
-import AdminAttendanceLog from "@/app/calendar/view/[id]/AdminAttendanceLog";
+import AdminAttendanceLog from "@/components/admin/AdminAttendanceLog";
 
 type Params = Promise<{ id: string }>
 

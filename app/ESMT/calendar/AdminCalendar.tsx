@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/dialog";
 import {RSVPGraph} from "@/app/ESMT/calendar/RsvpGraph";
 import {EventWithRsvp} from "@/components/Types";
+import AdminAttendanceLog from "@/components/admin/AdminAttendanceLog";
 
 
 export default function AdminCalendar(){
@@ -200,7 +201,7 @@ export default function AdminCalendar(){
                                                     <Eye/>
                                                 </Button>
                                             </Link>
-
+                                            <AdminAttendanceLog eventId={selectedEvent.id} text="" />
                                             <Link href={"/ESMT/calendar/" + selectedEvent.id}>
                                                 <Button variant="outline" size="icon">
                                                     <Pencil/>

@@ -59,10 +59,10 @@ export default function AdminAttendanceLog({eventId}: Props) {
                     variant="secondary"
                     className="flex items-center justify-center gap-2 w-full"
                 >
-                    <Users className="w-4 h-4" />
-                    Guests
-                    {numPresent > 0 &&
+                    {numPresent > 0 ?
                         (<span className="ml-2 bg-primary text-primary-foreground rounded-full px-2 py-1 text-xs font-semibold">{numPresent}</span>)
+                        :
+                        <Users className="w-4 h-4" />
                     }
                 </Button>
             </DialogTrigger>

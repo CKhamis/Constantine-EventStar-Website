@@ -45,11 +45,15 @@ export default async function Calendar(){
         // Event Analysis
         const today = new Date();
         const completeResponsesCount = eventList.filter((rsvp) => rsvp.response !== "NO_RESPONSE").length;
-        const nextRSVP = eventList.filter((rsvp) => new Date(rsvp.event.eventEnd) >= today && rsvp.response !== "NO").sort((a, b) => new Date(a.event.eventEnd).getTime() - new Date(b.event.eventEnd).getTime())[0] || null;
         const responseCounts:{YES?:number, MAYBE?:number, NO?:number, NO_RESPONSE?:number} = eventList.reduce((counts, rsvp) => {
             counts[rsvp.response] = (counts[rsvp.response] || 0) + 1;
             return counts;
         }, {});
+
+        const nextRSVP = eventList
+            .filter(rsvp => (rsvp.response === "YES" || rsvp.response === "MAYBE") && new Date(rsvp.event.eventStart) >= today)
+            .sort((a, b) => new Date(a.event.eventStart).getUTCDate() - new Date(b.event.eventStart).getUTCDate())
+            .at(0);
 
         return (
             <>

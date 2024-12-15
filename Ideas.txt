@@ -1,0 +1,9 @@
+Store ideas
+- checkout page with cart
+
+Store products
+- good night text
+- high five at next hangout
+- 1/3 chance of doubling points
+- shout-out on costi online newsroom
+- custom color on login using EventStarNode
