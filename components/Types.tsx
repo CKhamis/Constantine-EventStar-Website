@@ -11,6 +11,7 @@ export type RsvpWithEvent = {
     "eventId": string,
     "response": string,
     "userId": string,
+    "arrival": Date,
     "event": {
         "id": string,
         "createdAt": Date,

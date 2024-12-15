@@ -60,7 +60,7 @@ export default function AdminAttendanceLog({eventId}: Props) {
                     className="flex items-center justify-center gap-2 w-full"
                 >
                     <Users className="w-4 h-4" />
-                    Guest Attendance
+                    Guests
                     {numPresent > 0 &&
                         (<span className="ml-2 bg-primary text-primary-foreground rounded-full px-2 py-1 text-xs font-semibold">{numPresent}</span>)
                     }

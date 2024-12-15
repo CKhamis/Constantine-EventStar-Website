@@ -49,13 +49,29 @@ export const eventTableColumns: ColumnDef<EventWithResponse>[] = [
                 variant="ghost"
                 onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             >
-                Date
+                Start
                 <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         ),
         cell: ({ row }) => {
             const date = row.getValue("eventStart") as Date;
-            return format(date, "PPP");
+            return format(date, "MM/dd/yyyy h:mm a");
+        },
+    },
+    {
+        accessorKey: "eventEnd",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                End
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+        cell: ({ row }) => {
+            const date = row.getValue("eventEnd") as Date;
+            return format(date, "MM/dd/yyyy h:mm a");
         },
     },
     {
@@ -96,6 +112,43 @@ export const eventTableColumns: ColumnDef<EventWithResponse>[] = [
             }else {
                 return <div className="flex flex-row justify-center"><Badge variant="secondary">Maybe</Badge></div>;
             }
+        },
+    },
+    {
+        accessorKey: "arrival",
+        header: ({ column }) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Attendance
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+        cell: ({ row }) => {
+            const arrival = row.getValue("arrival") as string;
+            const start = new Date(row.getValue("eventStart"));
+            const end = new Date(row.getValue("eventEnd"));
+            const today = new Date();
+            const response = row.getValue("response") as string;
+
+            console.log("Arrival: " + arrival);
+            console.log("rn: " + today);
+            console.log("Start: " + start);
+            console.log("End: " + end);
+
+            if(response === "YES"){
+                if (arrival) {
+                    return <div className="flex flex-row justify-center"><Badge variant="secondary">Went</Badge></div>;
+                } else if (today < end) {
+                    return <div className="flex flex-row justify-center"><Badge variant="outline">Pending</Badge></div>;
+                } else {
+                    return <div className="flex flex-row justify-center"><Badge variant="destructive">Skipped</Badge></div>;
+                }
+            }else{
+                return <div className="flex flex-row justify-center"><Badge variant="outline">--</Badge></div>;
+            }
+
         },
     },
     {

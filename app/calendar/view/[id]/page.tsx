@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {CalendarPlus, ChevronLeft, Clock, LetterText, MapPin, TriangleAlert} from "lucide-react";
+import {CalendarPlus, ChevronLeft, Clock, LetterText, MapPin, Pencil, TriangleAlert} from "lucide-react";
 import {EventWithRsvp} from "@/components/Types";
 import axios from "axios";
 import TopBar from "@/components/TopBar";
@@ -66,7 +66,16 @@ export default async function ViewEventPage(props: { params: Params }){
                                                 Add to Calendar
                                             </Button>
                                         </Link>
-                                        {session.user.role === "ADMIN" && <AdminAttendanceLog eventId={eventId}/>}
+                                        {session.user.role === "ADMIN" &&
+                                            <>
+                                                <AdminAttendanceLog eventId={eventId}/>
+                                                <Link target="_blank" href={`/ESMT/calendar/${eventId}`}>
+                                                    <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
+                                                        <Pencil />
+                                                        Edit
+                                                    </Button>
+                                                </Link>
+                                            </>}
                                     </div>
                                 </CardHeader>
                                 <CardContent>

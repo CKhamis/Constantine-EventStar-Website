@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import {Search} from "lucide-react";
-import {eventTableColumns} from "@/app/profile/CalendarTableColumns";
+import {eventTableColumns} from "@/app/calendar/CalendarTableColumns";
 
 interface EventTableProps<TData, TValue>{
     data: TData
