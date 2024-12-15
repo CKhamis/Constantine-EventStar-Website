@@ -7,14 +7,16 @@ import { z } from 'zod'
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 import axios from "axios"
 import { Check, X } from 'lucide-react'
 import {rsvpSchema} from "@/components/ValidationSchemas";
+import {format} from "date-fns";
 
-export default function RsvpPanel({ eventId, backgroundStyle }: { eventId: string, backgroundStyle: string }) {
+export default function RsvpPanel({ eventId, backgroundStyle, rsvpDue }: { eventId: string, backgroundStyle: string, rsvpDue: Date }) {
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [focus, setFocus] = useState<boolean>(false);
+    const parsedDueDate = new Date(rsvpDue);
 
     const form = useForm<z.infer<typeof rsvpSchema>>({
         resolver: zodResolver(rsvpSchema),
@@ -33,7 +35,9 @@ export default function RsvpPanel({ eventId, backgroundStyle }: { eventId: strin
                 if (currentRsvp && currentRsvp !== 'NO_RESPONSE') {
                     form.setValue('response', currentRsvp);
                 }else{
-                    setFocus(true);
+                    if(parsedDueDate >= new Date()){
+                        setFocus(true);
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching current RSVP status:', error);
@@ -64,6 +68,7 @@ export default function RsvpPanel({ eventId, backgroundStyle }: { eventId: strin
         <Card className={!focus? 'glass-dark' : 'transition-all animate-pulse top-left-gradient shadow-md focus-border backdrop-blur-xl'}>
             <CardHeader className="mb-2 pb-0">
                 <CardTitle className="text-2xl font-bold">RSVP Status</CardTitle>
+                <CardDescription className="text-sm">{parsedDueDate < new Date()? `too late to respond` : `Respond by ${format(parsedDueDate, 'PPP')}`}</CardDescription>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
@@ -73,7 +78,7 @@ export default function RsvpPanel({ eventId, backgroundStyle }: { eventId: strin
                             name="response"
                             render={({ field }) => (
                                 <FormItem>
-                                    <Select onValueChange={field.onChange} value={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value} disabled={parsedDueDate < new Date()}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select your RSVP status" />
@@ -91,7 +96,7 @@ export default function RsvpPanel({ eventId, backgroundStyle }: { eventId: strin
                         />
 
                         <div className="flex flex-row gap-4 items-center justify-start">
-                            <Button type="submit" disabled={submitStatus === 'loading'}>
+                            <Button type="submit" disabled={submitStatus === 'loading' || parsedDueDate < new Date()}>
                                 {submitStatus === 'loading' ? 'Submitting...' : 'Save'}
                             </Button>
 

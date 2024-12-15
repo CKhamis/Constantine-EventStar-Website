@@ -41,6 +41,25 @@ export async function POST(request: Request, props: { params: Params }) {
             return NextResponse.json({ error: "RSVP not found" }, { status: 404 });
         }
 
+        // Check if the end time has already passed
+        const event = await prisma.event.findUnique({
+            where: {
+                id: eventId,
+            },
+            include: {
+                RSVP: false,
+            },
+        });
+
+        if(!event){
+            // this should never happen given the SQL schema
+            return NextResponse.json({ error: "RSVP not found" }, { status: 404 });
+        }
+
+        if(event.rsvpDuedate < new Date()){
+            return NextResponse.json({ error: "Cannot change RSVP after due date" }, { status: 403 });
+        }
+
         // Edit the rsvp value
         if(body.response != rsvp.response){
             const updatedRsvp = await prisma.rsvp.update({
