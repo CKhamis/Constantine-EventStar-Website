@@ -10,9 +10,10 @@ import {RsvpWithUser} from "@/components/Types";
 
 export interface Props{
     eventId: string;
+    text?: string;
 }
 
-export default function AdminAttendanceLog({eventId}: Props) {
+export default function AdminAttendanceLog({eventId, text}: Props) {
     const [rsvps, setRsvps] = useState<RsvpWithUser[]>([]);
     const [numPresent, setNumPresent] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(false);
@@ -55,16 +56,33 @@ export default function AdminAttendanceLog({eventId}: Props) {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button
-                    variant="secondary"
-                    className="flex items-center justify-center gap-2 w-full"
-                >
-                    {numPresent > 0 ?
-                        (<span className="ml-2 bg-primary text-primary-foreground rounded-full px-2 py-1 text-xs font-semibold">{numPresent}</span>)
-                        :
-                        <Users className="w-4 h-4" />
-                    }
-                </Button>
+                {text?
+                    <Button
+                        variant="secondary"
+                        className="flex items-center justify-center w-full px-2"
+                    >
+                        <Users className="w-4 h-4 mx-3" />
+                        {text}
+                        {numPresent > 0 ?
+                            (<span className="mx-2 bg-primary text-primary-foreground rounded-full py-1 px-2 text-xs font-semibold">{numPresent}</span>)
+                            :
+                            ""
+                        }
+                    </Button>
+                    :
+                    <Button
+                        variant="secondary"
+                        className="flex items-center justify-center w-full"
+                        size="icon"
+                    >
+                        {numPresent > 0 ?
+                            (<span className="mx-2 bg-primary text-primary-foreground rounded-full py-1 px-2 text-xs font-semibold">{numPresent}</span>)
+                            :
+                            <Users className="w-4 h-4 mx-3" />
+                        }
+                    </Button>
+                }
+
             </DialogTrigger>
             <DialogContent className="sm:max-w-[700px]">
                 <DialogHeader>

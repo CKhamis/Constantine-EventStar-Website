@@ -68,7 +68,7 @@ export default async function ViewEventPage(props: { params: Params }){
                                         </Link>
                                         {session.user.role === "ADMIN" &&
                                             <>
-                                                <AdminAttendanceLog eventId={eventId}/>
+                                                <AdminAttendanceLog eventId={eventId} text="Attendance"/>
                                                 <Link target="_blank" href={`/ESMT/calendar/${eventId}`}>
                                                     <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
                                                         <Pencil />
