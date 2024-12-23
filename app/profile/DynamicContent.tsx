@@ -10,15 +10,18 @@ import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import {EventTable} from "@/app/profile/EventTable";
-import {EventWithResponse} from "@/components/Types";
+import {AccountResponse, EventWithResponse} from "@/components/Types";
+import AccountSettings from "@/app/profile/AccountSettings";
 
 export interface Props{
     sessionUser: User;
     eventList: EventWithResponse[];
+    initialAccountList: AccountResponse[];
 }
 
-export default function DynamicContent({sessionUser, eventList}: Props) {
+export default function DynamicContent({sessionUser, eventList, initialAccountList}: Props) {
     const [user, setUser] = useState<User>(sessionUser);
+    const [accountList, setAccountList] = useState<AccountResponse[]>(initialAccountList);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
@@ -27,6 +30,9 @@ export default function DynamicContent({sessionUser, eventList}: Props) {
             setLoading(true);
             const response = await axios.get("/api/users/self");
             setUser(response.data);
+
+            const accounts = await axios.get("/api/users/connectedAccounts/all");
+            setAccountList(accounts.data);
         } catch (err) {
             console.error("Error fetching users:", err);
             router.push("/api/auth/signin");
@@ -34,7 +40,6 @@ export default function DynamicContent({sessionUser, eventList}: Props) {
             setLoading(false);
         }
     };
-
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
@@ -82,7 +87,10 @@ export default function DynamicContent({sessionUser, eventList}: Props) {
                     <TabsContent value="events">
                         <EventTable data={eventList}/>
                     </TabsContent>
-                    <TabsContent value="settings">Change your settings here.</TabsContent>
+                    <TabsContent value="settings">
+                        <p className="text-2xl font-bold mb-4">Settings</p>
+                        <AccountSettings accountList={accountList}/>
+                    </TabsContent>
                 </Tabs>
             </div>
         </div>

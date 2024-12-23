@@ -14,7 +14,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     providers: [GitHub, Google],
     callbacks: {
         async signIn({ user, account, profile }) {
-            console.log("signing in...")
 
             if (!account) {
                 console.error("Account is null or undefined");
@@ -29,16 +28,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 : null;
 
             if (existingUser) {
-                console.log("existing user...." + account.provider);
-
-                let r = await prisma.account.findMany({
-                    where: {
-                        userId: existingUser.id,
-                        provider: account.provider
-                    }
-                });
-
-                console.log(r);
                 // Link the account to the existing user
                 await prisma.account.upsert({
                     where: {

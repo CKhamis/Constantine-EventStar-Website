@@ -1,7 +1,6 @@
 import z from "zod";
 
 // Enums
-const UserRole = z.enum(["OWNER", "ADMIN", "USER"]);
 const RsvpResponse = z.enum(["YES", "NO", "MAYBE"]);
 const InviteRigidity = z.enum(["OPEN_INVITE", "ASK_HOST", "INVITE_ONLY"]);
 const EventType = z.enum([
