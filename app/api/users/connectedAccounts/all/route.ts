@@ -8,6 +8,8 @@ export async function POST(request: NextRequest){
     const body = await request.json();
     const validation = cuidSchema.safeParse(body);
 
+    //todo: this takes in an account id which can be used by anybody. need to make session based.
+
 
     if(!validation.success){
         return NextResponse.json(validation.error.format(), {status: 400});
