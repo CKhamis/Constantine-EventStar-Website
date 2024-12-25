@@ -10,7 +10,6 @@ import {
     DialogDescription,
     DialogFooter,
     DialogTrigger,
-    DialogClose
 } from "@/components/ui/dialog"
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area"
 import Image from 'next/image'
