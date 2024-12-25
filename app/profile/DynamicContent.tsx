@@ -31,7 +31,7 @@ export default function DynamicContent({sessionUser, eventList, initialAccountLi
             const response = await axios.get("/api/users/self");
             setUser(response.data);
 
-            const accounts = await axios.get("/api/users/connectedAccounts/all");
+            const accounts = await axios.post("/api/users/connectedAccounts/all", {id: user.id});
             setAccountList(accounts.data);
         } catch (err) {
             console.error("Error fetching users:", err);
@@ -89,7 +89,7 @@ export default function DynamicContent({sessionUser, eventList, initialAccountLi
                     </TabsContent>
                     <TabsContent value="settings">
                         <p className="text-2xl font-bold mb-4">Settings</p>
-                        <AccountSettings accountList={accountList}/>
+                        <AccountSettings accountList={accountList} refresh={refresh}/>
                     </TabsContent>
                 </Tabs>
             </div>

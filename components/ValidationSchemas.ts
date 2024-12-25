@@ -34,7 +34,7 @@ export const rsvpArrivalSchema = z.object({
 export const createUserSchema = z.object({
     name: z.string().min(1).max(255),
     phoneNumber: z.string().max(10, "Format should be: 5058425662"),
-    email: z.string().email().max(255).optional().or(z.literal("")),
+    email: z.string().email().max(255),
     discordId: z.string().max(255),
 })
 
@@ -42,7 +42,7 @@ export const editUserSchema = z.object({
     id: z.string().cuid(),
     name: z.string().min(1).max(255),
     phoneNumber: z.string().max(10, "Format should be: 5058425662"),
-    email: z.string().email().max(255).optional().or(z.literal("")),
+    email: z.string().email().max(255),
     discordId: z.string().max(255),
 })
 

@@ -88,6 +88,7 @@ export default function ProfileForm({user, refresh}: Props) {
                                     <Input type="email" placeholder="terence@ab.com" {...field} />
                                 </FormControl>
                                 <FormMessage/>
+                                <FormDescription>This field is required. Must be the same as your sign in provider</FormDescription>
                             </FormItem>
                         )}
                     />
