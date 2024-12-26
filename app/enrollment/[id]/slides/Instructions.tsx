@@ -15,7 +15,7 @@ export default function Instructions(){
                     <p className="text-3xl font-bold">2.</p>
                     <div>
                         <p className="font-bold text-xl">Enter your email</p>
-                        <p>The only information asked on the next screen is your email. If the email you enter matches the email of the sign in provider, your login will be linked and you finished setting up your account!</p>
+                        <p>The only information asked afterwards is your email. If the email you enter matches the email of the sign in provider, your login will be linked and you finished setting up your account!</p>
                     </div>
                 </div>
                 <div className="flex flex-row justify-start gap-5">
