@@ -31,6 +31,10 @@ const data = {
           title: "+ Add User",
           url: "/ESMT/users/new",
         },
+        {
+          title: "User Enrollment",
+          url: "/ESMT/users/enrollment",
+        },
       ],
     },
     {

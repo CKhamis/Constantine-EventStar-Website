@@ -11,9 +11,11 @@ import {UserPlus} from "lucide-react";
 import About from "@/app/enrollment/[id]/slides/About";
 import HostNote from "@/app/enrollment/[id]/slides/HostNote";
 import Instructions from "@/app/enrollment/[id]/slides/Instructions";
+import {enrollerResponse} from "@/components/Types";
+import Review from "@/app/enrollment/[id]/slides/Review";
 
 export type Props = {
-    ticketId: string;
+    enrollerResponse: enrollerResponse;
 }
 
 export type Slide = {
@@ -22,13 +24,14 @@ export type Slide = {
     content: React.ReactNode,
 }
 
-export default function DynamicContent({ticketId}: Props){
+export default function DynamicContent({enrollerResponse}: Props){
     const slideDeck:Slide[] = [
         {backAllowed: true, forwardAllowed: true, content: <Intro />, },
         {backAllowed: true, forwardAllowed: true, content: <About />, },
         {backAllowed: true, forwardAllowed: true, content: <HostNote />, },
         {backAllowed: true, forwardAllowed: true, content: <Instructions />, },
-        {backAllowed: true, forwardAllowed: true, content: <EmailForm ticketId={ticketId} />, },
+        {backAllowed: true, forwardAllowed: true, content: <Review enrollerResponse={enrollerResponse} />, },
+        {backAllowed: true, forwardAllowed: false, content: <EmailForm enrollerResponse={enrollerResponse} enableNextAction={enableNextCallback}/>, },
         {backAllowed: true, forwardAllowed: true, content: <p>test2</p>, },
     ];
 
@@ -42,8 +45,8 @@ export default function DynamicContent({ticketId}: Props){
             const newIndex = prevIndex + 1;
 
             //set nav buttons
-            setEnableNext(slideDeck[newIndex].backAllowed);
-            setEnablePrev(slideDeck[newIndex].forwardAllowed);
+            setEnableNext(slideDeck[newIndex].forwardAllowed);
+            setEnablePrev(slideDeck[newIndex].backAllowed);
 
             if(newIndex >= slideDeck.length -1){
                 setEnableNext(false);
@@ -58,8 +61,8 @@ export default function DynamicContent({ticketId}: Props){
             const newIndex = prevIndex - 1;
 
             //set nav buttons
-            setEnableNext(slideDeck[newIndex].backAllowed);
-            setEnablePrev(slideDeck[newIndex].forwardAllowed);
+            setEnableNext(slideDeck[newIndex].forwardAllowed);
+            setEnablePrev(slideDeck[newIndex].backAllowed);
 
             if(newIndex <= 0){
                 setEnablePrev(false);
@@ -67,6 +70,10 @@ export default function DynamicContent({ticketId}: Props){
 
             return newIndex;
         });
+    }
+
+    function enableNextCallback(){
+        setEnableNext(true);
     }
 
     return (

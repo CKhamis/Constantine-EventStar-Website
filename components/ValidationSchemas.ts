@@ -31,6 +31,13 @@ export const rsvpArrivalSchema = z.object({
     arrivalTime: z.date().optional(),
 })
 
+export const enrollmentSchema = z.object({
+    enrollerId: z.string().cuid(),
+    phoneNumber: z.string().max(10, "Format should be: 5058425662").optional(),
+    email: z.string().email().max(255),
+    discordId: z.string().max(255).optional(),
+})
+
 export const createUserSchema = z.object({
     name: z.string().min(1).max(255),
     phoneNumber: z.string().max(10, "Format should be: 5058425662"),
