@@ -118,7 +118,7 @@ export default function EmailForm({enrollerResponse, enableNextAction}: Props){
                             />
                             <Button type="submit" disabled={loading || !form.formState.isValid}>
                                 {loading && <Loader2 className="animate-spin"/>}
-                                Add User
+                                Save
                             </Button>
                         </form>
                     </Form>

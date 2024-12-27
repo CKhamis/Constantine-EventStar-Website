@@ -13,6 +13,7 @@ import HostNote from "@/app/enrollment/[id]/slides/HostNote";
 import Instructions from "@/app/enrollment/[id]/slides/Instructions";
 import {enrollerResponse} from "@/components/Types";
 import Review from "@/app/enrollment/[id]/slides/Review";
+import Final from "@/app/enrollment/[id]/slides/Final";
 
 export type Props = {
     enrollerResponse: enrollerResponse;
@@ -32,7 +33,7 @@ export default function DynamicContent({enrollerResponse}: Props){
         {backAllowed: true, forwardAllowed: true, content: <Instructions />, },
         {backAllowed: true, forwardAllowed: true, content: <Review enrollerResponse={enrollerResponse} />, },
         {backAllowed: true, forwardAllowed: false, content: <EmailForm enrollerResponse={enrollerResponse} enableNextAction={enableNextCallback}/>, },
-        {backAllowed: true, forwardAllowed: true, content: <p>test2</p>, },
+        {backAllowed: true, forwardAllowed: false, content: <Final enrollerResponse={enrollerResponse} />, },
     ];
 
     const [slideIndex, setSlideIndex] = useState(0);
