@@ -49,16 +49,16 @@ export default function EmailForm({enrollerResponse, enableNextAction}: Props){
             <p className="text-3xl font-bold">Account Setup</p>
             <p className="text-center">Make sure your email matches what you will use to sign in with next!</p>
 
-            <Card className="mt-10">
+            <Card className="mt-10 w-[25rem]">
                 <CardHeader>
                     <CardTitle>Account Information</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex flex-row items-center justify-center">
                     <div className="flex flex-row justify-between items-center">
                         <div className="flex flex-row items-center gap-5">
-                            <AvatarIcon name={enrollerResponse.author.name} image={enrollerResponse.author.image} size={"large"}/>
+                            <AvatarIcon name={enrollerResponse.user.name} image={enrollerResponse.user.image} size={"large"}/>
                             <div>
-                                <p className="font-bold text-2xl">{enrollerResponse.author.name}</p>
+                                <p className="font-bold text-2xl">{enrollerResponse.user.name}</p>
                             </div>
                         </div>
                     </div>

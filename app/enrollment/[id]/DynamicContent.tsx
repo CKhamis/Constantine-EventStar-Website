@@ -37,8 +37,8 @@ export default function DynamicContent({enrollerResponse}: Props){
     ];
 
     const [slideIndex, setSlideIndex] = useState(0);
-    const [enableNext, setEnableNext] = useState(true);
-    const [enablePrev, setEnablePrev] = useState(false);
+    const [enableNext, setEnableNext] = useState<boolean>(true);
+    const [enablePrev, setEnablePrev] = useState<boolean>(false);
 
 
     function nextPressed(){

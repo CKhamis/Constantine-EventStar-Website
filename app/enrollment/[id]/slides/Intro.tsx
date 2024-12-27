@@ -1,6 +1,10 @@
 import Image from "next/image";
+import {useRouter} from "next/navigation";
 
 export default function Intro(){
+    const router = useRouter();
+
+
     return (
         <div className="flex flex-col gap-10 justify-center items-center mt-16">
             <Image src={"/icons/Logo.svg"} alt={"EventStar logo"} width={300} height={300} />

@@ -23,7 +23,6 @@ export default function DynamicContent({sessionUser, eventList, initialAccountLi
     const [user, setUser] = useState<User>(sessionUser);
     const [accountList, setAccountList] = useState<AccountResponse[]>(initialAccountList);
     const [loading, setLoading] = useState(false);
-    const router = useRouter();
 
     const refresh = async () => {
         try {
@@ -35,7 +34,6 @@ export default function DynamicContent({sessionUser, eventList, initialAccountLi
             setAccountList(accounts.data);
         } catch (err) {
             console.error("Error fetching users:", err);
-            router.push("/api/auth/signin");
         } finally {
             setLoading(false);
         }
