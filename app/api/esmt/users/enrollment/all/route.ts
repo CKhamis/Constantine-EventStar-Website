@@ -19,7 +19,14 @@ export async function GET(request: NextRequest){
     }
 
     try {
-        const enrollers = await prisma.enroller.findMany();
+        const enrollers = await prisma.enroller.findMany({
+            include:{
+                user: true,
+                author:true
+            }
+        });
+
+        console.log(enrollers);
 
         return NextResponse.json(enrollers, { status: 200 });
     } catch (e) {
