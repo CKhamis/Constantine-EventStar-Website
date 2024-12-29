@@ -1,7 +1,7 @@
 "use client"
 import {useForm} from "react-hook-form";
 import * as z from "zod";
-import {editUserSchema} from "@/components/ValidationSchemas";
+import {profileEditUserSchema} from "@/components/ValidationSchemas";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
@@ -17,8 +17,8 @@ export interface Props{
 }
 
 export default function ProfileForm({user, refresh}: Props) {
-    const form = useForm<z.infer<typeof editUserSchema>>({
-        resolver: zodResolver(editUserSchema),
+    const form = useForm<z.infer<typeof profileEditUserSchema>>({
+        resolver: zodResolver(profileEditUserSchema),
         defaultValues: {
             name: user.name ?? "no name",
             email: user.email?? "",
@@ -32,7 +32,7 @@ export default function ProfileForm({user, refresh}: Props) {
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([]);
 
 
-    async function onEditUser(values: z.infer<typeof editUserSchema>) {
+    async function onEditUser(values: z.infer<typeof profileEditUserSchema>) {
         try{
             await axios.post('/api/users/edit', values).finally(refresh);
             addMessage({ title: "User Modification", message: values.name + " was modified and saved to server. Refresh to see changes", icon: 1 });

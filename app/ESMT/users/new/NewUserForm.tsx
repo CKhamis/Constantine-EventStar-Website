@@ -23,6 +23,7 @@ export default function NweUserForm() {
             phoneNumber: '',
             email: '',
             discordId: '',
+            pin: '0000'
         },
     })
     const [error, setError] = useState<string>('');
@@ -78,7 +79,7 @@ export default function NweUserForm() {
                         <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                                <Input type="email" placeholder="john.doe@example.com" {...field} />
+                                <Input type="email" placeholder="costi.khamis@example.com" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -91,7 +92,20 @@ export default function NweUserForm() {
                         <FormItem>
                             <FormLabel>Discord ID</FormLabel>
                             <FormControl>
-                                <Input placeholder="johndoe#1234" {...field} />
+                                <Input placeholder="terencebird" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="pin"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Pin ID</FormLabel>
+                            <FormControl>
+                                <Input placeholder="1234" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

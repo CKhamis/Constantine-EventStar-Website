@@ -12,6 +12,7 @@ import {LoadingIcon} from "@/components/LoadingIcon";
 import {EventTable} from "@/app/profile/EventTable";
 import {AccountResponse, EventWithResponse} from "@/components/Types";
 import AccountSettings from "@/app/profile/AccountSettings";
+import {IdCard} from "lucide-react";
 
 export interface Props{
     sessionUser: User;
@@ -66,6 +67,17 @@ export default function DynamicContent({sessionUser, eventList, initialAccountLi
                             <div className="flex flex-col items-center gap-3">
                                 <p className="font-bold">Last Modified</p>
                                 <p className="text-2xl">{new Date(user.updatedAt).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                    </CardHeader>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <div className="flex flex-row justify-evenly items-center gap-4">
+                            <div className="flex flex-col items-center gap-3">
+                                <p className="font-bold">Your ID Pin</p>
+                                <p className="text-4xl">{user.pin}</p>
+                                <p className="text-muted-foreground text-xs">Can only be changed by an admin</p>
                             </div>
                         </div>
                     </CardHeader>

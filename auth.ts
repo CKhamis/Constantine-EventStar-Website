@@ -29,6 +29,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
             if (existingUser) {
                 // Link the account to the existing user
+                console.log("existing user")
+
                 await prisma.account.upsert({
                     where: {
                         provider_providerAccountId: {
@@ -49,32 +51,42 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         // expires_at: account.expires_at,
                     },
                 });
+
+                return true;
             } else {
                 console.log("not existing user....");
+                const users = await prisma.user.findMany();
+
+                if(users.length === 0) {
+                    // No users exists. Create genesis user
+                    const newUser = await prisma.user.create({
+                        data: {
+                            email: user.email,
+                            name: user.name,
+                            image: user.image,
+                            pin: '0000',
+                            role: "ADMIN",
+                        },
+                    });
+
+                    await prisma.account.create({
+                        data: {
+                            userId: newUser.id,
+                            type: account.type,
+                            provider: account.provider,
+                            providerAccountId: account.providerAccountId,
+                            access_token: account.access_token,
+                            refresh_token: account.refresh_token,
+                            expires_at: account.expires_at,
+                        },
+                    });
+
+                    return true;
+                }
+
                 // Users are only able to be added through manual enrollment in ESMT
                 return false;
-                // const newUser = await prisma.user.create({
-                //     data: {
-                //         email: user.email,
-                //         name: user.name,
-                //         image: user.image,
-                //         // Add other default fields or process as necessary
-                //     },
-                // });
-                //
-                // await prisma.account.create({
-                //     data: {
-                //         userId: newUser.id,
-                //         type: account.type,
-                //         provider: account.provider,
-                //         providerAccountId: account.providerAccountId,
-                //         access_token: account.access_token,
-                //         refresh_token: account.refresh_token,
-                //         expires_at: account.expires_at,
-                //     },
-                // });
             }
-            return true;
         },
     },
 })

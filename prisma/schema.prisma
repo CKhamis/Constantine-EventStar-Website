@@ -37,6 +37,9 @@ model User {
   event         Event[]
   rsvp          Rsvp[]
   role          UserRole  @default(USER)
+  pin           String    @unique
+  cardId        String?
+  points        Int       @default(0)
 
   accounts Account[]
   sessions Session[]

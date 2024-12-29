@@ -25,7 +25,8 @@ export async function POST(request: NextRequest){
             name: body.name,
             email: body.email,
             discordId: body.discordId,
-            phoneNumber: body.phoneNumber
+            phoneNumber: body.phoneNumber,
+            pin: body.pin,
         },
     })
     return NextResponse.json(newUser, {status: 201});

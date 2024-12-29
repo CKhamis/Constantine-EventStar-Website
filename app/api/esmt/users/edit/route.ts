@@ -38,6 +38,7 @@ export async function POST(request: NextRequest){
                 email: body.email,
                 discordId: body.discordId,
                 phoneNumber: body.phoneNumber,
+                pin: body.pin
             },
         });
 

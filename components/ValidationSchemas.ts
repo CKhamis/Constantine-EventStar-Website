@@ -43,9 +43,19 @@ export const createUserSchema = z.object({
     phoneNumber: z.string().max(10, "Format should be: 5058425662"),
     email: z.string().email().max(255),
     discordId: z.string().max(255),
+    pin: z.string().regex(/^\d{4}$/),
 })
 
 export const editUserSchema = z.object({
+    id: z.string().cuid(),
+    name: z.string().min(1).max(255),
+    phoneNumber: z.string().max(10, "Format should be: 5058425662"),
+    email: z.string().email().max(255),
+    discordId: z.string().max(255),
+    pin: z.string().regex(/^\d{4}$/)
+})
+
+export const profileEditUserSchema = z.object({
     id: z.string().cuid(),
     name: z.string().min(1).max(255),
     phoneNumber: z.string().max(10, "Format should be: 5058425662"),

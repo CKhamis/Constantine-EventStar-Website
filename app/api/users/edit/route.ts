@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import {NextRequest, NextResponse} from "next/server";
-import {editUserSchema} from "@/components/ValidationSchemas";
+import {editUserSchema, profileEditUserSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 
 
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest){
     }
 
     const body = await request.json();
-    const validation = editUserSchema.safeParse(body);
+    const validation = profileEditUserSchema.safeParse(body);
 
     if(!validation.success){
         return NextResponse.json(validation.error.format(), {status: 400});

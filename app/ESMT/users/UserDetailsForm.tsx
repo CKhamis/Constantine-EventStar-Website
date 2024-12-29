@@ -34,7 +34,8 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
             email: user.email?? "",
             discordId: user.discordId ?? "",
             id: user.id,
-            phoneNumber: user.phoneNumber ?? ""
+            phoneNumber: user.phoneNumber ?? "",
+            pin: user.pin
         }
     });
 
@@ -130,6 +131,19 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
                                     <FormLabel>Discord ID</FormLabel>
                                     <FormControl>
                                         <Input placeholder="terence" {...field} />
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="pin"
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel>Pin ID</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="1234" {...field} />
                                     </FormControl>
                                     <FormMessage/>
                                 </FormItem>
