@@ -58,10 +58,10 @@ export function EnrollerTable<TData, TValue>({data}: Props<TData, TValue>) {
                     <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
                     <Input
                         type="search"
-                        placeholder="Search by id"
-                        value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
+                        placeholder="Search by name"
+                        value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
                         onChange={(event) =>
-                            table.getColumn("id")?.setFilterValue(event.target.value)
+                            table.getColumn("name")?.setFilterValue(event.target.value)
                         }
                         className="pl-8"
                     />

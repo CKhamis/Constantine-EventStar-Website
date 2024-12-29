@@ -5,12 +5,12 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import Link from "next/link";
 import {enrollerWithAuthorAndUser} from "@/components/Types";
 import AvatarIcon from "@/components/AvatarIcon";
 
 export const enrollerTableColumns: ColumnDef<enrollerWithAuthorAndUser>[] = [
     {
+        id: "name",
         accessorKey: "user.name", // Nested path
         header: ({ column }) => (
             <Button
