@@ -1,10 +1,10 @@
-import UserEnrollment from "@/app/ESMT/users/enrollment/DynamicContent";
 import AdminUI from "@/components/admin/AdminUI";
+import DynamicContent from "./DynamicContent"
 
-export default function page(){
-    return (
+export default function UsersPage() {
+    return(
         <AdminUI>
-            <UserEnrollment />
+            <DynamicContent />
         </AdminUI>
     );
 }
