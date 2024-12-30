@@ -7,7 +7,7 @@ import {EnrollerTable} from "@/app/ESMT/users/enrollment/EnrollerTable";
 import {enrollerStatisticsResponse, miniUser} from "@/components/Types";
 import NewEnrollerForm from "@/app/ESMT/users/enrollment/NewEnrollerForm";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {CalendarCheck2, CalendarClock, CalendarHeart, Star, User, Users} from "lucide-react";
+import {Link, Star, User, Users} from "lucide-react";
 import {Button} from "@/components/ui/button";
 
 
@@ -112,16 +112,16 @@ export default function DynamicContent() {
                             <div className="text-2xl font-bold">{userList.length}</div>
                         </CardContent>
                     </Card>
-                    {/*<Card>*/}
-                    {/*    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">*/}
-                    {/*        <CardTitle className="text-sm font-medium">Most Common Meet Time</CardTitle>*/}
-                    {/*        <CalendarClock className="-4 w-4 text-muted-foreground"/>*/}
-                    {/*    </CardHeader>*/}
-                    {/*    <CardContent>*/}
-                    {/*        <div className="text-2xl font-bold">{userList.length}</div>*/}
-                    {/*        <p className="text-xs text-muted-foreground"></p>*/}
-                    {/*    </CardContent>*/}
-                    {/*</Card>*/}
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Enroller Count</CardTitle>
+                            <Link className="w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{enrollerList.length}</div>
+                            <p className="text-xs text-muted-foreground"></p>
+                        </CardContent>
+                    </Card>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Favorite Provider</CardTitle>
@@ -143,7 +143,6 @@ export default function DynamicContent() {
                             )}
                         </CardContent>
                     </Card>
-                    <Button onClick={() => console.log(enrollerStats)}>Test</Button>
                 </div>
                 <EnrollerTable data={enrollerList}/>
             </div>
