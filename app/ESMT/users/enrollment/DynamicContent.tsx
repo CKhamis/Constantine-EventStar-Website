@@ -7,7 +7,8 @@ import {EnrollerTable} from "@/app/ESMT/users/enrollment/EnrollerTable";
 import {enrollerStatisticsResponse, miniUser} from "@/components/Types";
 import NewEnrollerForm from "@/app/ESMT/users/enrollment/NewEnrollerForm";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {CalendarCheck2, CalendarClock, CalendarHeart, User} from "lucide-react";
+import {CalendarCheck2, CalendarClock, CalendarHeart, Star, User, Users} from "lucide-react";
+import {Button} from "@/components/ui/button";
 
 
 export default function DynamicContent() {
@@ -52,10 +53,7 @@ export default function DynamicContent() {
 
     const fetchStatistics = async () => {
         try {
-            console.log("alksdfasdf------------------------");
             const response = await axios.get("/api/esmt/users/enrollment/stats");
-            console.log("successful----------");
-            console.log(response.data)
             setEnrollerStats(response.data);
         } catch (err) {
             console.error("Error fetching stats:", err);
@@ -68,6 +66,8 @@ export default function DynamicContent() {
         fetchEnrollers();
         fetchStatistics();
         fetchUserCount();
+
+        console.log(enrollerStats)
     }
 
     useEffect(() => {
@@ -76,8 +76,8 @@ export default function DynamicContent() {
 
     async function createEnroller(userId: string) {
         try{
-            const response = await axios.post('/api/esmt/users/enrollment/new', {id: userId});
-            console.log(response);
+            await axios.post('/api/esmt/users/enrollment/new', {id: userId});
+            setAlertMessages([...alertMessages, { title: "Enroller Created", message: "Please copy and send the link to continue.", icon: 1 }]);
         }catch(e){
             console.log(e)
         }finally {
@@ -97,7 +97,7 @@ export default function DynamicContent() {
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                            <CalendarCheck2 className="-4 w-4 text-muted-foreground"/>
+                            <Users className="w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{totalUserCount}</div>
@@ -122,16 +122,28 @@ export default function DynamicContent() {
                     {/*        <p className="text-xs text-muted-foreground"></p>*/}
                     {/*    </CardContent>*/}
                     {/*</Card>*/}
-                    {/*<Card>*/}
-                    {/*    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">*/}
-                    {/*        <CardTitle className="text-sm font-medium">Favorite Provider</CardTitle>*/}
-                    {/*        <CalendarHeart className="-4 w-4 text-muted-foreground"/>*/}
-                    {/*    </CardHeader>*/}
-                    {/*    <CardContent>*/}
-                    {/*        <div className="text-2xl font-bold">{enrollerStats[0].provider}</div>*/}
-                    {/*        <p className="text-xs text-muted-foreground">Used {enrollerStats[0]._count.provider} times</p>*/}
-                    {/*    </CardContent>*/}
-                    {/*</Card>*/}
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Favorite Provider</CardTitle>
+                            <Star className="w-4 text-muted-foreground"/>
+                        </CardHeader>
+                        <CardContent>
+                            {enrollerStats.length > 0 ? (
+                                <>
+                                    <div className="text-2xl font-bold">{enrollerStats[0].provider.toUpperCase()}</div>
+                                    <p className="text-xs text-muted-foreground">
+                                        Used {enrollerStats[0]._count.provider} times
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="text-2xl font-bold">N/A</div>
+                                    <p className="text-xs text-muted-foreground">No data available</p>
+                                </>
+                            )}
+                        </CardContent>
+                    </Card>
+                    <Button onClick={() => console.log(enrollerStats)}>Test</Button>
                 </div>
                 <EnrollerTable data={enrollerList}/>
             </div>
