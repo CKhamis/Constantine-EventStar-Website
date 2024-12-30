@@ -14,14 +14,11 @@ const prisma = new PrismaClient();
 export async function GET(request: NextRequest){
     const session =  await auth();
 
-    console.log("dopplegangers");
-
-    // if(!session || !session.user || session.user.role !== "ADMIN"){
-    //     return NextResponse.json("Approved login required", {status: 401});
-    // }
+    if(!session || !session.user || session.user.role !== "ADMIN"){
+        return NextResponse.json("Approved login required", {status: 401});
+    }
 
     try {
-        console.log("my best firend but in the show");
         // Get most popular providers
         const providers = await prisma.account.groupBy({
             by: ['provider'],
@@ -34,8 +31,6 @@ export async function GET(request: NextRequest){
                 },
             },
         })
-
-        console.log(providers);
 
         return NextResponse.json(providers, { status: 200 });
     } catch (e) {

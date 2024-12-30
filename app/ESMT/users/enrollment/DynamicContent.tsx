@@ -15,8 +15,20 @@ export default function DynamicContent() {
     const [userList, setUserList] = useState<miniUser[]>([]);
     const [enrollerList, setEnrollerList] = useState<Enroller[]>([]);
     const [enrollerStats, setEnrollerStats] = useState<enrollerStatisticsResponse[]>([]);
+    const [totalUserCount, setTotalUserCount] = useState(0);
 
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([]);
+
+    const fetchUserCount = async () => {
+        try {
+            const response = await axios.get("/api/esmt/users/all");
+            console.log(response.data.length);
+            setTotalUserCount(response.data.length);
+        } catch (err) {
+            console.error("Error fetching users:", err);
+            setAlertMessages([...alertMessages, { title: "Catastrophic Error", message: "Unable to fetch list of users", icon: 2 }]);
+        }
+    };
 
     const fetchUsers = async () => {
         try {
@@ -40,7 +52,9 @@ export default function DynamicContent() {
 
     const fetchStatistics = async () => {
         try {
+            console.log("alksdfasdf------------------------");
             const response = await axios.get("/api/esmt/users/enrollment/stats");
+            console.log("successful----------");
             console.log(response.data)
             setEnrollerStats(response.data);
         } catch (err) {
@@ -53,6 +67,7 @@ export default function DynamicContent() {
         fetchUsers();
         fetchEnrollers();
         fetchStatistics();
+        fetchUserCount();
     }
 
     useEffect(() => {
@@ -85,7 +100,7 @@ export default function DynamicContent() {
                             <CalendarCheck2 className="-4 w-4 text-muted-foreground"/>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{userList.length}</div>
+                            <div className="text-2xl font-bold">{totalUserCount}</div>
                         </CardContent>
                     </Card>
                     <Card>
@@ -97,26 +112,26 @@ export default function DynamicContent() {
                             <div className="text-2xl font-bold">{userList.length}</div>
                         </CardContent>
                     </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Most Common Meet Time</CardTitle>
-                            <CalendarClock className="-4 w-4 text-muted-foreground"/>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{userList.length}</div>
-                            <p className="text-xs text-muted-foreground"></p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Favorite Provider</CardTitle>
-                            <CalendarHeart className="-4 w-4 text-muted-foreground"/>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{enrollerStats[0].provider}</div>
-                            <p className="text-xs text-muted-foreground">Least popular: {enrollerStats[0].provider}</p>
-                        </CardContent>
-                    </Card>
+                    {/*<Card>*/}
+                    {/*    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">*/}
+                    {/*        <CardTitle className="text-sm font-medium">Most Common Meet Time</CardTitle>*/}
+                    {/*        <CalendarClock className="-4 w-4 text-muted-foreground"/>*/}
+                    {/*    </CardHeader>*/}
+                    {/*    <CardContent>*/}
+                    {/*        <div className="text-2xl font-bold">{userList.length}</div>*/}
+                    {/*        <p className="text-xs text-muted-foreground"></p>*/}
+                    {/*    </CardContent>*/}
+                    {/*</Card>*/}
+                    {/*<Card>*/}
+                    {/*    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">*/}
+                    {/*        <CardTitle className="text-sm font-medium">Favorite Provider</CardTitle>*/}
+                    {/*        <CalendarHeart className="-4 w-4 text-muted-foreground"/>*/}
+                    {/*    </CardHeader>*/}
+                    {/*    <CardContent>*/}
+                    {/*        <div className="text-2xl font-bold">{enrollerStats[0].provider}</div>*/}
+                    {/*        <p className="text-xs text-muted-foreground">Used {enrollerStats[0]._count.provider} times</p>*/}
+                    {/*    </CardContent>*/}
+                    {/*</Card>*/}
                 </div>
                 <EnrollerTable data={enrollerList}/>
             </div>
