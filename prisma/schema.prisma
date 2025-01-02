@@ -101,6 +101,7 @@ model Rsvp {
   updatedAt DateTime     @updatedAt
   event     Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
   arrival   DateTime?
+  validator String       @default("none")
   eventId   String
   response  RsvpResponse @default(NO_RESPONSE)
   User      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
