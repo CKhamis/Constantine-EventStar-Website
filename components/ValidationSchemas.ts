@@ -14,6 +14,12 @@ const EventType = z.enum([
 const ReminderAmount = z.enum(["OBSESSIVE", "PUSHY", "MEDIUM", "LIGHT", "ONCE", "NONE"]);
 
 // Validation Schemas
+export const cardEnrollmentSchema = z.object({
+    id: z.string().min(1).max(255),
+    pin: z.string().regex(/^\d{4}$/),
+})
+
+
 export const uuidSchema = z.object({
     id: z.string().uuid()
 })

@@ -38,7 +38,7 @@ model User {
   rsvp          Rsvp[]
   role          UserRole  @default(USER)
   pin           String    @unique
-  cardId        String?
+  cardId        String?   @unique
   points        Int       @default(0)
 
   accounts Account[]
