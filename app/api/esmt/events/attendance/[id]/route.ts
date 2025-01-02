@@ -53,6 +53,7 @@ export async function POST(request: Request, props: { params: Params }) {
             },
             data: {
                 arrival: rsvp.arrival? null : (body.arrivalTime? body.arrivalTime : new Date()),
+                validator: "Admin"
             },
         });
 
