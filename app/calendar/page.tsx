@@ -100,7 +100,7 @@ export default async function Calendar(){
                             </CardFooter>
                         </Card>
                     </div>
-                    <div className="grid grid-cols-3 mt-4 gap-4">
+                    <div className="grid grid-cols-3 mt-4 gap-4 mb-10">
                         <div className="col-span-3 lg:col-span-2">
                             <EventTable data={eventsOnly} />
                         </div>

@@ -32,10 +32,6 @@ export async function GET(request: NextRequest){
             }
         });
 
-        //todo: [important] check if this actually works
-
-        console.log(usersWithoutAccounts);
-
         return NextResponse.json(usersWithoutAccounts, { status: 200 });
     } catch (e) {
         console.error(e);
