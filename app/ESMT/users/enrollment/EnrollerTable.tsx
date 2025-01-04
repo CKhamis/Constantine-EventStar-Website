@@ -20,23 +20,23 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
-import {Search} from "lucide-react";
-import {eventTableColumns} from "@/app/profile/CalendarTableColumns";
-import {enrollerTableColumns} from "@/app/ESMT/users/enrollment/EnrollerTableColumns";
+import { Search } from 'lucide-react';
+import { enrollerTableColumns } from "@/app/ESMT/users/enrollment/EnrollerTableColumns";
 
-interface Props<TData, TValue>{
-    data: TData
+interface Props<TData, TValue> {
+    data: TData[];
+    deleteEnroller: (id: string) => void;
 }
 
-export function EnrollerTable<TData, TValue>({data}: Props<TData, TValue>) {
+export function EnrollerTable<TData, TValue>({ data, deleteEnroller }: Props<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-        []
-    )
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+
+    const columns = React.useMemo(() => enrollerTableColumns(deleteEnroller), [deleteEnroller]);
 
     const table = useReactTable({
         data,
-        columns: enrollerTableColumns,
+        columns,
         onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -48,7 +48,6 @@ export function EnrollerTable<TData, TValue>({data}: Props<TData, TValue>) {
             columnFilters,
         },
     })
-
 
     return (
         <>

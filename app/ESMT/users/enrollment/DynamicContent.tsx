@@ -9,6 +9,7 @@ import NewEnrollerForm from "@/app/ESMT/users/enrollment/NewEnrollerForm";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Link, Star, User, Users} from "lucide-react";
 import {Button} from "@/components/ui/button";
+import {enrollerTableColumns} from "@/app/ESMT/users/enrollment/EnrollerTableColumns";
 
 
 export default function DynamicContent() {
@@ -85,6 +86,17 @@ export default function DynamicContent() {
         }
     }
 
+    async function deleteEnroller(enrollerId: string) {
+        try{
+            await axios.post('/api/esmt/users/enrollment/delete', {id: enrollerId}).finally(refresh);
+            setAlertMessages([...alertMessages, { title: "Enroller Deleted", message: "You can re-create one in this page.", icon: 1 }]);
+        }catch(e){
+            console.log(e)
+        }finally {
+            refresh();
+        }
+    }
+
     return (
         <>
             <div className="container mt-4">
@@ -144,7 +156,7 @@ export default function DynamicContent() {
                         </CardContent>
                     </Card>
                 </div>
-                <EnrollerTable data={enrollerList}/>
+                <EnrollerTable data={enrollerList} deleteEnroller={deleteEnroller}/>
             </div>
         </>
     );

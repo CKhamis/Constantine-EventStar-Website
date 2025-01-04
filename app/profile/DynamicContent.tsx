@@ -61,6 +61,16 @@ export default function DynamicContent({sessionUser, eventList, initialAccountLi
                     <CardHeader>
                         <div className="flex flex-row justify-evenly items-center gap-4">
                             <div className="flex flex-col items-center gap-3">
+                                <p className="font-bold">Your Points</p>
+                                <p className="text-3xl">{user.points}</p>
+                            </div>
+                        </div>
+                    </CardHeader>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <div className="flex flex-row justify-evenly items-center gap-4">
+                            <div className="flex flex-col items-center gap-3">
                                 <p className="font-bold">Date Joined</p>
                                 <p className="text-2xl">{new Date(user.createdAt).toLocaleDateString()}</p>
                             </div>
