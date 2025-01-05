@@ -5,6 +5,7 @@ import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import axios from "axios";
 import {Group} from "@prisma/client";
+import {GroupTable} from "@/app/ESMT/groups/GroupTable";
 
 export default function DynamicContent(){
     const [groups, setGroups] = useState<Group[]>([]);
@@ -36,7 +37,9 @@ export default function DynamicContent(){
                 <Link href="/ESMT/calendar/new">
                     <Button variant="secondary">+ New Group</Button>
                 </Link>
+                <Button variant="secondary" onClick={() => console.log(groups)}>Group</Button>
             </div>
+            <GroupTable data={groups} deleteEnroller={()=> console.log("delete")} />
         </div>
     );
 }
