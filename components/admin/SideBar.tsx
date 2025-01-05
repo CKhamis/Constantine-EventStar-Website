@@ -28,13 +28,20 @@ const data = {
       url: "/ESMT/users",
       items: [
         {
-          title: "+ Add User",
-          url: "/ESMT/users/new",
-        },
-        {
           title: "User Enrollment",
           url: "/ESMT/users/enrollment",
         },
+        {
+          title: "+ Add User",
+          url: "/ESMT/users/new",
+        },
+      ],
+    },
+    {
+      title: "Groups",
+      url: "/ESMT/groups",
+      items: [
+
       ],
     },
     {

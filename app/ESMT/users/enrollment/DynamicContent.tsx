@@ -8,9 +8,6 @@ import {enrollerStatisticsResponse, miniUser} from "@/components/Types";
 import NewEnrollerForm from "@/app/ESMT/users/enrollment/NewEnrollerForm";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Link, Star, User, Users} from "lucide-react";
-import {Button} from "@/components/ui/button";
-import {enrollerTableColumns} from "@/app/ESMT/users/enrollment/EnrollerTableColumns";
-
 
 export default function DynamicContent() {
     // State
@@ -67,8 +64,6 @@ export default function DynamicContent() {
         fetchEnrollers();
         fetchStatistics();
         fetchUserCount();
-
-        console.log(enrollerStats)
     }
 
     useEffect(() => {

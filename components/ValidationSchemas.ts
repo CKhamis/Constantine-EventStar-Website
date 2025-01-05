@@ -2,6 +2,7 @@ import z from "zod";
 
 // Enums
 const RsvpResponse = z.enum(["YES", "NO", "MAYBE"]);
+const Status = z.enum(["ACTIVE", "INACTIVE", "DORMANT"]);
 const InviteRigidity = z.enum(["OPEN_INVITE", "ASK_HOST", "INVITE_ONLY"]);
 const EventType = z.enum([
     "PARTY",
@@ -49,6 +50,15 @@ export const enrollmentSchema = z.object({
     phoneNumber: z.string().max(10, "Format should be: 5058425662").optional(),
     email: z.string().email().max(255),
     discordId: z.string().max(255).optional(),
+})
+
+export const createGroupSchema = z.object({
+    name: z.string().min(1).max(255),
+    description: z.string().min(1),
+    status: Status,
+    users: z.array(
+        z.string().cuid(),
+    ).optional(),
 })
 
 export const createUserSchema = z.object({

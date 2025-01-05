@@ -1,4 +1,4 @@
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Don't try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -43,9 +43,21 @@ model User {
 
   accounts Account[]
   sessions Session[]
+  groups   Group[]   @relation(name: "group-user")
 
   enrollmentTicket          Enroller?  @relation(name: "ticket")
   authoredEnrollmentTickets Enroller[] @relation(name: "authoredTickets")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Group {
+  id          String @id @default(cuid())
+  name        String
+  description String @db.LongText
+  status      Status @default(ACTIVE)
+  users       User[] @relation(name: "group-user")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -147,6 +159,12 @@ enum UserRole {
   OWNER
   ADMIN
   USER
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  DORMANT
 }
 
 enum RsvpResponse {
