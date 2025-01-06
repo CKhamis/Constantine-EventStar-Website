@@ -26,14 +26,14 @@ import {groupTableColumns} from "@/app/ESMT/groups/GroupTableColumns";
 
 interface Props<TData, TValue> {
     data: TData[];
-    deleteEnroller: (id: string) => void;
+    deleteGroup: (id: string) => void;
 }
 
-export function GroupTable<TData, TValue>({ data, deleteEnroller }: Props<TData, TValue>) {
+export function GroupTable<TData, TValue>({ data, deleteGroup }: Props<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
-    const columns = React.useMemo(() => groupTableColumns(deleteEnroller), [deleteEnroller]);
+    const columns = React.useMemo(() => groupTableColumns(deleteGroup), [deleteGroup]);
 
     const table = useReactTable({
         data,

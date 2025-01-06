@@ -21,6 +21,16 @@ export default function DynamicContent(){
         }
     };
 
+    async function deleteGroup(id: string){
+        try {
+            console.log(id);
+            await axios.post("/api/esmt/groups/delete", {id: id}).finally(refresh);
+        } catch (err) {
+            console.error("Error fetching users:", err);
+            setAlertMessages([...alertMessages, { title: "Catastrophic Error", message: "Unable to fetch list of groups", icon: 2 }]);
+        }
+    }
+
     function refresh(){
         fetchGroups();
     }
@@ -37,9 +47,8 @@ export default function DynamicContent(){
                 <Link href="/ESMT/calendar/new">
                     <Button variant="secondary">+ New Group</Button>
                 </Link>
-                <Button variant="secondary" onClick={() => console.log(groups)}>Group</Button>
             </div>
-            <GroupTable data={groups} deleteEnroller={()=> console.log("delete")} />
+            <GroupTable data={groups} deleteGroup={deleteGroup} />
         </div>
     );
 }
