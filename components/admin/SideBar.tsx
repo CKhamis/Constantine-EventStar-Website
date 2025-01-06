@@ -41,7 +41,10 @@ const data = {
       title: "Groups",
       url: "/ESMT/groups",
       items: [
-
+        {
+          title: "+ Add Group",
+          url: "/ESMT/groups/new",
+        },
       ],
     },
     {

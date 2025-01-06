@@ -44,7 +44,7 @@ export default function DynamicContent(){
             <AlertList alerts={alertMessages}/>
             <div className="flex justify-between gap-4 mb-4">
                 <h1 className="text-3xl">User Groups</h1>
-                <Link href="/ESMT/calendar/new">
+                <Link href="/ESMT/groups/new">
                     <Button variant="secondary">+ New Group</Button>
                 </Link>
             </div>

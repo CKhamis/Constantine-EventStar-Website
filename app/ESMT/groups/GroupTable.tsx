@@ -53,7 +53,7 @@ export function GroupTable<TData, TValue>({ data, deleteGroup }: Props<TData, TV
     return (
         <>
             <div className="flex flex-row justify-between items-center mb-4">
-                <p className="text-2xl font-bold">Enrollers</p>
+                <p className="text-2xl font-bold">Groups</p>
                 <div className="relative max-w-sm">
                     <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
                     <Input
