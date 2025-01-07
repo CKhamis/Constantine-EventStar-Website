@@ -13,14 +13,14 @@ import {
 } from "@/components/ui/dialog"
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area"
 import Image from 'next/image'
-import {AccountResponse} from "@/components/Types";
 import {formatDate} from "date-fns";
 import {Plus} from "lucide-react";
 import {useRouter} from "next/navigation";
 import axios from "axios";
+import {Account} from "@prisma/client";
 
 export interface Props{
-    accountList: AccountResponse[];
+    accountList: Account[];
     refresh: () => Promise<void>;
 }
 

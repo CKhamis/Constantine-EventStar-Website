@@ -5,40 +5,65 @@ import AvatarIcon from "@/components/AvatarIcon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileForm from "@/app/profile/ProfileForm";
 import axios from "axios";
-import { useState } from "react";
-import { User } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import {useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import {EventTable} from "@/app/profile/EventTable";
-import {AccountResponse, EventWithResponse} from "@/components/Types";
+import {EventWithResponse, userWithAccountsAndGroups} from "@/components/Types";
 import AccountSettings from "@/app/profile/AccountSettings";
-import {IdCard} from "lucide-react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import Image from "next/image";
+import Link from "next/link";
 
 export interface Props{
-    sessionUser: User;
     eventList: EventWithResponse[];
-    initialAccountList: AccountResponse[];
 }
 
-export default function DynamicContent({sessionUser, eventList, initialAccountList}: Props) {
-    const [user, setUser] = useState<User>(sessionUser);
-    const [accountList, setAccountList] = useState<AccountResponse[]>(initialAccountList);
-    const [loading, setLoading] = useState(false);
+export default function DynamicContent({eventList}: Props) {
+    const [user, setUser] = useState<userWithAccountsAndGroups | null>(null);
+    const [loading, setLoading] = useState(true);
 
     const refresh = async () => {
         try {
             setLoading(true);
             const response = await axios.get("/api/users/self");
             setUser(response.data);
-
-            const accounts = await axios.post("/api/users/connectedAccounts/all", {id: user.id});
-            setAccountList(accounts.data);
         } catch (err) {
             console.error("Error fetching users:", err);
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        refresh();
+    }, [])
+
+
+    if (loading && user === null) {
+        return (
+            <div className="flex justify-center items-center h-screen gap-5">
+                <LoadingIcon size="lg" />
+                <p>Please wait</p>
+            </div>
+        );
+    }
+
+    if(user === null){
+        return (
+            <div className="w-100 h-screen flex flex-col items-center justify-center p-10 top-left-gradient">
+                <Image src="/agent/waiting.png" alt="waiting" height={150} width={150} />
+                <p className="text-4xl font-bold text-center">OOPS! There was an error with your account</p>
+                <p className="mt-3">Please contact the server operator for more information</p>
+                <Link href="/" className="underline text-muted-foreground mt-3">Back to home page</Link>
+            </div>
+        );
+    }
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
@@ -52,6 +77,16 @@ export default function DynamicContent({sessionUser, eventList, initialAccountLi
                                 <div>
                                     <p className="text-lg font-bold">{user.name}</p>
                                     <p>{user.email}</p>
+
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <p className="text-muted-foreground text-xs cursor-pointer mt-2">View Groups</p>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className="w-56">
+                                            <DropdownMenuLabel>Your Groups</DropdownMenuLabel>
+                                            {user?.groups.map((group) => <DropdownMenuItem key={group.id}>{group.name}</DropdownMenuItem>)}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                             </div>
                         </div>
@@ -109,7 +144,7 @@ export default function DynamicContent({sessionUser, eventList, initialAccountLi
                     </TabsContent>
                     <TabsContent value="settings">
                         <p className="text-2xl font-bold mb-4">Settings</p>
-                        <AccountSettings accountList={accountList} refresh={refresh}/>
+                        <AccountSettings accountList={user.accounts} refresh={refresh}/>
                     </TabsContent>
                 </Tabs>
             </div>

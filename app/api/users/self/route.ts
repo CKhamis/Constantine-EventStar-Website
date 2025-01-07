@@ -13,14 +13,19 @@ export async function GET(){
 
     try{
         const user = await prisma.user.findFirstOrThrow({
-                where: {
-                    id: session.user.id
-                }
-            });
+            where: {
+                id: session.user.id
+            },
+            include: {
+                groups: true,
+                accounts: true,
+            }
+        });
         return NextResponse.json(user, {status: 201});
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     }catch(e){
         // This should never happen
+        console.error(e);
         return NextResponse.json("Approved login required", {status: 401});
     }
 }
