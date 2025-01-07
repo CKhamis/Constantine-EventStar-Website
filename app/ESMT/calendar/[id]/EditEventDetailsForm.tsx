@@ -54,8 +54,6 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
     })
 
     useEffect(() => {
-
-
         fetchEventData()
     }, [eventId, form, alertMessages])
 

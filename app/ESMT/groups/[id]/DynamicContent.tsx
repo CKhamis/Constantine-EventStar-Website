@@ -5,23 +5,26 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
 import {useForm} from "react-hook-form";
+import { useEffect } from 'react'
 import * as z from "zod";
-import {createGroupSchema} from "@/components/ValidationSchemas";
+import {createGroupSchema, editGroupSchema} from "@/components/ValidationSchemas";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Loader2} from "lucide-react";
-import {useState} from "react";
-import { Status } from "@prisma/client";
+import { useState} from "react";
+import {Status, User, Group} from "@prisma/client";
 import UserSelection from "./UserSelection";
 import axios from "axios";
 import AlertList, {alertContent} from "@/components/AlertList";
 import { useRouter } from 'next/navigation';
+import {groupWithUser} from "@/components/Types";
 
-export default function DynamicContent({userId}: {userId: string}) {
+export default function DynamicContent({groupId}: {groupId: string}) {
     const router = useRouter();
 
-    const form = useForm<z.infer<typeof createGroupSchema>>({
-        resolver: zodResolver(createGroupSchema),
+    const form = useForm<z.infer<typeof editGroupSchema>>({
+        resolver: zodResolver(editGroupSchema),
         defaultValues: {
+            id: groupId,
             name: '',
             description: '',
             status: 'INACTIVE',
@@ -31,6 +34,7 @@ export default function DynamicContent({userId}: {userId: string}) {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([]);
+    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
     // Enum formatting
     const statusOptions = Object.values(Status).map((value) => ({
@@ -41,7 +45,7 @@ export default function DynamicContent({userId}: {userId: string}) {
     async function onSubmit (values: z.infer<typeof createGroupSchema>) {
         try{
             setIsLoading(true);
-            await axios.post('/api/esmt/groups/new', values);
+            await axios.post('/api/esmt/groups/edit', values);
             router.push("/ESMT/groups?message=1");
         }catch(e){
             setIsLoading(false);
@@ -51,11 +55,45 @@ export default function DynamicContent({userId}: {userId: string}) {
         }
     }
 
+    async function refresh() {
+        try {
+            const groupInfo:groupWithUser = await fetchGroupInfo();
+
+            if (groupInfo) {
+                form.reset({
+                    ...groupInfo,
+                    id: groupId,
+                    users: groupInfo.users.map((user:User) => user.id) || []
+                })
+                setSelectedUsers(groupInfo.users.map((user:User) => user.id) || []);
+            } else {
+                setAlertMessages([...alertMessages, { title: "Error", message: "Group not found", icon: 2 }])
+            }
+        } catch (error) {
+            console.error("Error fetching group data:", error)
+            setAlertMessages([...alertMessages, { title: "Error", message: "Failed to load group data", icon: 2 }])
+        }
+    }
+
+    useEffect(() => {
+        refresh()
+    }, [])
+
+    async function fetchGroupInfo() {
+        try {
+            const response = await axios.get(`/api/esmt/groups/view/${groupId}`)
+            return response.data
+        } catch (err) {
+            console.error("Error fetching event:", err)
+            return null
+        }
+    }
+
     return (
         <Form {...form}>
             <AlertList alerts={alertMessages} />
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-4">
-                <UserSelection onGuestsSelected={(data) => form.setValue("users", data)}/>
+                <UserSelection initialSelectedGuests={selectedUsers} onGuestsSelected={(data) => form.setValue("users", data)}/>
                 <FormField
                     control={form.control}
                     name="name"

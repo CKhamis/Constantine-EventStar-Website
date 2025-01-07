@@ -1,4 +1,4 @@
-import {$Enums, Event, User, EventType, InviteRigidity, ReminderAmount, Rsvp, Enroller} from "@prisma/client";
+import {$Enums, Event, User, EventType, InviteRigidity, ReminderAmount, Rsvp, Status} from "@prisma/client";
 
 export type enrollerStatisticsResponse = {
     provider: string;
@@ -11,6 +11,16 @@ export type miniUser = {
     id: string,
     name: string,
     email: string,
+}
+
+export type groupWithUser = {
+    id: string,
+    name: string,
+    description: string,
+    status: Status,
+    users: User[],
+    createdAt: Date,
+    updatedAt: Date,
 }
 
 export type enrollerWithAuthorAndUser = {

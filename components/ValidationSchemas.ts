@@ -61,6 +61,16 @@ export const createGroupSchema = z.object({
     ).optional(),
 })
 
+export const editGroupSchema = z.object({
+    id: z.string().cuid(),
+    name: z.string().min(1).max(255),
+    description: z.string().min(1),
+    status: Status,
+    users: z.array(
+        z.string().cuid(),
+    ).optional(),
+})
+
 export const createUserSchema = z.object({
     name: z.string().min(1).max(255),
     phoneNumber: z.string().max(10, "Format should be: 5058425662"),

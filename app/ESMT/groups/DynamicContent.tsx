@@ -21,6 +21,16 @@ export default function DynamicContent(){
         }
     };
 
+    async function editGroup(id: string){
+        try {
+            console.log(id);
+            await axios.post("/api/esmt/groups/edit", {id: id}).finally(refresh);
+        } catch (err) {
+            console.error("Error fetching users:", err);
+            setAlertMessages([...alertMessages, { title: "Catastrophic Error", message: "Unable to edit group", icon: 2 }]);
+        }
+    }
+
     async function deleteGroup(id: string){
         try {
             console.log(id);

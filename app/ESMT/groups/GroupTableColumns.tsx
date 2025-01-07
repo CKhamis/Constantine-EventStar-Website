@@ -2,11 +2,19 @@
 
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from 'lucide-react';
+import {ArrowUpDown, MoreHorizontal} from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {Group, User} from "@prisma/client";
 import {format} from "date-fns";
 import {Badge} from "@/components/ui/badge";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel, DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 export const groupTableColumns = (
     deleteGroup: (id: string) => void
@@ -95,17 +103,29 @@ export const groupTableColumns = (
     {
         accessorKey: "id",
         header: () => (
-            <p>Delete</p>
+            <p>Actions</p>
         ),
         cell: ({ row }) => {
             const id: string = row.getValue("id");
 
             return (
-                <div className="flex flex-row gap-5 justify-start items-center">
-                    <Button variant="destructive" onClick={() => deleteGroup(id)}>
-                        Delete
-                    </Button>
-                </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(id)}>
+                            Copy ID
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem><Link href={"/ESMT/groups/" + id}>Edit</Link></DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => deleteGroup(id)}>Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             );
         },
     },
