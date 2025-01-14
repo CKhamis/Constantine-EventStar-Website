@@ -2,27 +2,21 @@ import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
 import { rsvpArrivalSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
+import type { NextApiRequest } from 'next'
 
 const prisma = new PrismaClient();
 
-type Params = Promise<{ id: string }>
-
-export async function generateMetadata(props: { params: Params }):Promise<string> {
-    const params = await props.params
-    return params.id
-}
-
-export async function POST(request: Request, props: { params: Params }) {
+export async function POST(request: NextApiRequest) {
     const session =  await auth();
+    const {id} = request.query
 
     if(!session || !session.user || session.user.role !== "ADMIN"){
         return NextResponse.json("Please sign in", {status: 401});
     }
 
-    const params = await props.params
-    const eventId = params.id;
+    const eventId = id;
 
-    const body = await request.json();
+    const body = request.body;
 
     if (body.arrivalTime) {
         body.arrivalTime = new Date(body.arrivalTime);
