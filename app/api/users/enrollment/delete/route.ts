@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import {NextRequest, NextResponse} from "next/server";
-import {cuidSchema, enrollmentSchema} from "@/components/ValidationSchemas";
+import {cuidSchema} from "@/components/ValidationSchemas";
 
 const prisma = new PrismaClient();
 

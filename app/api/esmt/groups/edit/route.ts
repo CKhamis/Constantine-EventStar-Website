@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import {NextRequest, NextResponse} from "next/server";
-import {createGroupSchema, createUserSchema, editGroupSchema} from "@/components/ValidationSchemas";
+import {editGroupSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 
 

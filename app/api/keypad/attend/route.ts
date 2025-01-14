@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import {NextRequest, NextResponse} from "next/server";
-import {attendanceSchema, cardEnrollmentSchema} from "@/components/ValidationSchemas";
-import {originConsoleError} from "next/dist/client/components/globals/intercept-console-error";
+import {attendanceSchema} from "@/components/ValidationSchemas";
 
 const prisma = new PrismaClient();
 

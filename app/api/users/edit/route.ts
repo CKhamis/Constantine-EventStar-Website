@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import {NextRequest, NextResponse} from "next/server";
-import {editUserSchema, profileEditUserSchema} from "@/components/ValidationSchemas";
+import {profileEditUserSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 
 

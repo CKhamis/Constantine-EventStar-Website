@@ -47,7 +47,7 @@ export default function About(){
             </ul>
             <p>More features are expected to release soon!</p>
             <p className="text-3xl font-bold mb-2 mt-5">EventStar Terminal</p>
-            <p>EventStar will be a physical device located in the host's residence. This device will include a keypad and NFC reader. Members are expected to check in with this machine when they arrive to validate their RSVP status. Checking in with a 4-digit pin and scanning a membership card are both valid ways of checking in. Members are eligible to earn points using this device rather than having the host manually enter it.</p>
+            <p>EventStar will be a physical device located in the host&#39;s residence. This device will include a keypad and NFC reader. Members are expected to check in with this machine when they arrive to validate their RSVP status. Checking in with a 4-digit pin and scanning a membership card are both valid ways of checking in. Members are eligible to earn points using this device rather than having the host manually enter it.</p>
         </>
     );
 }

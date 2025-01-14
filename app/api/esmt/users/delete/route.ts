@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import {NextRequest, NextResponse} from "next/server";
-import {cuidSchema, uuidSchema} from "@/components/ValidationSchemas";
+import {cuidSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 
 

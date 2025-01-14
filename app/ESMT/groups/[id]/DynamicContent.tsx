@@ -11,7 +11,7 @@ import {createGroupSchema, editGroupSchema} from "@/components/ValidationSchemas
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Loader2} from "lucide-react";
 import { useState} from "react";
-import {Status, User, Group} from "@prisma/client";
+import {Status, User} from "@prisma/client";
 import UserSelection from "./UserSelection";
 import axios from "axios";
 import AlertList, {alertContent} from "@/components/AlertList";

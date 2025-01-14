@@ -16,7 +16,7 @@ import axios from "axios";
 import AlertList, {alertContent} from "@/components/AlertList";
 import { useRouter } from 'next/navigation';
 
-export default function DynamicContent({userId}: {userId: string}) {
+export default function DynamicContent() {
     const router = useRouter();
 
     const form = useForm<z.infer<typeof createGroupSchema>>({

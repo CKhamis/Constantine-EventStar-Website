@@ -2,21 +2,24 @@ import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
 import { rsvpArrivalSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
-import type { NextApiRequest } from 'next'
 
 const prisma = new PrismaClient();
 
-export async function POST(request: NextApiRequest) {
+export async function POST(request: Request) {
     const session =  await auth();
-    const {id} = request.query
 
     if(!session || !session.user || session.user.role !== "ADMIN"){
         return NextResponse.json("Please sign in", {status: 401});
     }
 
-    const eventId = id;
+    const url = new URL(request.url);
+    const eventId = url.searchParams.get('id');
 
-    const body = request.body;
+    if (!eventId) {
+        return NextResponse.json({ error: "Event ID is missing" }, { status: 400 });
+    }
+
+    const body = await request.json();
 
     if (body.arrivalTime) {
         body.arrivalTime = new Date(body.arrivalTime);

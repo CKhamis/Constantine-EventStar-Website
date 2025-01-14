@@ -109,8 +109,10 @@ export default async function GuestList({userId, eventId}: Props) {
             </Card>
         );
     } catch (e) { //todo: implement error screen
+        console.error(e);
         return (
             <>
+                An error occurred
             </>
         );
     }

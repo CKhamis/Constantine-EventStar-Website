@@ -1,4 +1,4 @@
-import {EventType, PrismaClient} from '@prisma/client';
+import {PrismaClient} from '@prisma/client';
 import {NextRequest, NextResponse} from "next/server";
 import {editEventSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";

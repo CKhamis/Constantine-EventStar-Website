@@ -1,7 +1,6 @@
 "use client"
 import * as React from "react"
 import {
-    ColumnDef,
     ColumnFiltersState,
     SortingState,
     flexRender,
@@ -21,15 +20,14 @@ import {
 } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Search } from 'lucide-react';
-import { enrollerTableColumns } from "@/app/ESMT/users/enrollment/EnrollerTableColumns";
 import {groupTableColumns} from "@/app/ESMT/groups/GroupTableColumns";
 
-interface Props<TData, TValue> {
+interface Props<TData> {
     data: TData[];
     deleteGroup: (id: string) => void;
 }
 
-export function GroupTable<TData, TValue>({ data, deleteGroup }: Props<TData, TValue>) {
+export function GroupTable<TData>({ data, deleteGroup }: Props<TData>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 

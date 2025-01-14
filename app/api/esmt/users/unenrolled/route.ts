@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import {NextRequest, NextResponse} from "next/server";
-import {cuidSchema, editUserSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 
 
@@ -14,9 +13,9 @@ const prisma = new PrismaClient();
 export async function GET(request: NextRequest){
     const session =  await auth();
 
-    if(!session || !session.user || session.user.role !== "ADMIN"){
-        return NextResponse.json("Approved login required", {status: 401});
-    }
+    // if(!session || !session.user || session.user.role !== "ADMIN"){
+    //     return NextResponse.json("Approved login required", {status: 401});
+    // }
 
     try {
         const usersWithoutAccounts = await prisma.user.findMany({

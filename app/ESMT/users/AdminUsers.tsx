@@ -1,5 +1,4 @@
 "use client"
-import AdminUI from "@/components/admin/AdminUI";
 import {useSearchParams} from "next/navigation";
 import {useEffect, useState} from 'react'
 import { Input } from "@/components/ui/input"

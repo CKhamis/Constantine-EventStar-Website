@@ -1,7 +1,6 @@
 "use client"
 import * as React from "react"
 import {
-    ColumnDef,
     ColumnFiltersState,
     SortingState,
     flexRender,
@@ -23,11 +22,11 @@ import { Input } from "@/components/ui/input"
 import {Search} from "lucide-react";
 import {eventTableColumns} from "@/app/calendar/CalendarTableColumns";
 
-interface EventTableProps<TData, TValue>{
+interface EventTableProps<TData>{
     data: TData
 }
 
-export function EventTable<TData, TValue>({data}: EventTableProps<TData, TValue>) {
+export function EventTable<TData>({data}: EventTableProps<TData>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []

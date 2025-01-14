@@ -9,7 +9,7 @@ export default async function Page(){
         <AdminUI>
             <div className="container mt-4 max-w-xl">
                 <h1 className="text-3xl mb-4">Create New Group</h1>
-                {(!session || !session.user || !session.user.id)? null: <DynamicContent userId={session.user.id}/>}
+                {(!session || !session.user || !session.user.id)? null: <DynamicContent />}
             </div>
         </AdminUI>
     );
