@@ -9,7 +9,6 @@ import AccountButton from "@/components/AccountButton";
 export default function TopBar() {
     const links = [
         {label: "Home", href: "/"},
-        {label: "Spots", href: "/spots"},
         {label: "Events", href: "/calendar"},
         {label: "Costi Online", href: "https://costionline.com"},
     ];

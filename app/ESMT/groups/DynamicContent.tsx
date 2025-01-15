@@ -21,7 +21,6 @@ export default function DynamicContent(){
         }
     };
 
-    // todo: implement this functionality
     // async function editGroup(id: string){
     //     try {
     //         console.log(id);

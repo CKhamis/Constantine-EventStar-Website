@@ -150,7 +150,7 @@ export default function DynamicContent({groupId}: {groupId: string}) {
                 />
                 <Button type="submit" disabled={isLoading}>
                     {isLoading && <Loader2 className="animate-spin"/>}
-                    Create Group
+                    Edit Group
                 </Button>
             </form>
         </Form>

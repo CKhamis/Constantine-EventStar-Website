@@ -17,6 +17,7 @@ import {EventTable} from "@/app/calendar/EventTable";
 import { EventWithResponse } from "@/components/Types";
 import {auth} from "@/auth";
 import {redirect} from "next/navigation";
+import Image from "next/image";
 
 
 export default async function Calendar(){
@@ -160,7 +161,10 @@ export default async function Calendar(){
                                 </Card>
                             </div>
                             :
-                            <div className="col-span-3 lg:col-span-1">No events to show</div>
+                            <div className="flex flex-col items-center justify-center">
+                                <Image src="/agent/waiting.png" alt={"awkward"} height={200} width={200} />
+                                <p className="text-center text-2xl font-bold">No Events</p>
+                            </div>
                         }
                     </div>
                 </div>
