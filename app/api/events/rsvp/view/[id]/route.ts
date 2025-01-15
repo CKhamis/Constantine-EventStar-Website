@@ -4,23 +4,16 @@ import {auth} from "@/auth";
 
 const prisma = new PrismaClient();
 
-type Params = Promise<{ id: string }>
-
-export async function generateMetadata(props: { params: Params }):Promise<string> {
-    const params = await props.params
-    return params.id
-}
-
 // THIS IS A POST FUNCTION!!!
-export async function POST(request: Request, props: { params: Params }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const session =  await auth();
 
     if(!session || !session.user){
         return NextResponse.json("Please sign in", {status: 401});
     }
 
-    const params = await props.params
-    const eventId = params.id;
+    const resolvedParams = await params
+    const eventId = resolvedParams.id;
 
     try {
         const rsvp = await prisma.rsvp.findFirst({
