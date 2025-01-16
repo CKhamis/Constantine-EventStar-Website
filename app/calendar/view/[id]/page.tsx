@@ -54,15 +54,15 @@ export default async function ViewEventPage(props: { params: Params }){
                         </Link>
                         <p className="text-lg font-bold">Back to Events</p>
                     </div>
-                    <div className="grid items-start gap-4 lg:grid-cols-3 mt-5">
+                    <div className="grid items-start gap-5 lg:grid-cols-3 mt-5">
                         <div className="grid auto-rows-max items-start lg:col-span-2 mb-4">
                             <Card className="glass-dark">
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                                <CardHeader className="flex flex-col md:flex-row justify-between gap-5 pb-4">
                                     <CardTitle className="text-4xl font-bold">{eventData.title}</CardTitle>
-                                    <div className="flex flex-row gap-4">
+                                    <div className="flex flex-col md:flex-row gap-4">
                                         <Link target="_blank" href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventData.title)}&dates=${encodeURIComponent(eventData.eventStart + '/' + eventData.eventEnd)}&details=${encodeURIComponent(eventData.description)}&location=${encodeURIComponent(eventData.address)}`}>
                                             <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
-                                                <CalendarPlus />
+                                                <CalendarPlus/>
                                                 Add to Calendar
                                             </Button>
                                         </Link>
@@ -71,7 +71,7 @@ export default async function ViewEventPage(props: { params: Params }){
                                                 <AdminAttendanceLog eventId={eventId} text="Attendance"/>
                                                 <Link target="_blank" href={`/ESMT/calendar/${eventId}`}>
                                                     <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
-                                                        <Pencil />
+                                                        <Pencil/>
                                                         Edit
                                                     </Button>
                                                 </Link>
