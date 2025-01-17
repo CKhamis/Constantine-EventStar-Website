@@ -71,7 +71,7 @@ export function SideBar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <Image src={`/icons/Logo.svg`} alt={`Event Star Logo`} width={35} height={35} className="hover-minimize"/>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-semibold">EventStar ESMT</span>
-                  <span className="">v1.0.0</span>
+                  <span className="">v{process.env.version}</span>
                 </div>
               </Link>
             </SidebarMenuButton>
