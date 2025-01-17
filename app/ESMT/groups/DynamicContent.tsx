@@ -58,6 +58,9 @@ export default function DynamicContent(){
                     <Button variant="secondary">+ New Group</Button>
                 </Link>
             </div>
+            <div className="w-max bg-amber-400">
+                d
+            </div>
             <GroupTable data={groups} deleteGroup={deleteGroup} />
         </div>
     );

@@ -43,6 +43,7 @@ export default function TopBar() {
                                 <p className="font-bold text-2xl">EventStar</p>
                             </Link>
                             {links.map((link) => <Link key={link.href} href={link.href} className="hover:text-foreground hover-underline">{link.label}</Link>)}
+                            <Link href="/profile" className="hover:text-foreground hover-underline">Profile</Link>
                         </nav>
                     </SheetContent>
                 </Sheet>

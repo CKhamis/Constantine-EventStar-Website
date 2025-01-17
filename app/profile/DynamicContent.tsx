@@ -47,10 +47,7 @@ export default function DynamicContent({eventList}: Props) {
 
     if (loading && user === null) {
         return (
-            <div className="flex justify-center items-center h-screen gap-5">
-                <LoadingIcon size="lg" />
-                <p>Please wait</p>
-            </div>
+            <LoadingIcon />
         );
     }
 
@@ -68,7 +65,7 @@ export default function DynamicContent({eventList}: Props) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
             <div className="md:col-span-1 flex flex-col gap-5">
-                {loading? <LoadingIcon size="lg" /> : ""}
+                {loading? <LoadingIcon /> : ""}
                 <Card>
                     <CardHeader>
                         <div className="flex flex-row justify-between items-center gap-4">
