@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
-import { rsvpArrivalSchema} from "@/components/ValidationSchemas";
+import { rsvpAttendanceSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 
 const prisma = new PrismaClient();
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
         body.arrivalTime = new Date(body.arrivalTime);
     }
 
-    const validation = rsvpArrivalSchema.safeParse(body);
+    const validation = rsvpAttendanceSchema.safeParse(body);
 
     if(!validation.success){
         return NextResponse.json(validation.error.format(), {status: 400});

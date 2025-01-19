@@ -19,6 +19,7 @@ import Overview from "@/app/ESMT/users/[id]/tabContent/Overview";
 import UserSettings from "@/app/ESMT/users/[id]/tabContent/UserSettings";
 import Groups from "@/app/ESMT/users/[id]/tabContent/Groups";
 import {Group} from "@prisma/client";
+import Attendance from "@/app/ESMT/users/[id]/tabContent/Attendance";
 
 export interface Props{
     userId: string;
@@ -98,7 +99,7 @@ export default function UserInfo({userId}: Props){
                 <TabsContent value="overview"><Overview user={user} refreshAction={refresh} /></TabsContent>
                 <TabsContent value="groups"><Groups excludedGroups={excludedGroups} refresh={refresh} groupList={user.groups} userId={user.id} /></TabsContent>
                 <TabsContent value="events">Change your password here.</TabsContent>
-                <TabsContent value="attendance">Change your password here.</TabsContent>
+                <TabsContent value="attendance"><Attendance rsvp={user.rsvp} userId={user.id} refresh={refresh} /></TabsContent>
                 <TabsContent value="polariscope">To be added in a future update.</TabsContent>
                 <TabsContent value="settings"><UserSettings accountList={user.accounts} refreshAction={refresh} /></TabsContent>
             </Tabs>

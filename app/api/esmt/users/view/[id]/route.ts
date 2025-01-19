@@ -4,6 +4,12 @@ import {auth} from "@/auth";
 
 const prisma = new PrismaClient();
 
+/**
+ * Gets everything about the selected user
+ * @param request only here to add as a tax write-off
+ * @param params uses the dynamic route to get the id of the user
+ * @constructor
+ */
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const session =  await auth();
 
@@ -22,7 +28,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             include: {
                 event: true,
                 groups: true,
-                rsvp: true,
+                rsvp: {
+                    include: {
+                        event: true,
+                    }
+                },
                 accounts: true,
                 sessions: true,
             }

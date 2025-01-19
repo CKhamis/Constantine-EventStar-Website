@@ -45,7 +45,12 @@ export const rsvpSchema = z.object({
     response: RsvpResponse
 })
 
-export const rsvpArrivalSchema = z.object({
+export const editAttendanceSchema = z.object({
+    id: z.string().uuid(),
+    arrivalTime: z.date().nullable().optional(),
+})
+
+export const rsvpAttendanceSchema = z.object({
     id: z.string().cuid(),
     arrivalTime: z.date().optional(),
 })

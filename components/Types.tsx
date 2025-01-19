@@ -3,7 +3,7 @@ import {$Enums, Event, User, Account, EventType, InviteRigidity, ReminderAmount,
 export type userWithEventAndGroupsAndRsvpAndAccountsAndSessions = User & {
     groups: Group[],
     accounts: Account[],
-    rsvp: Rsvp[],
+    rsvp: (Rsvp & { event: Event })[],
     event: Event[],
     sessions: Session[],
 }

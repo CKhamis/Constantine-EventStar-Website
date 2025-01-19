@@ -36,12 +36,10 @@ export interface Props{
 export default function UserSettings({accountList, refreshAction}: Props) {
     const [statusText, setStatusText] = useState<ReactElement>(<></>);
     const [statusText2, setStatusText2] = useState<ReactElement>(<></>);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     async function deleteOauth(accountId: string) {
         try {
             await axios.post(`/api/esmt/users/deleteOauth`, {id: accountId}).finally(refreshAction);
-            setIsDialogOpen(false);
         } catch (e) {
             console.log(e);
             setStatusText(
@@ -53,7 +51,6 @@ export default function UserSettings({accountList, refreshAction}: Props) {
     async function deleteSession(sessionId: string) {
         try {
             await axios.post(`/api/esmt/users/deleteSession`, {id: sessionId}).finally(refreshAction);
-            setIsDialogOpen(false);
         } catch (e) {
             console.log(e);
             setStatusText2(
@@ -67,6 +64,7 @@ export default function UserSettings({accountList, refreshAction}: Props) {
             <p className="text-2xl font-bold">Sign In Providers</p>
             <p className="text-sm text-muted-foreground">These are the different options associated with the given
                 account.</p>
+            {statusText}
             <Table className="mt-5">
                 <TableCaption>This user has a total of {accountList.length} providers</TableCaption>
                 <TableHeader>
@@ -103,13 +101,12 @@ export default function UserSettings({accountList, refreshAction}: Props) {
 
             <p className="text-2xl font-bold mt-10">User Sessions</p>
             <p className="text-sm text-muted-foreground">These are the currently active sessions associated with the user. Deleting a session will require the user to log in again</p>
-
+            {statusText2}
             <Table className="mt-5">
                 <TableCaption>This user has a total of {accountList.length} sessions.</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead>Id</TableHead>
-                        <TableHead>Token</TableHead>
                         <TableHead>Expires</TableHead>
                         <TableHead>Created</TableHead>
                         <TableHead>Updated</TableHead>
@@ -120,7 +117,6 @@ export default function UserSettings({accountList, refreshAction}: Props) {
                     {accountList.map((session) => (
                         <TableRow key={session.id}>
                             <TableCell>{session.id}</TableCell>
-                            <TableCell>{session.access_token}</TableCell>
                             <TableCell>{session.expires_at ?? "Doesn't expire"}</TableCell>
                             <TableCell>{format(session.createdAt, 'PPP')}</TableCell>
                             <TableCell>{format(session.updatedAt, 'PPP')}</TableCell>

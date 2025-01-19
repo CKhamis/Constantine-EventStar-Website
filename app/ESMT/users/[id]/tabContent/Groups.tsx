@@ -38,15 +38,15 @@ export default function Groups({groupList, userId, refresh, excludedGroups}: Pro
     };
 
     return (
-        <div className="container">
+        <div className="container mb-5">
             <div className="flex flex-row justify-between items-center">
                 <p className="text-2xl font-bold mb-2">Associated Groups</p>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="default" size="icon">+</Button>
+                        <Button variant="default" size="sm">+ Add Group</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56">
-                        <DropdownMenuLabel>All groups</DropdownMenuLabel>
+                        <DropdownMenuLabel>Excluded groups</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         {excludedGroups.map((group) => <DropdownMenuItem key={group.id} onClick={() => joinGroup(group.id)}>{group.name}</DropdownMenuItem>)}
                     </DropdownMenuContent>
