@@ -18,6 +18,7 @@ import {Button} from "@/components/ui/button";
 import Overview from "@/app/ESMT/users/[id]/tabContent/Overview";
 import UserSettings from "@/app/ESMT/users/[id]/tabContent/UserSettings";
 import Groups from "@/app/ESMT/users/[id]/tabContent/Groups";
+import {Group} from "@prisma/client";
 
 export interface Props{
     userId: string;
@@ -26,13 +27,16 @@ export interface Props{
 export default function UserInfo({userId}: Props){
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<userWithEventAndGroupsAndRsvpAndAccountsAndSessions | null>(null);
-
+    const [excludedGroups, setExcludedGroups] = useState<Group[]>([]);
 
     const refresh = async () => {
         try {
             setLoading(true);
-            const response = await axios.get("/api/esmt/users/view/" + userId);
+            const response = await axios.get("/api/esmt/users/view/" + userId)
             setUser(response.data);
+
+            const response2 = await axios.post("/api/esmt/users/groups/excluded", {id: userId})
+            setExcludedGroups(response2.data);
         } catch (err) {
             console.error("Error fetching users:", err);
         } finally {
@@ -92,7 +96,7 @@ export default function UserInfo({userId}: Props){
                     <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview"><Overview user={user} refreshAction={refresh} /></TabsContent>
-                <TabsContent value="groups"><Groups refresh={refresh} groupList={user.groups} userId={user.id} /></TabsContent>
+                <TabsContent value="groups"><Groups excludedGroups={excludedGroups} refresh={refresh} groupList={user.groups} userId={user.id} /></TabsContent>
                 <TabsContent value="events">Change your password here.</TabsContent>
                 <TabsContent value="attendance">Change your password here.</TabsContent>
                 <TabsContent value="polariscope">To be added in a future update.</TabsContent>
