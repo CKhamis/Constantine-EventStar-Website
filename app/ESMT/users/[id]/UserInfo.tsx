@@ -1,6 +1,5 @@
 "use client"
 import AvatarIcon from "@/components/AvatarIcon";
-import {auth} from "@/auth";
 import {useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import axios from "axios";
@@ -16,7 +15,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {Button} from "@/components/ui/button";
-import AccountSettings from "";
 import Overview from "@/app/ESMT/users/[id]/tabContent/Overview";
 import UserSettings from "@/app/ESMT/users/[id]/tabContent/UserSettings";
 
@@ -84,17 +82,19 @@ export default function UserInfo({userId}: Props){
                 </DropdownMenu>
             </div>
             <Tabs defaultValue="overview" className="w-100 mt-4">
-                <TabsList className="grid w-full grid-cols-5 mb-5">
+                <TabsList className="grid w-full grid-cols-6 mb-5">
                     <TabsTrigger value="overview">Overview</TabsTrigger>
                     <TabsTrigger value="groups">Groups</TabsTrigger>
                     <TabsTrigger value="events">Events</TabsTrigger>
                     <TabsTrigger value="attendance">Attendance</TabsTrigger>
+                    <TabsTrigger value="polariscope">Polariscope</TabsTrigger>
                     <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
-                <TabsContent value="overview"><Overview user={user} /></TabsContent>
+                <TabsContent value="overview"><Overview user={user} refreshAction={refresh} /></TabsContent>
                 <TabsContent value="groups">Change your password here.</TabsContent>
                 <TabsContent value="events">Change your password here.</TabsContent>
                 <TabsContent value="attendance">Change your password here.</TabsContent>
+                <TabsContent value="polariscope">To be added in a future update.</TabsContent>
                 <TabsContent value="settings"><UserSettings accountList={user.accounts} refreshAction={refresh} /></TabsContent>
             </Tabs>
 

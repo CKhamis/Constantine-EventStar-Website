@@ -67,69 +67,45 @@ export default function UserSettings({accountList, refreshAction}: Props) {
             <p className="text-xl font-bold">Sign In Providers</p>
             <p className="text-sm text-muted-foreground">These are the different options associated with the given
                 account.</p>
-            <ScrollArea className="whitespace-nowrap mt-5">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <Table className="mt-5">
+                <TableCaption>This user has a total of {accountList.length} providers</TableCaption>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Provider</TableHead>
+                        <TableHead>Expires</TableHead>
+                        <TableHead>Created</TableHead>
+                        <TableHead>Updated</TableHead>
+                        <TableHead>Delete</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
                     {accountList.map((provider) => (
-                        <Dialog key={provider.id} open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                            <DialogTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    className="w-auto h-auto py-4 px-2 flex flex-col items-center justify-center gap-2"
-                                >
-                                    <Image
-                                        src={`https://logo.clearbit.com/${provider.provider}.com`}
-                                        alt={`${provider.provider} logo`}
-                                        width={40}
-                                        height={40}
-                                        className="rounded-full"
-                                    />
-                                    <span className="font-semibold">{provider.provider.toUpperCase()}</span>
-                                    <span
-                                        className="text-xs text-muted-foreground">Added: {formatDate(provider.createdAt, "MM/dd/yyyy")}</span>
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[300px]">
-                                <DialogHeader>
-                                    <div className="flex flex-col items-center space-y-4">
-                                        <Image
-                                            src={`https://logo.clearbit.com/${provider.provider}.com`}
-                                            alt={`${provider.provider} logo`}
-                                            width={50}
-                                            height={50}
-                                            className="rounded-full"
-                                        />
-                                        <DialogTitle
-                                            className="text-2xl font-semibold">{provider.provider.toUpperCase()}</DialogTitle>
-                                    </div>
-                                </DialogHeader>
-                                <DialogDescription className="text-center">
-                                    Connected on: {formatDate(provider.createdAt, "MM/dd/yyyy")}
-                                </DialogDescription>
-                                <DialogDescription className="text-center">
-                                    Last updated: {formatDate(provider.updatedAt, "MM/dd/yyyy")}
-                                </DialogDescription>
-                                {statusText}
-                                <DialogFooter className="sm:justify-center">
-                                    <Button
-                                        type="button"
-                                        variant="destructive"
-                                        onClick={() => deleteOauth(provider.id)}
-                                    >
-                                        Disconnect
-                                    </Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
+                        <TableRow key={provider.id}>
+                            <TableCell className="flex flex-row justify-start gap-4 items-center h-100">
+                                <Image
+                                    src={`https://logo.clearbit.com/${provider.provider}.com`}
+                                    alt={`${provider.provider} logo`}
+                                    width={35}
+                                    height={35}
+                                    className="rounded-full"
+                                />
+                                <p className="font-bold text-lg">{provider.provider}</p>
+                            </TableCell>
+                            <TableCell>{provider.expires_at? (provider.expires_at, 'PPP') : "None"}</TableCell>
+                            <TableCell>{format(provider.createdAt, 'PPP')}</TableCell>
+                            <TableCell>{format(provider.updatedAt, 'PPP')}</TableCell>
+                            <TableCell><Button variant="destructive" onClick={() => deleteOauth(provider.id)}>Delete</Button></TableCell>
+                        </TableRow>
                     ))}
-                </div>
-                <ScrollBar orientation="horizontal"/>
-            </ScrollArea>
+                </TableBody>
+            </Table>
+
 
             <p className="text-xl font-bold mt-10">User Sessions</p>
             <p className="text-sm text-muted-foreground">These are the currently active sessions associated with the user. Deleting a session will require the user to log in again</p>
 
             <Table className="mt-5">
-                <TableCaption>A list of all associated sessions.</TableCaption>
+                <TableCaption>This user has a total of {accountList.length} sessions.</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead>Id</TableHead>
@@ -153,7 +129,6 @@ export default function UserSettings({accountList, refreshAction}: Props) {
                     ))}
                 </TableBody>
             </Table>
-
         </>
     );
 }
