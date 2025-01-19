@@ -64,7 +64,7 @@ export default function UserSettings({accountList, refreshAction}: Props) {
 
     return (
         <>
-            <p className="text-xl font-bold">Sign In Providers</p>
+            <p className="text-2xl font-bold">Sign In Providers</p>
             <p className="text-sm text-muted-foreground">These are the different options associated with the given
                 account.</p>
             <Table className="mt-5">
@@ -101,7 +101,7 @@ export default function UserSettings({accountList, refreshAction}: Props) {
             </Table>
 
 
-            <p className="text-xl font-bold mt-10">User Sessions</p>
+            <p className="text-2xl font-bold mt-10">User Sessions</p>
             <p className="text-sm text-muted-foreground">These are the currently active sessions associated with the user. Deleting a session will require the user to log in again</p>
 
             <Table className="mt-5">

@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {Button} from "@/components/ui/button";
 import Overview from "@/app/ESMT/users/[id]/tabContent/Overview";
 import UserSettings from "@/app/ESMT/users/[id]/tabContent/UserSettings";
+import Groups from "@/app/ESMT/users/[id]/tabContent/Groups";
 
 export interface Props{
     userId: string;
@@ -91,7 +92,7 @@ export default function UserInfo({userId}: Props){
                     <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview"><Overview user={user} refreshAction={refresh} /></TabsContent>
-                <TabsContent value="groups">Change your password here.</TabsContent>
+                <TabsContent value="groups"><Groups refresh={refresh} groupList={user.groups} userId={user.id} /></TabsContent>
                 <TabsContent value="events">Change your password here.</TabsContent>
                 <TabsContent value="attendance">Change your password here.</TabsContent>
                 <TabsContent value="polariscope">To be added in a future update.</TabsContent>
