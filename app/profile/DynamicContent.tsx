@@ -54,7 +54,7 @@ export default function DynamicContent({eventList}: Props) {
     if(user === null){
         return (
             <div className="w-100 h-screen flex flex-col items-center justify-center p-10 top-left-gradient">
-                <Image src="/agent/waiting.png" alt="waiting" height={150} width={150} />
+                <Image src="/agent/error.gif" alt="waiting" height={150} width={150} className="mb-5" />
                 <p className="text-4xl font-bold text-center">OOPS! There was an error with your account</p>
                 <p className="mt-3">Please contact the server operator for more information</p>
                 <Link href="/" className="underline text-muted-foreground mt-3">Back to home page</Link>

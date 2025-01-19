@@ -1,5 +1,12 @@
-import {$Enums, Event, User, Account, EventType, InviteRigidity, ReminderAmount, Rsvp, Status, Group} from "@prisma/client";
+import {$Enums, Event, User, Account, EventType, InviteRigidity, ReminderAmount, Rsvp, Status, Group, Session} from "@prisma/client";
 
+export type userWithEventAndGroupsAndRsvpAndAccountsAndSessions = User & {
+    groups: Group[],
+    accounts: Account[],
+    rsvp: Rsvp[],
+    event: Event[],
+    sessions: Session[],
+}
 
 export type userWithAccountsAndGroups = User & {
     groups: Group[],

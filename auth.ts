@@ -31,6 +31,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 // Link the account to the existing user
                 console.log("existing user")
 
+                //todo: needs testing
+                // Update the user's profile picture if it has changed
+                if (user.image && user.image !== existingUser.image) {
+                    await prisma.user.update({
+                        where: { id: existingUser.id },
+                        data: { image: user.image },
+                    });
+                }
+
                 await prisma.account.upsert({
                     where: {
                         provider_providerAccountId: {
