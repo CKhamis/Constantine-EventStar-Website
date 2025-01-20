@@ -45,6 +45,16 @@ export default function Overview({user, refreshAction}: Props){
                             </div>
                         </CardHeader>
                     </Card>
+                    <Card>
+                        <CardHeader>
+                            <div className="flex flex-row justify-evenly items-center gap-4">
+                                <div className="flex flex-col items-center gap-3">
+                                    <p className="font-bold">Membership Card ID</p>
+                                    <p className="text-3xl">{user.cardId? user.cardId : "None"}</p>
+                                </div>
+                            </div>
+                        </CardHeader>
+                    </Card>
                 </div>
                 <div className="col-span-2 md:col-span-2 md:pl-4 mb-5">
                     <p className="font-bold text-2xl mb-3">General Information</p>

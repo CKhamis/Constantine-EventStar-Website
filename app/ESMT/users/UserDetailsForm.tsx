@@ -19,6 +19,7 @@ import {useState} from "react";
 import axios from "axios";
 import {alertContent} from "@/components/AlertList";
 import AvatarIcon from "@/components/AvatarIcon";
+import Link from "next/link";
 
 interface Props {
     user: User;
@@ -159,6 +160,7 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
                                     Save
                                 </Button>
                             </DialogClose>
+                            <Link href={"/ESMT/users/" + user.id}><Button variant="secondary">Details</Button> </Link>
                             <Dialog>
                                 <DialogTrigger asChild>
                                     <Button variant="destructive" className="mb-4">
