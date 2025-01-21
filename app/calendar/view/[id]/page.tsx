@@ -12,6 +12,8 @@ import RsvpPanel from "@/app/calendar/view/[id]/RsvpPanel";
 import GuestList from "@/app/calendar/view/[id]/GuestList";
 import {auth} from "@/auth";
 import AdminAttendanceLog from "@/components/admin/AdminAttendanceLog";
+import Image from "next/image";
+import {redirect} from "next/navigation";
 
 type Params = Promise<{ id: string }>
 
@@ -24,7 +26,15 @@ export default async function ViewEventPage(props: { params: Params }){
     const session = await auth();
 
     if (!session || !session.user || !session.user.id){
-        return (<>login to view page</>)
+        // redirect("/api/auth/signin");
+        return (
+            <div className="w-100 h-screen flex flex-col items-center justify-center p-10 top-left-gradient">
+                <Image src="/agent/error.gif" alt="error" height={200} width={200} className="mb-5"/>
+                <p className="text-4xl font-bold text-center">OOPS! You need to log in first!</p>
+                <p className="mt-3">If you are invited, you should already have an account created for you</p>
+                <Link href="/api/auth/signin" className="underline text-muted-foreground mt-3">Log In</Link>
+            </div>
+        )
     }
 
     const params = await props.params
@@ -40,8 +50,8 @@ export default async function ViewEventPage(props: { params: Params }){
         }
     }
 
-    try{
-        const eventData:EventWithRsvp = await fetchEvent();
+    try {
+        const eventData: EventWithRsvp = await fetchEvent();
         return (
             <>
                 <TopBar />
