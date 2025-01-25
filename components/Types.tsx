@@ -1,4 +1,16 @@
 import {$Enums, Event, User, Account, EventType, InviteRigidity, ReminderAmount, Rsvp, Status, Group, Session} from "@prisma/client";
+import React from "react";
+
+export type emailRequest = {
+    eventName: string;
+    eventDescription: string;
+    eventStart: string;
+    eventEnd: string;
+
+    to: string[];
+    subject: string;
+    scheduledAt: string
+}
 
 export type userWithEventAndGroupsAndRsvpAndAccountsAndSessions = User & {
     groups: Group[],
