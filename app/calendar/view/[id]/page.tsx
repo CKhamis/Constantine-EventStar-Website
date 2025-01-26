@@ -13,7 +13,6 @@ import GuestList from "@/app/calendar/view/[id]/GuestList";
 import {auth} from "@/auth";
 import AdminAttendanceLog from "@/components/admin/AdminAttendanceLog";
 import Image from "next/image";
-import {redirect} from "next/navigation";
 
 type Params = Promise<{ id: string }>
 

@@ -92,21 +92,7 @@ export type RsvpWithEvent = {
     }
 }
 
-export type EventWithRsvp = {
-    id: string
-    backgroundStyle: string
-    createdAt: Date
-    updatedAt: Date
-    title: string
-    address: string
-    eventStart: Date
-    eventEnd: Date
-    rsvpDuedate: Date
-    description: string
-    inviteRigidity: $Enums.InviteRigidity
-    eventType: $Enums.EventType
-    reminderAmount: $Enums.ReminderAmount
-    authorId: string
+export type EventWithRsvp = Event & {
     RSVP: Rsvp[]
 }
 
