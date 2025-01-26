@@ -26,7 +26,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                 id: eventId
             },
             include: {
-                RSVP: true
+                RSVP: {
+                    include: {
+                        User: true
+                    }
+                }
             }
         });
 

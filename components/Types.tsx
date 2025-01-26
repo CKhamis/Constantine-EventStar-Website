@@ -92,6 +92,10 @@ export type RsvpWithEvent = {
     }
 }
 
+export type EventWithRsvpWithUser = Event & {
+    RSVP: RsvpWithUser[]
+}
+
 export type EventWithRsvp = Event & {
     RSVP: Rsvp[]
 }
