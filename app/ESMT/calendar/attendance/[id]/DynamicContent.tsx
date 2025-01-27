@@ -3,7 +3,7 @@
 import {LoadingIcon} from "@/components/LoadingIcon";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {EventWithRsvp, EventWithRsvpWithUser} from "@/components/Types";
+import {EventWithRsvp, EventWithRsvpWithUserWithAccount} from "@/components/Types";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -13,9 +13,9 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
-import {format} from "date-fns";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import Attendance from "@/app/ESMT/calendar/attendance/[id]/tabs/Attendance";
+import {format} from "date-fns";
 
 export interface Props{
     eventId: string;
@@ -23,13 +23,29 @@ export interface Props{
 
 export default function UserInfo({eventId}: Props){
     const [loading, setLoading] = useState(true);
-    const [event, setEvent] = useState<EventWithRsvpWithUser | null>(null);
+    const [event, setEvent] = useState<EventWithRsvpWithUserWithAccount | null>(null);
+    const [timing, setTiming] = useState<string>("Unknown");
+
+    const now = new Date();
 
     const refresh = async () => {
         try {
             setLoading(true);
-            const response = await axios.get("/api/esmt/events/view/" + eventId)
-            setEvent(response.data);
+            await axios.get("/api/esmt/events/view/" + eventId)
+                .then((response) => {
+                    setEvent(response.data);
+
+                    const eventStart = new Date(response.data.eventStart);
+                    const eventEnd = new Date(response.data.eventEnd);
+
+                    if (now < eventStart) {
+                        setTiming("Not started yet");
+                    } else if (now >= eventStart && now <= eventEnd) {
+                        setTiming("In progress");
+                    } else if (now > eventEnd) {
+                        setTiming("Ended");
+                    }
+                })
         } catch (err) {
             console.error("Error fetching users:", err);
         } finally {
@@ -67,7 +83,7 @@ export default function UserInfo({eventId}: Props){
                         <div className="flex flex-row justify-start gap-5 items-center">
                             <div>
                                 <p className="font-bold text-4xl">{event.title}</p>
-                                <p className="mt-3 ml-1 text-muted-foreground">{event.eventType} | {format(event.eventStart, "MM/dd/yyyy h:mm a")}</p>
+                                <p className="mt-3 ml-1 text-muted-foreground">{format(event.eventStart, "M/dd/yyyy")} - {format(event.eventEnd, "M/dd/yyyy")} | {timing}</p>
                             </div>
                         </div>
                         <DropdownMenu>
@@ -88,7 +104,7 @@ export default function UserInfo({eventId}: Props){
                         </TabsList>
                         <TabsContent value="overview"></TabsContent>
                         <TabsContent value="details"></TabsContent>
-                        <TabsContent value="attendance"><Attendance eventDetails={event} /></TabsContent>
+                        <TabsContent value="attendance"><Attendance eventDetails={event} refresh={refresh} /></TabsContent>
                         <TabsContent value="settings"></TabsContent>
                     </Tabs>
                 </div>

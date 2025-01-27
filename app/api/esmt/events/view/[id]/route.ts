@@ -28,7 +28,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             include: {
                 RSVP: {
                     include: {
-                        User: true
+                        User: {
+                            include: {
+                                accounts: true
+                            }
+                        }
                     }
                 }
             }

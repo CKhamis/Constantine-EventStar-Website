@@ -92,8 +92,8 @@ export type RsvpWithEvent = {
     }
 }
 
-export type EventWithRsvpWithUser = Event & {
-    RSVP: RsvpWithUser[]
+export type EventWithRsvpWithUserWithAccount = Event & {
+    RSVP: RsvpWithUserWithAccount[]
 }
 
 export type EventWithRsvp = Event & {
@@ -109,4 +109,17 @@ export type RsvpWithUser = {
     guestId: string,
     arrival: Date,
     User: User
+}
+
+export type RsvpWithUserWithAccount = {
+    id: string,
+    createdAt: Date,
+    updatedAt: Date,
+    eventId: string,
+    response: string,
+    guestId: string,
+    arrival: Date,
+    User: User & {
+        accounts: Account[],
+    }
 }
