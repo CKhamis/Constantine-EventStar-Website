@@ -14,9 +14,9 @@ import Link from "next/link";
 // } from "@/components/ui/dropdown-menu";
 // import {Button} from "@/components/ui/button";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import Attendance from "@/app/ESMT/calendar/attendance/[id]/tabs/Attendance";
+import Attendance from "@/app/ESMT/calendar/[id]/tabs/Attendance";
 import {format} from "date-fns";
-import EditEventDetailsForm from "@/app/ESMT/calendar/attendance/[id]/tabs/EditEventDetailsForm";
+import EditEventDetailsForm from "@/app/ESMT/calendar/[id]/tabs/EditEventDetailsForm";
 
 export interface Props{
     eventId: string;
