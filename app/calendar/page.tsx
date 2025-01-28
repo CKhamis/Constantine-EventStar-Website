@@ -102,8 +102,26 @@ export default async function Calendar(){
                         </Card>
                     </div>
                     <div className="grid grid-cols-3 mt-4 gap-4 mb-10">
+                        {/*<div className="col-span-3 lg:col-span-2">*/}
+                        {/*    <EventTable data={eventsOnly}/>*/}
+                        {/*</div>*/}
                         <div className="col-span-3 lg:col-span-2">
-                            <EventTable data={eventsOnly} />
+                            <p className="text-2xl font-bold mb-5">All Events</p>
+                            {eventList.map((event) => {
+                                return (
+                                    <Card key={event.id} className="mb-4">
+                                        <CardHeader>
+                                            <CardTitle className="text-xl font-bold">{event.event.title}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            {event.event.description}
+                                        </CardContent>
+                                        <CardFooter>
+                                            <Link href={"/calendar/view/" + event.event.id}><Button>View Event</Button></Link>
+                                        </CardFooter>
+                                    </Card>
+                                );
+                            })}
                         </div>
                         {nextRSVP ?
                             <div className="col-span-3 lg:col-span-1">
@@ -162,7 +180,7 @@ export default async function Calendar(){
                             </div>
                             :
                             <div className="flex flex-col items-center justify-center">
-                                <Image src="/agent/waiting.png" alt={"awkward"} height={200} width={200} />
+                                <Image src="/agent/waiting.png" alt={"awkward"} height={200} width={200}/>
                                 <p className="text-center text-2xl font-bold">No Events</p>
                             </div>
                         }
