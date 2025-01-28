@@ -3,19 +3,20 @@
 import {LoadingIcon} from "@/components/LoadingIcon";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {EventWithRsvp, EventWithRsvpWithUserWithAccount} from "@/components/Types";
+import {EventWithRsvpWithUserWithAccount} from "@/components/Types";
 import Image from "next/image";
 import Link from "next/link";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import {Button} from "@/components/ui/button";
+// import {
+//     DropdownMenu,
+//     DropdownMenuContent,
+//     DropdownMenuLabel,
+//     DropdownMenuTrigger
+// } from "@/components/ui/dropdown-menu";
+// import {Button} from "@/components/ui/button";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import Attendance from "@/app/ESMT/calendar/attendance/[id]/tabs/Attendance";
 import {format} from "date-fns";
+import EditEventDetailsForm from "@/app/ESMT/calendar/attendance/[id]/tabs/EditEventDetailsForm";
 
 export interface Props{
     eventId: string;
@@ -86,26 +87,22 @@ export default function UserInfo({eventId}: Props){
                                 <p className="mt-3 ml-1 text-muted-foreground">{format(event.eventStart, "M/dd/yyyy")} - {format(event.eventEnd, "M/dd/yyyy")} | {timing}</p>
                             </div>
                         </div>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button size="sm">Groups</Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56">
-                                <DropdownMenuLabel>All groups</DropdownMenuLabel>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        {/*<DropdownMenu>*/}
+                        {/*    <DropdownMenuTrigger asChild>*/}
+                        {/*        <Button size="sm">Groups</Button>*/}
+                        {/*    </DropdownMenuTrigger>*/}
+                        {/*    <DropdownMenuContent className="w-56">*/}
+                        {/*        <DropdownMenuLabel>All groups</DropdownMenuLabel>*/}
+                        {/*    </DropdownMenuContent>*/}
+                        {/*</DropdownMenu>*/}
                     </div>
-                    <Tabs defaultValue="overview" className="w-100 mt-4">
-                        <TabsList className="grid w-full grid-cols-4 mb-5">
-                            <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <Tabs defaultValue="details" className="w-100 mt-4">
+                        <TabsList className="grid w-full grid-cols-2 mb-5">
                             <TabsTrigger value="details">Details</TabsTrigger>
                             <TabsTrigger value="attendance">Attendance</TabsTrigger>
-                            <TabsTrigger value="settings">Settings</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="overview"></TabsContent>
-                        <TabsContent value="details"></TabsContent>
+                        <TabsContent value="details" className="max-w-xl mx-auto glass-dark p-4 rounded-lg"><EditEventDetailsForm eventId={eventId} refresh={refresh}/></TabsContent>
                         <TabsContent value="attendance"><Attendance eventDetails={event} refresh={refresh} /></TabsContent>
-                        <TabsContent value="settings"></TabsContent>
                     </Tabs>
                 </div>
             </div>

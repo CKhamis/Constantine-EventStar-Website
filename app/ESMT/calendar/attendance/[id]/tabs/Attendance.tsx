@@ -13,6 +13,7 @@ import {addHours, format} from "date-fns";
 import {Button} from "@/components/ui/button";
 import {Badge} from "@/components/ui/badge";
 import axios from "axios";
+import Link from "next/link";
 
 
 export interface Props {
@@ -83,9 +84,11 @@ export default function Attendance({eventDetails, refresh}: Props) {
 
                         return (
                             <TableRow key={rsvp.id}>
-                                <TableCell className="font-bold text-xl gap-4 flex flex-row items-center justify-start">
-                                    <AvatarIcon name={rsvp.User.name} size="small" image={rsvp.User.image}/>
-                                    {rsvp.User.name}
+                                <TableCell >
+                                    <Link href={"/ESMT/users/"+rsvp.User.id} className="font-bold text-xl gap-4 flex flex-row items-center justify-start">
+                                        <AvatarIcon name={rsvp.User.name} size="small" image={rsvp.User.image}/>
+                                        {rsvp.User.name}
+                                    </Link>
                                 </TableCell>
                                 <TableCell>{rsvp.User.accounts.length > 0? <Badge variant="secondary">Yes</Badge> : <Badge variant="destructive">No</Badge>}</TableCell>
                                 <TableCell>{rsvp.response}</TableCell>
