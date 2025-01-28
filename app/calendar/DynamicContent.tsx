@@ -43,13 +43,13 @@ export default function DynamicContent({userId}: Props) {
                     setEventList(response.data);
                     return response.data;
                 })
-                .then(() => {
-                    setCompleteResponsesCount(eventList.filter((rsvp) => rsvp.response !== "NO_RESPONSE").length);
-                    setResponseCounts(eventList.reduce((counts, rsvp) => {
+                .then((data: RsvpWithEvent[]) => {
+                    setCompleteResponsesCount(data.filter((rsvp:RsvpWithEvent) => rsvp.response !== "NO_RESPONSE").length);
+                    setResponseCounts(data.reduce((counts: { YES?: number, MAYBE?: number, NO?: number, NO_RESPONSE?: number }, rsvp:RsvpWithEvent) => {
                         counts[rsvp.response] = (counts[rsvp.response] || 0) + 1;
                         return counts;
                     }, {}));
-                    setNextRSVP(eventList
+                    setNextRSVP(data
                         .filter(rsvp => (rsvp.response === "YES" || rsvp.response === "MAYBE") && new Date(rsvp.event.eventStart) >= today)
                         .sort((a, b) => new Date(a.event.eventStart).getUTCDate() - new Date(b.event.eventStart).getUTCDate())
                         .at(0));
@@ -63,7 +63,22 @@ export default function DynamicContent({userId}: Props) {
 
     useEffect(() => {
         refresh()
-    }, [])
+    }, []);
+
+    async function updateRSVP(eventId:string, response:"YES" | "NO" | "MAYBE") {
+        setLoading(true);
+        try {
+            await axios.post(`/api/events/rsvp/edit/${eventId}`, {response: response})
+                .finally(refresh);
+            // setSubmitStatus('success')
+            // setFocus(false);
+        } catch (e) {
+            console.log(e);
+            // setSubmitStatus('error')
+        } finally {
+            // setTimeout(() => setSubmitStatus('idle'), 3000)
+        }
+    }
 
     if (loading) {
         return (
@@ -128,13 +143,13 @@ export default function DynamicContent({userId}: Props) {
                                         <CardTitle className="text-2xl">{event.event.title}</CardTitle>
                                         <div>
                                             <ToggleGroup type="single" variant="default" defaultValue={event.response} disabled={new Date(event.event.rsvpDuedate) < new Date()}>
-                                                <ToggleGroupItem value="YES" aria-label="Toggle check">
+                                                <ToggleGroupItem value="YES" aria-label="Toggle check" onClick={() => updateRSVP(event.eventId, "YES")}>
                                                     <Check className="h-4 w-4" />
                                                 </ToggleGroupItem>
-                                                <ToggleGroupItem value="MAYBE" aria-label="Toggle question">
+                                                <ToggleGroupItem value="MAYBE" aria-label="Toggle question" onClick={() => updateRSVP(event.eventId, "MAYBE")}>
                                                     <CircleHelp className="h-4 w-4" />
                                                 </ToggleGroupItem>
-                                                <ToggleGroupItem value="NO" aria-label="Toggle x">
+                                                <ToggleGroupItem value="NO" aria-label="Toggle x" onClick={() => updateRSVP(event.eventId, "NO")}>
                                                     <X className="h-4 w-4" />
                                                 </ToggleGroupItem>
                                             </ToggleGroup>
@@ -145,8 +160,11 @@ export default function DynamicContent({userId}: Props) {
                                 <CardContent>
                                     {event.event.description}
                                 </CardContent>
-                                <CardFooter>
-                                    <Link href={"/calendar/view/" + event.event.id}><Button>View Event</Button></Link>
+                                <CardFooter className="gap-4">
+                                    <div className="flex flex-col justify-start gap-2">
+                                        <Link href={"/calendar/view/" + event.event.id}><Button variant={new Date(event.event.eventStart) < new Date()? "outline" : "default"}>View Event</Button></Link>
+                                        {new Date(event.event.eventStart) < new Date()? <p className="text-muted-foreground text-xs ml-1">event over</p> : <></>}
+                                    </div>
                                 </CardFooter>
                             </Card>
                         );
