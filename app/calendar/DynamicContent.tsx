@@ -16,6 +16,8 @@ import Image from "next/image";
 import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
 import {useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {EventTable} from "@/app/calendar/EventTable";
 
 export interface Props {
     userId: string
@@ -130,45 +132,56 @@ export default function DynamicContent({userId}: Props) {
                 </Card>
             </div>
             <div className="grid grid-cols-3 mt-4 gap-4 mb-10">
-                {/*<div className="col-span-3 lg:col-span-2">*/}
-                {/*    <EventTable data={eventsOnly}/>*/}
-                {/*</div>*/}
                 <div className="col-span-3 lg:col-span-2">
-                    <p className="text-2xl font-bold mb-5">All Events ({eventList.length})</p>
-                    {eventList.map((event) => {
-                        return (
-                            <Card key={event.id} className="mb-4">
-                                <CardHeader>
-                                    <div className="flex flex-row items-center justify-between space-y-0 gap-2">
-                                        <CardTitle className="text-2xl">{event.event.title}</CardTitle>
-                                        <div>
-                                            <ToggleGroup type="single" variant="default" defaultValue={event.response} disabled={new Date(event.event.rsvpDuedate) < new Date()}>
-                                                <ToggleGroupItem value="YES" aria-label="Toggle check" onClick={() => updateRSVP(event.eventId, "YES")}>
-                                                    <Check className="h-4 w-4" />
-                                                </ToggleGroupItem>
-                                                <ToggleGroupItem value="MAYBE" aria-label="Toggle question" onClick={() => updateRSVP(event.eventId, "MAYBE")}>
-                                                    <CircleHelp className="h-4 w-4" />
-                                                </ToggleGroupItem>
-                                                <ToggleGroupItem value="NO" aria-label="Toggle x" onClick={() => updateRSVP(event.eventId, "NO")}>
-                                                    <X className="h-4 w-4" />
-                                                </ToggleGroupItem>
-                                            </ToggleGroup>
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground">{format(new Date(event.event.eventStart), "M/dd/yyyy hh:mm a")} - {format(new Date(event.event.eventEnd), "M/dd/yyyy hh:mm a")}</p>
-                                </CardHeader>
-                                <CardContent>
-                                    {event.event.description}
-                                </CardContent>
-                                <CardFooter className="gap-4">
-                                    <div className="flex flex-col justify-start gap-2">
-                                        <Link href={"/calendar/view/" + event.event.id}><Button variant={new Date(event.event.eventStart) < new Date()? "outline" : "default"}>View Event</Button></Link>
-                                        {new Date(event.event.eventStart) < new Date()? <p className="text-muted-foreground text-xs ml-1">event over</p> : <></>}
-                                    </div>
-                                </CardFooter>
-                            </Card>
-                        );
-                    })}
+                    <Tabs defaultValue="calendar">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="calendar">Calendar</TabsTrigger>
+                            <TabsTrigger value="table">Table</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="table">
+                            <p className="text-2xl font-bold mb-5">All Events ({eventList.length})</p>
+                            {/*<EventTable data={eventsOnly}/>*/}
+                        </TabsContent>
+                        <TabsContent value="calendar">
+                            <p className="text-2xl font-bold mb-5">All Events ({eventList.length})</p>
+                            {eventList.map((event) => {
+                                return (
+                                    <Card key={event.id} className="mb-4">
+                                        <CardHeader>
+                                            <div className="flex flex-row items-center justify-between space-y-0 gap-2">
+                                                <CardTitle className="text-2xl">{event.event.title}</CardTitle>
+                                                <div>
+                                                    <ToggleGroup type="single" variant="default" defaultValue={event.response} disabled={new Date(event.event.rsvpDuedate) < new Date()}>
+                                                        <ToggleGroupItem value="YES" aria-label="Toggle check" onClick={() => updateRSVP(event.eventId, "YES")}>
+                                                            <Check className="h-4 w-4"/>
+                                                        </ToggleGroupItem>
+                                                        <ToggleGroupItem value="MAYBE" aria-label="Toggle question" onClick={() => updateRSVP(event.eventId, "MAYBE")}>
+                                                            <CircleHelp className="h-4 w-4"/>
+                                                        </ToggleGroupItem>
+                                                        <ToggleGroupItem value="NO" aria-label="Toggle x" onClick={() => updateRSVP(event.eventId, "NO")}>
+                                                            <X className="h-4 w-4"/>
+                                                        </ToggleGroupItem>
+                                                    </ToggleGroup>
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-muted-foreground">{format(new Date(event.event.eventStart), "M/dd/yyyy hh:mm a")} - {format(new Date(event.event.eventEnd), "M/dd/yyyy hh:mm a")}</p>
+                                        </CardHeader>
+                                        <CardContent>
+                                            {event.event.description}
+                                        </CardContent>
+                                        <CardFooter className="gap-4">
+                                            <div className="flex flex-col justify-start gap-2">
+                                                <Link href={"/calendar/view/" + event.event.id}><Button variant={new Date(event.event.eventStart) < new Date() ? "outline" : "default"}>View Event</Button></Link>
+                                                {new Date(event.event.eventStart) < new Date() ?
+                                                    <p className="text-muted-foreground text-xs ml-1">event over</p> : <></>}
+                                            </div>
+                                        </CardFooter>
+                                    </Card>
+                                );
+                            })}
+                        </TabsContent>
+                    </Tabs>
+
                 </div>
                 {nextRSVP ?
                     <div className="col-span-3 lg:col-span-1">
