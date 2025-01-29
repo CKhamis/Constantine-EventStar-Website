@@ -18,9 +18,20 @@ import {useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {EventTable} from "@/app/calendar/EventTable";
+import {EventType, InviteRigidity, RsvpResponse} from "@prisma/client";
 
 export interface Props {
     userId: string
+}
+
+export type UserEventTableRow = {
+    id: string,
+    title: string,
+    eventType: EventType,
+    eventStart: Date,
+    arrival: string,
+    inviteRigidity: InviteRigidity,
+    response: RsvpResponse,
 }
 
 export default function DynamicContent({userId}: Props) {
@@ -34,6 +45,7 @@ export default function DynamicContent({userId}: Props) {
         NO_RESPONSE?: number
     }>({YES: 0, NO: 0, MAYBE: 0, NO_RESPONSE: 0});
     const [nextRSVP, setNextRSVP] = useState<RsvpWithEvent | undefined>(undefined);
+    const [eventsOnly, setEventsOnly] = useState<UserEventTableRow[]>([]);
 
     const today = new Date();
 
@@ -55,6 +67,18 @@ export default function DynamicContent({userId}: Props) {
                         .filter(rsvp => (rsvp.response === "YES" || rsvp.response === "MAYBE") && new Date(rsvp.event.eventStart) >= today)
                         .sort((a, b) => new Date(a.event.eventStart).getUTCDate() - new Date(b.event.eventStart).getUTCDate())
                         .at(0));
+
+                    const events: UserEventTableRow[] = data.map((rsvp: RsvpWithEvent) => ({
+                        id: rsvp.event.id,
+                        title: rsvp.event.title,
+                        eventStart: rsvp.event.eventStart,
+                        inviteRigidity: rsvp.event.inviteRigidity,
+                        eventType: rsvp.event.eventType,
+                        response: rsvp.response,
+                        arrival: rsvp.arrival,
+                    }))
+
+                    setEventsOnly(events);
                 })
                 .finally(() => setLoading(false));
 
@@ -139,8 +163,7 @@ export default function DynamicContent({userId}: Props) {
                             <TabsTrigger value="table">Table</TabsTrigger>
                         </TabsList>
                         <TabsContent value="table">
-                            <p className="text-2xl font-bold mb-5">All Events ({eventList.length})</p>
-                            {/*<EventTable data={eventsOnly}/>*/}
+                            <EventTable data={eventsOnly}/>
                         </TabsContent>
                         <TabsContent value="calendar">
                             <p className="text-2xl font-bold mb-5">All Events ({eventList.length})</p>
@@ -173,7 +196,7 @@ export default function DynamicContent({userId}: Props) {
                                             <div className="flex flex-col justify-start gap-2">
                                                 <Link href={"/calendar/view/" + event.event.id}><Button variant={new Date(event.event.eventStart) < new Date() ? "outline" : "default"}>View Event</Button></Link>
                                                 {new Date(event.event.eventStart) < new Date() ?
-                                                    <p className="text-muted-foreground text-xs ml-1">event over</p> : <></>}
+                                                    <p className="text-muted-foreground text-xs ml-1">Event ended</p> : <></>}
                                             </div>
                                         </CardFooter>
                                     </Card>
@@ -181,10 +204,9 @@ export default function DynamicContent({userId}: Props) {
                             })}
                         </TabsContent>
                     </Tabs>
-
                 </div>
                 {nextRSVP ?
-                    <div className="col-span-3 lg:col-span-1">
+                    <div className="col-span-3 lg:col-span-1 hidden md:block">
                         <div className="flex flex-row justify-between items-center mb-4">
                             <p className="text-2xl font-bold">Next Event</p>
                             {nextRSVP.response === "NO_RESPONSE" ?
@@ -239,9 +261,10 @@ export default function DynamicContent({userId}: Props) {
                         </Card>
                     </div>
                     :
-                    <div className="flex flex-col items-center justify-center">
-                        <Image src="/agent/waiting.png" alt={"awkward"} height={200} width={200}/>
+                    <div className="flex flex-col items-center">
+                        <Image src="/agent/empty.png" className="mt-10" alt={"awkward"} height={150} width={150}/>
                         <p className="text-center text-2xl font-bold">No Events</p>
+                        <p className="text-center text-xs text-muted-foreground w-[250px] mt-3">Confirm your attendance to an upcoming event to see it here</p>
                     </div>
                 }
             </div>
