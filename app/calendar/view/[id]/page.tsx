@@ -1,18 +1,15 @@
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {CalendarPlus, ChevronLeft, Clock, LetterText, MapPin, Pencil, TriangleAlert} from "lucide-react";
+import {ChevronLeft, TriangleAlert} from "lucide-react";
 import {EventWithRsvp} from "@/components/Types";
 import axios from "axios";
 import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
-import {Badge} from "@/components/ui/badge";
-import {format} from "date-fns";
 import RsvpPanel from "@/app/calendar/view/[id]/RsvpPanel";
 import GuestList from "@/app/calendar/view/[id]/GuestList";
 import {auth} from "@/auth";
-import AdminAttendanceLog from "@/components/admin/AdminAttendanceLog";
 import Image from "next/image";
+import EventDetailsPanel from "@/app/calendar/view/[id]/EventDetailsPanel";
 
 type Params = Promise<{ id: string }>
 
@@ -65,61 +62,7 @@ export default async function ViewEventPage(props: { params: Params }){
                     </div>
                     <div className="grid items-start gap-5 lg:grid-cols-3 mt-5">
                         <div className="grid auto-rows-max items-start lg:col-span-2 mb-4">
-                            <Card className="glass-dark">
-                                <CardHeader className="flex flex-col md:flex-row justify-between gap-5 pb-4">
-                                    <CardTitle className="text-4xl font-bold">{eventData.title}</CardTitle>
-                                    <div className="flex flex-col md:flex-row gap-4">
-                                        <Link target="_blank" href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventData.title)}&dates=${encodeURIComponent(eventData.eventStart + '/' + eventData.eventEnd)}&details=${encodeURIComponent(eventData.description)}&location=${encodeURIComponent(eventData.address)}`}>
-                                            <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
-                                                <CalendarPlus/>
-                                                Add to Calendar
-                                            </Button>
-                                        </Link>
-                                        {session.user.role === "ADMIN" &&
-                                            <>
-                                                <AdminAttendanceLog eventId={eventId} text="Attendance"/>
-                                                <Link target="_blank" href={`/ESMT/calendar/${eventId}`}>
-                                                    <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
-                                                        <Pencil/>
-                                                        Edit
-                                                    </Button>
-                                                </Link>
-                                            </>}
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-1 gap-5">
-                                        <div className="flex flex-row justify-start gap-4">
-                                            <Badge variant="secondary">{eventData.eventType}</Badge>
-                                            <Badge variant="outline">{eventData.inviteRigidity}</Badge>
-                                        </div>
-
-                                        <div>
-                                            <div className="flex flex-row justify-start gap-2 items-center mb-1">
-                                                <Clock className="h-5 w-5"/>
-                                                <p>Date / Time</p>
-                                            </div>
-                                            <p className="text-muted-foreground">{format(eventData.eventStart, "MM/dd/yyyy h:mm a")} - {format(eventData.eventEnd, "MM/dd/yyyy h:mm a")}</p>
-                                        </div>
-
-                                        <div>
-                                            <div className="flex flex-row justify-start gap-2 items-center mb-1">
-                                                <MapPin className="h-5 w-5"/>
-                                                <p>Location</p>
-                                            </div>
-                                            <p className="text-muted-foreground">{eventData.address ? eventData.address : "None provided"}</p>
-                                        </div>
-
-                                        <div>
-                                            <div className="flex flex-row justify-start gap-2 items-center mb-1">
-                                                <LetterText className="h-5 w-5"/>
-                                                <p>Description</p>
-                                            </div>
-                                            <p className="text-muted-foreground">{eventData.description ? eventData.description : "No description provided"}</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                            <EventDetailsPanel eventData={eventData} role={session.user.role} />
                         </div>
                         <div className="flex flex-col gap-4 mb-4">
                             <RsvpPanel eventId={eventData.id} rsvpDue={eventData.rsvpDuedate} backgroundStyle={eventData.backgroundStyle}/>
