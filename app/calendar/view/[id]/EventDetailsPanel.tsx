@@ -21,7 +21,8 @@ export default function EventDetailsPanel({eventData, role}: Props){
             <CardHeader className="flex flex-col md:flex-row justify-between gap-5 pb-4">
                 <CardTitle className="text-4xl font-bold">{eventData.title}</CardTitle>
                 <div className="flex flex-col md:flex-row gap-4">
-                    <Link target="_blank" href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventData.title)}&dates=${encodeURIComponent(eventData.eventStart + '/' + eventData.eventEnd)}&details=${encodeURIComponent(eventData.description)}&location=${encodeURIComponent(eventData.address)}`}>
+                    <Link target="_blank"
+                          href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventData.title)}&dates=${encodeURIComponent(format(new Date(eventData.eventStart), "yyyyMMdd'T'HHmmss") + '/' + format(new Date(eventData.eventEnd), "yyyyMMdd'T'HHmmss"))}&details=${encodeURIComponent(eventData.description)}&location=${encodeURIComponent(eventData.address)}`}>
                         <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
                             <CalendarPlus/>
                             Add to Calendar
@@ -45,7 +46,6 @@ export default function EventDetailsPanel({eventData, role}: Props){
                         <Badge variant="secondary">{eventData.eventType}</Badge>
                         <Badge variant="outline">{eventData.inviteRigidity}</Badge>
                     </div>
-
                     <div>
                         <div className="flex flex-row justify-start gap-2 items-center mb-1">
                             <Clock className="h-5 w-5"/>

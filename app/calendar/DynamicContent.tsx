@@ -261,7 +261,7 @@ export default function DynamicContent({userId}: Props) {
                         </Card>
                     </div>
                     :
-                    <div className="flex flex-col items-center hidden md:block">
+                    <div className="flex-col justify-center items-center hidden md:flex">
                         <Image src="/agent/empty.png" className="mt-10" alt={"awkward"} height={150} width={150}/>
                         <p className="text-center text-2xl font-bold">No Events</p>
                         <p className="text-center text-xs text-muted-foreground w-[250px] mt-3">Confirm your attendance to an upcoming event to see it here</p>
