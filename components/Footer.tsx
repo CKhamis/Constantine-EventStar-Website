@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Footer(){
     return (
         <footer className="w-full border-t glass-dark" style={{
-            backgroundImage: `url('/tiles/ES & Logo Dark.svg')`,
+            backgroundImage: `url('/tiles/logoTiles.svg')`,
             backgroundSize: '120px'
         }}>
             <div className="container grid lg:grid-cols-5 md:grid-cols-2 md:grid-flow-col gap-4 py-10 px-3">

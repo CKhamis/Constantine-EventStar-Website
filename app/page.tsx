@@ -26,7 +26,7 @@ export default async function Home() {
                             <CarouselItem>
                                 <div className="p-1">
                                     <Card style={{
-                                        backgroundImage: `url('/tiles/ES & Logo Dark.svg')`,
+                                        backgroundImage: `url('/tiles/logoTiles.svg')`,
                                         backgroundSize: '120px'
                                     }}>
                                         <CardContent className="flex items-center flex-col justify-center p-6 my-10">
@@ -92,7 +92,7 @@ export default async function Home() {
                     <CarouselItem>
                             <div className="p-1">
                                 <Card style={{
-                                    backgroundImage: `url('/tiles/ES & Logo Dark.svg')`,
+                                    backgroundImage: `url('/tiles/logoTiles.svg')`,
                                     backgroundSize: '120px'
                                 }}>
                                     <CardContent className="flex items-center flex-col justify-center p-6 my-10">
