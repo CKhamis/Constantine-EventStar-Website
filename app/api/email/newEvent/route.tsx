@@ -10,9 +10,9 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: NextRequest) {
     const session =  await auth();
 
-    // if(!session || !session.user || session.user.role !== "ADMIN"){
-    //     return NextResponse.json("Approved login required", {status: 401});
-    // }
+    if(!session || !session.user || session.user.role !== "ADMIN"){
+        return NextResponse.json("Approved login required", {status: 401});
+    }
 
     const body = await request.json();
     const validation = emailNotificationSchema.safeParse(body);
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
             </p>
             <div style="background: lightgray; background: rgba(0,0,0,0.05); padding: 15px; border-left: 4px solid #4caf50; margin-bottom: 20px; border-radius: 0px;">
               <h2 style="margin: 0 0 10px; font-size: 20px; color: black;">${existingEvent.title}</h2>
-              <p style="margin: 5px 0; font-size: 14px; color: black;"><strong>Date & Time:</strong> ${format(existingEvent.eventStart, 'MM/dd/yyyy HH:MM a')} - ${format(existingEvent.eventEnd, 'MM/dd/yyyy HH:MM a')}</p>
+              <p style="margin: 5px 0; font-size: 14px; color: black;"><strong>Date & Time:</strong> ${format(existingEvent.eventStart, 'MM/dd/yyyy h:mm a')} - ${format(existingEvent.eventEnd, 'MM/dd/yyyy h:mm a')}</p>
               <p style="margin: 5px 0; font-size: 14px; color: black;"><strong>Description:</strong> ${existingEvent.description}</p>
             </div>
             <a href="https://eventstar.costionline.com/calendar/view/${existingEvent.id}" style="
