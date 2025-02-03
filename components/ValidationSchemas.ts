@@ -15,6 +15,11 @@ const EventType = z.enum([
 const ReminderAmount = z.enum(["OBSESSIVE", "PUSHY", "MEDIUM", "LIGHT", "ONCE", "NONE"]);
 
 // Validation Schemas
+export const emailNotificationSchema = z.object({
+    id: z.string().uuid(),
+    to: z.array(z.string())
+})
+
 export const connectionSchema = z.object({
     id1:z.string().cuid(),
     id2:z.string().cuid(),

@@ -1,19 +1,45 @@
 import {NextRequest, NextResponse} from "next/server";
 import { Resend } from 'resend';
-import {emailNewEventRequest} from "@/components/Types";
+import {emailNotificationSchema} from "@/components/ValidationSchemas";
+import {auth} from "@/auth";
+import prisma from "@/prisma/client";
+import {format} from "date-fns";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
-    const body:emailNewEventRequest = await request.json();
+    const session =  await auth();
 
-    await resend.emails.send({
-        from: 'EventStar <onboarding@resend.dev>',
-        to: body.to,
-        scheduledAt: body.scheduledAt,
-        subject: body.subject,
-        // react: <NewEvent eventStart={body.eventStart} eventEnd={body.eventEnd} eventName={body.eventName} eventDescription={body.eventDescription} />
-        html: `
+    // if(!session || !session.user || session.user.role !== "ADMIN"){
+    //     return NextResponse.json("Approved login required", {status: 401});
+    // }
+
+    const body = await request.json();
+    const validation = emailNotificationSchema.safeParse(body);
+
+    if(!validation.success){
+        return NextResponse.json(validation.error.format(), {status: 400});
+    }
+
+    try {
+        const existingEvent = await prisma.event.findUnique({
+            where: {
+                id: body.id,
+            }
+        });
+
+        if(existingEvent == null){
+            return NextResponse.json({ message: "Event not found" }, { status: 404 });
+        }
+
+
+        const test = await resend.emails.send({
+            from: 'EventStar <onboarding@resend.dev>',
+            to: body.to,
+            scheduledAt: "in 1 min",
+            subject: "You're Invited!",
+            // react: <NewEvent eventStart={body.eventStart} eventEnd={body.eventEnd} eventName={body.eventName} eventDescription={body.eventDescription} />
+            html: `
       <div style="font-family: Arial, sans-serif; padding: 20px; margin: 0; line-height: 1.5; color: white;">
         <div style="max-width: 600px; margin: 0 auto; background: lightgray; border-radius: .5rem; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); border-width: 1px; border-color: #262626">
           <!-- Header Section -->
@@ -29,11 +55,11 @@ export async function POST(request: NextRequest) {
               You have been invited to an event hosted by <strong>EventStar</strong>! Please make sure to RSVP before the due date.
             </p>
             <div style="background: lightgray; background: rgba(0,0,0,0.05); padding: 15px; border-left: 4px solid #4caf50; margin-bottom: 20px; border-radius: 0px;">
-              <h2 style="margin: 0 0 10px; font-size: 20px; color: black;">${body.eventName}</h2>
-              <p style="margin: 5px 0; font-size: 14px; color: black;"><strong>Date & Time:</strong> ${body.eventStart} - ${body.eventEnd}</p>
-              <p style="margin: 5px 0; font-size: 14px; color: black;"><strong>Description:</strong> ${body.eventDescription}</p>
+              <h2 style="margin: 0 0 10px; font-size: 20px; color: black;">${existingEvent.title}</h2>
+              <p style="margin: 5px 0; font-size: 14px; color: black;"><strong>Date & Time:</strong> ${format(existingEvent.eventStart, 'MM/dd/yyyy HH:MM a')} - ${format(existingEvent.eventEnd, 'MM/dd/yyyy HH:MM a')}</p>
+              <p style="margin: 5px 0; font-size: 14px; color: black;"><strong>Description:</strong> ${existingEvent.description}</p>
             </div>
-            <a href="https://eventstar.costionline.com/calendar/view/${body.eventLink}" style="
+            <a href="https://eventstar.costionline.com/calendar/view/${existingEvent.id}" style="
                 display: inline-block;
                 padding: 10px 20px;
                 font-size: 16px;
@@ -51,10 +77,13 @@ export async function POST(request: NextRequest) {
         </div>
       </div>
     `,
-    });
+        });
+        console.log(test);
 
 
-
-    return NextResponse.json("sent", { status: 200 });
-
+        return NextResponse.json("sent", { status: 200 });
+    } catch (e) {
+        console.error(e);
+        return NextResponse.json({ message: "An error occurred" }, { status: 500 });
+    }
 }
