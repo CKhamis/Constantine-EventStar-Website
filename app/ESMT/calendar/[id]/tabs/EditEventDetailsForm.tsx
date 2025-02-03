@@ -26,10 +26,11 @@ import {RsvpWithUser} from "@/components/Types";
 import {GradientPicker} from "@/components/ui/GradientPicker";
 
 interface EditEventFormProps {
-    eventId: string
+    eventId: string;
+    refresh: () => Promise<void>;
 }
 
-export default function EditEventForm({ eventId }: EditEventFormProps) {
+export default function EditEventForm({ eventId, refresh }: EditEventFormProps) {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([])
     const [rsvpGuests, setRsvpGuests] = useState<RsvpWithUser[]>([])
@@ -81,7 +82,7 @@ export default function EditEventForm({ eventId }: EditEventFormProps) {
         try {
             setIsLoading(true)
             await axios.post(`/api/esmt/events/edit`, values)
-            fetchEventData().then(() => setIsLoading(false))
+            fetchEventData().then(() => refresh()).then(() => setIsLoading(false))
         } catch (e) {
             setIsLoading(false)
             console.log(e)
