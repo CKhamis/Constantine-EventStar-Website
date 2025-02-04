@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
         }
 
 
-        const test = await resend.emails.send({
-            from: 'EventStar <onboarding@resend.dev>',
+        const result = await resend.emails.send({
+            from: 'EventStar <donotreply@costionline.com>',
             to: body.to,
             scheduledAt: "in 1 min",
             subject: "You're Invited!",
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
           <div style="padding: 20px;background-color: rgb(250, 250, 250);">
             <p style="font-size: 16px; margin: 0 0 10px; color: black">Hi,</p>
             <p style="font-size: 16px; margin: 0 0 20px; color: black">
-              You have been invited to an event hosted by <strong>EventStar</strong>! Please make sure to RSVP before the due date.
+              You have been invited to an event hosted by <strong>EventStar</strong>! Please make sure to RSVP before the due date. Event information can change since this email has been sent. Please view the event for the most up to date info.
             </p>
             <div style="background: lightgray; background: rgba(0,0,0,0.05); padding: 15px; border-left: 4px solid #4caf50; margin-bottom: 20px; border-radius: 0px;">
               <h2 style="margin: 0 0 10px; font-size: 20px; color: black;">${existingEvent.title}</h2>
@@ -78,10 +78,19 @@ export async function POST(request: NextRequest) {
       </div>
     `,
         });
-        console.log(test);
 
+        await prisma.event.update({
+            where: {
+                id: body.id,
+            },
+            data: {
+                reminderCount: existingEvent.reminderCount + 1
+            }
+        });
 
-        return NextResponse.json("sent", { status: 200 });
+        console.log(result);
+
+        return NextResponse.json(result, { status: 200 });
     } catch (e) {
         console.error(e);
         return NextResponse.json({ message: "An error occurred" }, { status: 500 });

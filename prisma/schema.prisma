@@ -137,6 +137,7 @@ model Event {
   inviteRigidity  InviteRigidity
   eventType       EventType
   reminderAmount  ReminderAmount
+  reminderCount   Int            @default(0)
   RSVP            Rsvp[]
   author          User           @relation(fields: [authorId], references: [id])
   authorId        String

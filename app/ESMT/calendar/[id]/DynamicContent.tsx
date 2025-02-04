@@ -17,6 +17,7 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import Attendance from "@/app/ESMT/calendar/[id]/tabs/Attendance";
 import {format} from "date-fns";
 import EditEventDetailsForm from "@/app/ESMT/calendar/[id]/tabs/EditEventDetailsForm";
+import Notifications from "@/app/ESMT/calendar/[id]/tabs/Notifications";
 
 export interface Props{
     eventId: string;
@@ -97,12 +98,14 @@ export default function UserInfo({eventId}: Props){
                         {/*</DropdownMenu>*/}
                     </div>
                     <Tabs defaultValue="details" className="w-100 mt-4">
-                        <TabsList className="grid w-full grid-cols-2 mb-5">
+                        <TabsList className="grid w-full grid-cols-3 mb-5">
                             <TabsTrigger value="details">Details</TabsTrigger>
                             <TabsTrigger value="attendance">Attendance</TabsTrigger>
+                            <TabsTrigger value="notifications">Notifications</TabsTrigger>
                         </TabsList>
                         <TabsContent value="details" className="max-w-xl mx-auto glass-dark p-4 rounded-lg"><EditEventDetailsForm eventId={eventId} refresh={refresh}/></TabsContent>
                         <TabsContent value="attendance"><Attendance eventDetails={event} refresh={refresh} /></TabsContent>
+                        <TabsContent value="notifications"><Notifications eventDetails={event} refresh={refresh} /></TabsContent>
                     </Tabs>
                 </div>
             </div>
