@@ -75,6 +75,10 @@ export async function POST(request: NextRequest) {
             <p style="margin: 0; color:black">Thank you for using Constantine EventStar!</p>
           </div>
         </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <p style="margin: 5px 0; font-size: 14px; color: black;">You can opt out of EventStar communications like this in <a href="https://eventstar.costionline.com/profile">Profile Settings</a></p>
+          </div>
       </div>
     `,
         });

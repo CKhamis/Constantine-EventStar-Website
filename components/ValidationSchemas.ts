@@ -143,5 +143,5 @@ export const editEventSchema = z.object({
     RSVP: z.array(
         z.string().cuid(),
     ).optional(),
-    authorId: z.string().cuid()
+    authorId: z.string().cuid(),
 })

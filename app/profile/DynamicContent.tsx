@@ -141,7 +141,7 @@ export default function DynamicContent({eventList}: Props) {
                     </TabsContent>
                     <TabsContent value="settings">
                         <p className="text-2xl font-bold mb-4">Settings</p>
-                        <AccountSettings accountList={user.accounts} refresh={refresh}/>
+                        <AccountSettings accountList={user.accounts} user={user} refresh={refresh}/>
                     </TabsContent>
                 </Tabs>
             </div>

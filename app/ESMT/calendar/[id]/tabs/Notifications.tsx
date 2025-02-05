@@ -12,7 +12,7 @@ export default function Notifications({eventDetails, refresh}: Props){
 
     const sendNotification = async () => {
         try {
-            await axios.post("/api/esmt/events/email/newEvent", {id: eventDetails.id, to: eventDetails.RSVP.map((rsvp) => rsvp.User.email)})
+            await axios.post("/api/esmt/events/email/newEvent", {id: eventDetails.id, to: eventDetails.RSVP.filter((rsvp) => rsvp.User.newEventEmails).map((rsvp) => rsvp.User.email)})
                 .then(refresh)
         } catch (err) {
             console.error("Error fetching users:", err);
@@ -30,7 +30,7 @@ export default function Notifications({eventDetails, refresh}: Props){
                     <CardTitle className="text-xl font-bold">Send Email Notification</CardTitle>
                 </CardHeader>
                 <CardContent className="">
-                    <p>Sends an email notification to all guests to the event. This event has {eventDetails.RSVP.length} guest{eventDetails.RSVP.length === 1? "" : "s"}.</p>
+                    <p>Sends an email notification to all guests to the event. This event has {eventDetails.RSVP.length} guest{eventDetails.RSVP.length === 1? "" : "s"} and {eventDetails.RSVP.filter((rsvp) => rsvp.User.newEventEmails).length} have New Event Emails turned on.</p>
                     <Button onClick={sendNotification} className="mt-5">Send to All</Button>
                 </CardContent>
             </Card>

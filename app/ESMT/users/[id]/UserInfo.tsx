@@ -99,7 +99,7 @@ export default function UserInfo({userId}: Props){
                 <TabsContent value="groups"><Groups excludedGroups={excludedGroups} refresh={refresh} groupList={user.groups} userId={user.id} /></TabsContent>
                 <TabsContent value="attendance"><Attendance rsvp={user.rsvp} userId={user.id} refresh={refresh} /></TabsContent>
                 <TabsContent value="polariscope">To be added in a future update.</TabsContent>
-                <TabsContent value="settings"><UserSettings accountList={user.accounts} refreshAction={refresh} /></TabsContent>
+                <TabsContent value="settings"><UserSettings accountList={user.accounts} user={user} refreshAction={refresh} /></TabsContent>
             </Tabs>
 
         </div>

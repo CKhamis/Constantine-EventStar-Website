@@ -42,6 +42,8 @@ model User {
   cardId        String?   @unique
   points        Int       @default(0)
 
+  newEventEmails Boolean @default(true)
+
   accounts Account[]
   sessions Session[]
   groups   Group[]   @relation(name: "group-user")
