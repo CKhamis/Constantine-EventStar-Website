@@ -1,7 +1,6 @@
 // WebSpy Interceptor
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import {auth} from "@/auth";
 import axios from "axios";
 
 // Request
@@ -30,15 +29,17 @@ type RequestReport = {
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
-    const session =  await auth();
+    if(!process.env.WEBSPY_URL || process.env.WEBSPY_URL === "" || process.env.WEBSPY_URL === undefined){
+        return NextResponse.next();
+    }
 
     const report: RequestReport = {
         domain_id: "EventStar",
         ip: request.headers.get("x-forwarded-for")?? "unknown",
         client_port: request.nextUrl.port,
-        client_user: session?.user?.id?? "None",
+        client_user: "Unknown",
         client_locale: request.nextUrl.defaultLocale?? "?",
-        session: session?.expires?? "Unknown",
+        session: "Unknown",
         cookies: request.cookies.getAll().map((cookie) => cookie.name.toString() + ": " + cookie.value.toString()).join(", "),
         request_uri: request.nextUrl.pathname,
         request_url: request.url,
@@ -49,9 +50,20 @@ export async function middleware(request: NextRequest) {
         user_agent: request.headers.get("User-Agent")?? "None"
     }
 
-    try{
-        await axios.post("http://localhost:8080/report", report)
-    }catch(e){
+    try {
+        // Axios is not supported in the Edge runtime for some reason
+        const response = await fetch(process.env.WEBSPY_URL, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(report)
+        });
+
+        if (response.ok) {
+            return NextResponse.next();
+        } else {
+            return NextResponse.error();
+        }
+    } catch (e) {
         return NextResponse.error();
     }
 }
