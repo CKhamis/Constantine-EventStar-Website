@@ -59,6 +59,10 @@ export async function middleware(request: NextRequest) {
         });
 
         if (response.ok) {
+            const body: {"is_blocked": boolean, "message": string, "expire": string} = await response.json();
+            if(body.is_blocked){
+                return NextResponse.error();
+            }
             return NextResponse.next();
         } else {
             return NextResponse.error();
