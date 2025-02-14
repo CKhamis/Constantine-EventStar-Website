@@ -132,9 +132,9 @@ model Event {
   backgroundStyle String
   title           String         @db.VarChar(255)
   address         String         @db.VarChar(255)
-  eventStart      DateTime       @db.DateTime()
-  eventEnd        DateTime       @db.DateTime()
-  rsvpDuedate     DateTime       @db.DateTime()
+  eventStart      DateTime       @db.DateTime(0)
+  eventEnd        DateTime       @db.DateTime(0)
+  rsvpDuedate     DateTime       @db.DateTime(0)
   description     String         @db.LongText
   inviteRigidity  InviteRigidity
   eventType       EventType
