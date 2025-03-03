@@ -1,19 +1,14 @@
-import {enrollerResponse} from "@/components/Types";
 import {Button} from "@/components/ui/button";
 import Image from "next/image";
 import axios from "axios";
 import {useRouter} from "next/navigation";
 
-export type Props = {
-    enrollerResponse: enrollerResponse;
-}
-
-export default function Final({enrollerResponse}: Props){
+export default function Final(){
     const router = useRouter();
 
     async function invalidateToken() {
         try{
-            await axios.post('/api/users/enrollment/delete', {id: enrollerResponse.id});
+            await axios.post('/api/user/setup/finish', {});
             router.push("/api/auth/signin");
         }catch(e){
             console.log(e)

@@ -12,7 +12,7 @@ import About from "@/app/enrollment/[id]/slides/About";
 import HostNote from "@/app/enrollment/[id]/slides/HostNote";
 import Instructions from "@/app/enrollment/[id]/slides/Instructions";
 import {enrollerResponse} from "@/components/Types";
-import Review from "@/app/enrollment/[id]/slides/Review";
+import Review from "@/app/enrollment/[id]/slides/FollowPrompt";
 import Final from "@/app/enrollment/[id]/slides/Final";
 
 export type Props = {

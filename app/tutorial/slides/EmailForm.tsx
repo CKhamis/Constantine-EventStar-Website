@@ -1,41 +1,60 @@
 'use client'
 
 import z from 'zod'
-import {enrollerResponse} from "@/components/Types";
+import {basicUserInfo} from "@/components/Types";
 import AvatarIcon from "@/components/AvatarIcon";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {enrollmentSchema} from "@/components/ValidationSchemas";
+import {editBasicUserInfoSchema} from "@/components/ValidationSchemas";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import axios from "axios";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import {Input} from "@/components/ui/input";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Loader2} from "lucide-react";
 import {Button} from "@/components/ui/button";
 
 export type Props = {
-    enrollerResponse: enrollerResponse;
     enableNextAction: () => void;
 }
 
-export default function EmailForm({enrollerResponse, enableNextAction}: Props){
-    const form = useForm<z.infer<typeof enrollmentSchema>>({
-        resolver: zodResolver(enrollmentSchema),
+export default function EmailForm({enableNextAction}: Props){
+    const form = useForm<z.infer<typeof editBasicUserInfoSchema>>({
+        resolver: zodResolver(editBasicUserInfoSchema),
         defaultValues: {
-            enrollerId: enrollerResponse.id,
-            phoneNumber: enrollerResponse.user.phoneNumber ?? undefined,
-            email: enrollerResponse.user.email ?? undefined,
-            discordId: enrollerResponse.user.discordId ?? undefined,
+            phoneNumber: "",
+            name: "",
+            discordId: "",
         },
     });
-
     const [loading, setLoading] = useState<boolean>(false);
+    const [imageUrl, setImageUrl] = useState<string>("");
+    const [name, setName] = useState<string>("New User");
 
-    async function onSubmit(values: z.infer<typeof enrollmentSchema>) {
+
+    async function loadUserData() {
         try{
             setLoading(true);
-            await axios.post('/api/users/enrollment/editUser', values);
+            await axios.get('/api/user/setup/info')
+                .then((response) => {
+                    const userInfo = response.data;
+                    form.setValue("name", userInfo.name || "");
+                    form.setValue("discordId", userInfo.discordId || "");
+                    form.setValue("phoneNumber", userInfo.phoneNumber || "");
+                    setName(userInfo.name);
+                    setImageUrl(userInfo.image);
+                });
+        }catch(e){
+            console.log(e)
+        }finally {
+            setLoading(false);
+        }
+    }
+
+    async function onSubmit(values: z.infer<typeof editBasicUserInfoSchema>) {
+        try{
+            setLoading(true);
+            await axios.post('/api/user/setup/edit', values);
             enableNextAction();
         }catch(e){
             console.log(e)
@@ -44,10 +63,14 @@ export default function EmailForm({enrollerResponse, enableNextAction}: Props){
         }
     }
 
+    useEffect(() => {
+        loadUserData();
+    }, []);
+
     return (
         <div className="flex flex-col justify-center items-center">
             <p className="text-3xl font-bold">Account Setup</p>
-            <p className="text-center">Make sure your email matches what you will use to sign in with next!</p>
+            <p className="text-center">Make sure your information is accurate and up to date.</p>
 
             <Card className="mt-10 w-[25rem]">
                 <CardHeader>
@@ -56,9 +79,9 @@ export default function EmailForm({enrollerResponse, enableNextAction}: Props){
                 <CardContent className="flex flex-row items-center justify-center">
                     <div className="flex flex-row justify-between items-center">
                         <div className="flex flex-row items-center gap-5">
-                            <AvatarIcon name={enrollerResponse.user.name} image={enrollerResponse.user.image} size={"large"}/>
+                            <AvatarIcon name={name} image={imageUrl} size={"large"}/>
                             <div>
-                                <p className="font-bold text-2xl">{enrollerResponse.user.name}</p>
+                                <p className="font-bold text-2xl">{name}</p>
                             </div>
                         </div>
                     </div>
@@ -68,12 +91,14 @@ export default function EmailForm({enrollerResponse, enableNextAction}: Props){
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                             <FormField
                                 control={form.control}
-                                name="enrollerId"
+                                name="name"
                                 render={({ field }) => (
                                     <FormItem>
+                                        <FormLabel>Name</FormLabel>
                                         <FormControl>
-                                            <Input type="hidden" {...field} />
+                                            <Input type="text" placeholder="Costi Khamis" {...field} />
                                         </FormControl>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -92,25 +117,12 @@ export default function EmailForm({enrollerResponse, enableNextAction}: Props){
                             />
                             <FormField
                                 control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                            <Input type="email" placeholder="john.doe@example.com" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
                                 name="discordId"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Discord ID</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="johndoe#1234" {...field} />
+                                            <Input placeholder="costiboasty" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

@@ -109,23 +109,24 @@ model Rsvp {
 }
 
 model Event {
-  id              String    @id @default(uuid())
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id               String                @id @default(uuid())
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
   // imageName       String
   // imageData       Bytes
-  backgroundStyle String
-  title           String    @db.VarChar(255)
-  address         String    @db.VarChar(255)
-  eventStart      DateTime  @db.DateTime(0)
-  eventEnd        DateTime  @db.DateTime(0)
-  rsvpDuedate     DateTime  @db.DateTime(0)
-  description     String    @db.LongText
-  eventType       EventType
-  reminderCount   Int       @default(0)
-  RSVP            Rsvp[]
-  author          User      @relation(fields: [authorId], references: [id])
-  authorId        String
+  backgroundStyle  String
+  title            String                @db.VarChar(255)
+  address          String                @db.VarChar(255)
+  eventStart       DateTime              @db.DateTime(0)
+  eventEnd         DateTime              @db.DateTime(0)
+  rsvpDuedate      DateTime              @db.DateTime(0)
+  description      String                @db.LongText
+  eventType        EventType
+  inviteVisibility EventInviteVisibility @default(FULL)
+  reminderCount    Int                   @default(0)
+  RSVP             Rsvp[]
+  author           User                  @relation(fields: [authorId], references: [id])
+  authorId         String
 }
 
 // Enums
@@ -148,4 +149,10 @@ enum EventType {
   CEREMONY
   MEETING
   CELEBRATION
+}
+
+enum EventInviteVisibility {
+  FULL
+  TOTALS_ONLY
+  NONE
 }
