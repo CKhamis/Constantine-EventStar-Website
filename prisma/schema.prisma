@@ -38,29 +38,14 @@ model User {
   event         Event[]
   rsvp          Rsvp[]
   role          UserRole  @default(USER)
-  pin           String    @unique
-  cardId        String?   @unique
-  points        Int       @default(0)
+  followedBy    User[]    @relation("UserFollows")
+  following     User[]    @relation("UserFollows")
 
+  tutorial       Boolean @default(true)
   newEventEmails Boolean @default(true)
 
   accounts Account[]
   sessions Session[]
-  groups   Group[]   @relation(name: "group-user")
-
-  enrollmentTicket          Enroller?  @relation(name: "ticket")
-  authoredEnrollmentTickets Enroller[] @relation(name: "authoredTickets")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Group {
-  id          String @id @default(cuid())
-  name        String
-  description String @db.LongText
-  status      Status @default(ACTIVE)
-  users       User[] @relation(name: "group-user")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -124,51 +109,29 @@ model Rsvp {
 }
 
 model Event {
-  id              String         @id @default(uuid())
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id              String    @id @default(uuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   // imageName       String
   // imageData       Bytes
   backgroundStyle String
-  title           String         @db.VarChar(255)
-  address         String         @db.VarChar(255)
-  eventStart      DateTime       @db.DateTime(0)
-  eventEnd        DateTime       @db.DateTime(0)
-  rsvpDuedate     DateTime       @db.DateTime(0)
-  description     String         @db.LongText
-  inviteRigidity  InviteRigidity
+  title           String    @db.VarChar(255)
+  address         String    @db.VarChar(255)
+  eventStart      DateTime  @db.DateTime(0)
+  eventEnd        DateTime  @db.DateTime(0)
+  rsvpDuedate     DateTime  @db.DateTime(0)
+  description     String    @db.LongText
   eventType       EventType
-  reminderAmount  ReminderAmount
-  reminderCount   Int            @default(0)
+  reminderCount   Int       @default(0)
   RSVP            Rsvp[]
-  author          User           @relation(fields: [authorId], references: [id])
+  author          User      @relation(fields: [authorId], references: [id])
   authorId        String
-}
-
-model Enroller {
-  id      String   @id @default(cuid())
-  expires DateTime
-  user    User     @relation(fields: [userId], references: [id], name: "ticket")
-  userId  String   @unique
-
-  author   User   @relation(fields: [authorId], references: [id], name: "authoredTickets")
-  authorId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 // Enums
 enum UserRole {
   OWNER
-  ADMIN
   USER
-}
-
-enum Status {
-  ACTIVE
-  INACTIVE
-  DORMANT
 }
 
 enum RsvpResponse {
@@ -178,12 +141,6 @@ enum RsvpResponse {
   NO_RESPONSE
 }
 
-enum InviteRigidity {
-  OPEN_INVITE
-  ASK_HOST
-  INVITE_ONLY
-}
-
 enum EventType {
   PARTY
   HANGOUT
@@ -191,13 +148,4 @@ enum EventType {
   CEREMONY
   MEETING
   CELEBRATION
-}
-
-enum ReminderAmount {
-  OBSESSIVE
-  PUSHY
-  MEDIUM
-  LIGHT
-  ONCE
-  NONE
 }
