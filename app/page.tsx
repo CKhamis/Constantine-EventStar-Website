@@ -11,10 +11,14 @@ import Image from "next/image";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import {Angry, CalendarCheck, ChartSpline, IdCard, Landmark, Sparkle, Star, Info} from "lucide-react";
+import {redirect} from "next/navigation";
 
 export default async function Home() {
     const session = await auth();
     if (session){
+        if(session.user && session.user.tutorial){
+            redirect("/tutorial");
+        }
         return (
             <>
                 <TopBar/>
