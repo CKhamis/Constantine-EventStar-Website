@@ -7,7 +7,7 @@ import {useForm} from "react-hook-form";
 import z from "zod";
 import {editBasicUserInfoSchema, emailSchema} from "@/components/ValidationSchemas";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {Loader2} from "lucide-react";
+import {Check, Loader2, X} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {useState} from "react";
 import axios from "axios";
@@ -20,17 +20,17 @@ export default function FollowPrompt(){
         },
     });
     const [loading, setLoading] = useState<boolean>(false);
-    const [statusMessage, setStatusMessage] = useState<string>("");
+    const [statusMessage, setStatusMessage] = useState<React.ReactElement>(<></>);
 
     async function onSubmit(values: z.infer<typeof emailSchema>) {
         try{
             setLoading(true);
             await axios.post('/api/user/connections/newRequest', values)
                 .then((response) => {
-                    setStatusMessage(response.data.message);
+                    setStatusMessage(<p className="text-green-400 flex flex-row gap-2"><Check />{response.data.message}</p>);
                 })
                 .catch((error) => {
-                    setStatusMessage(error.response.data.message);
+                    setStatusMessage(<p className="text-red-400 flex flex-row gap-2"><X />{error.response.data.message}</p>);
                 });
 
         }catch(e){
@@ -66,7 +66,7 @@ export default function FollowPrompt(){
                                 {loading && <Loader2 className="animate-spin"/>}
                                 Send Request
                             </Button>
-                            <p className="">{statusMessage}</p>
+                            {statusMessage}
                         </form>
                     </Form>
                 </CardContent>
