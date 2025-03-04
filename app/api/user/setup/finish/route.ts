@@ -1,23 +1,15 @@
 import { PrismaClient } from '@prisma/client';
-import {NextRequest, NextResponse} from "next/server";
-import {editBasicUserInfoSchema} from "@/components/ValidationSchemas";
+import {NextResponse} from "next/server";
 import {auth} from "@/auth";
 
 
 const prisma = new PrismaClient();
 
-export async function POST(request: NextRequest){
+export async function POST(){
     const session =  await auth();
 
     if(!session || !session.user){
         return NextResponse.json("Approved login required", {status: 401});
-    }
-
-    const body = await request.json();
-    const validation = editBasicUserInfoSchema.safeParse(body);
-
-    if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
     }
 
     try {
