@@ -39,6 +39,11 @@ export async function POST(request: NextRequest){
             return NextResponse.json({ message: "User not found" }, { status: 404 });
         }
 
+        // Check if the referenced user is the same user who is requesting
+        if(existingUser.id === userToFollow.id){
+            return NextResponse.json({ message: "You cannot follow yourself." }, {status: 400});
+        }
+
         // Check to see if a request already exists
         const existingRequest = await prisma.followRequest.findFirst({
             where: {
