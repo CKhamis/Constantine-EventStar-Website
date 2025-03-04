@@ -28,6 +28,9 @@ export default function FollowPrompt(){
             await axios.post('/api/user/connections/newRequest', values)
                 .then((response) => {
                     setStatusMessage(response.data.message);
+                })
+                .catch((error) => {
+                    setStatusMessage(error.response.data.message);
                 });
 
         }catch(e){

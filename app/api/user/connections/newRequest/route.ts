@@ -39,6 +39,20 @@ export async function POST(request: NextRequest){
             return NextResponse.json({ message: "User not found" }, { status: 404 });
         }
 
+        // Check to see if a request already exists
+        const existingRequest = await prisma.followRequest.findFirst({
+            where: {
+                receiverId: userToFollow.id,
+                senderId: existingUser.id
+            },
+        });
+
+        if(existingRequest){
+            return NextResponse.json({ message: "Request already sent" }, { status: 400 });
+        }
+
+        // todo: Check if user is already following
+
         // Create Follow Request
         const newEvent = await prisma.followRequest.create({
             data: {
