@@ -7,7 +7,7 @@ import AccountButton from "@/components/AccountButton";
 export default function MainNav({children}: PropsWithChildren){
     const menuItems = [
         {title: 'Feed', iconUrl: '/icons/Feed.svg', link: '/feed'},
-        {title: 'Events2', iconUrl: '/icons/Events.svg', link: '/calendar'}
+        {title: 'New Event', iconUrl: '/icons/NewEvent.svg', link: '/newEvent'}
     ];
 
     return(
