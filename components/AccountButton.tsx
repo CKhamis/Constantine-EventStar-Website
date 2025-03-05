@@ -17,8 +17,8 @@ export default async function AccountButton(){
         return (
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="secondary" size="icon" className="rounded-full">
-                        <Avatar className="h-9 w-9 sm:flex">
+                    <Button variant="secondary" size="icon" className="rounded-full h-7 w-7">
+                        <Avatar className="h-7 w-7 sm:flex">
                             {session.user.image && <AvatarImage src={session.user.image} alt={`${session.user.name}`}/>}
                             {session.user && <AvatarFallback>{session.user.name}</AvatarFallback>}
                             <AvatarFallback><PersonStanding /></AvatarFallback>

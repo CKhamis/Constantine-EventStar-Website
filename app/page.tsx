@@ -12,6 +12,7 @@ import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import {Angry, CalendarCheck, ChartSpline, IdCard, Landmark, Sparkle, Star, Info} from "lucide-react";
 import {redirect} from "next/navigation";
+import MainNav from "@/components/MainNav";
 
 export default async function Home() {
     const session = await auth();
@@ -19,9 +20,14 @@ export default async function Home() {
         if(session.user && session.user.tutorial){
             redirect("/tutorial");
         }
+        // return (
+        //     <MainNav>
+        //         <p>test</p>
+        //     </MainNav>
+        // )
         return (
-            <>
-                <TopBar/>
+            <MainNav>
+                {/*<TopBar/>*/}
                 <div className="container mt-4">
                     <p className="mb-3 font-bold text-4xl">Welcome back, {session.user?.name}</p>
 
@@ -83,7 +89,7 @@ export default async function Home() {
                     <br className="my-8"/>
                 </div>
                 <Footer/>
-            </>
+            </MainNav>
         );
     }
 
