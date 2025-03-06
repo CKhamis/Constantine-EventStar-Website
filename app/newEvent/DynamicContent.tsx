@@ -21,11 +21,12 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {EventInviteVisibility, EventType} from "@prisma/client";
 import {Textarea} from "@/components/ui/textarea";
 import axios from "axios";
-import UserSelection from "@/app/deprecated pages/ESMT/calendar/new/UserSelection";
+import UserSelect from "@/components/UserSelect";
 
 export default function DynamicContent() {
     const [loading, setLoading] = useState(false);
     const [editing, setEditing] = useState(false);
+    const [followers, setFollowers] = useState([]);
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([]);
 
     const form = useForm<z.infer<typeof saveEventSchema>>({
@@ -89,7 +90,7 @@ console.log("Submitting...");
                         </div>
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)}>
-                                <UserSelection onGuestsSelected={(data) => form.setValue("RSVP", data)}/>
+                                <UserSelect action={(data) => form.setValue("RSVP", data)} />
                                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 mt-6">
                                     <FormField
                                         control={form.control}

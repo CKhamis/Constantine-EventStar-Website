@@ -1,7 +1,7 @@
 import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
 import {redirect} from "next/navigation";
-import DynamicContent from "@/app/calendar/DynamicContent";
+// import DynamicContent from "@/app/calendar/DynamicContent";
 import {auth} from "@/auth";
 
 export default async function page(){

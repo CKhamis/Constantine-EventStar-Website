@@ -42,6 +42,7 @@ export default function DynamicContent() {
                 console.log(error);
             });
 
+        //todo: (immediate) this does not work
         await axios.get("/api/events/invited")
             .then((response) => {
                 setRSVPs(response.data);
@@ -56,7 +57,6 @@ export default function DynamicContent() {
         await axios.get("/api/user/connections/incoming")
             .then((response) => {
                 setRecievedFollows(response.data);
-                console.log(response.data)
             })
             .catch((error) => {
                 console.log(error);

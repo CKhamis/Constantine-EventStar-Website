@@ -9,8 +9,8 @@ export type response = {
     discordId: string | null,
     email: string,
     emailVerified: boolean | null,
-    followedBy: {name: boolean, email: boolean, image: string | null, phoneNumber: string}[],
-    following: {name: boolean, email: boolean, image: string | null, phoneNumber: string}[],
+    followedBy: {id: true, name: boolean, email: boolean, image: string | null, phoneNumber: string}[],
+    following: {id: true, name: boolean, email: boolean, image: string | null, phoneNumber: string}[],
     id: string,
     image: string | null,
     name: string,
@@ -37,6 +37,7 @@ export async function GET(){
             include: {
                 followedBy: {
                     select: {
+                        id: true,
                         name: true,
                         email: true,
                         image: true,
@@ -45,6 +46,7 @@ export async function GET(){
                 },
                 following: {
                     select: {
+                        id: true,
                         name: true,
                         email: true,
                         image: true,

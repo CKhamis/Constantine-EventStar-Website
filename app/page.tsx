@@ -1,4 +1,3 @@
-import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
 import {auth} from "@/auth";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
@@ -94,8 +93,7 @@ export default async function Home() {
     }
 
     return (
-        <>
-            <TopBar/>
+        <MainNav>
             <div className="container mt-4">
                 <Carousel className="mb-4">
                     <CarouselContent>
@@ -212,6 +210,6 @@ export default async function Home() {
                 </div>
             </div>
             <Footer/>
-        </>
+        </MainNav>
     );
 }
