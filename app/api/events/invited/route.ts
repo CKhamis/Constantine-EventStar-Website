@@ -4,6 +4,20 @@ import {auth} from "@/auth";
 
 const prisma = new PrismaClient();
 
+export type invitedResponse = {
+    createdAt: Date,
+    id: string,
+    receiverId: string,
+    sender:{
+        id:string,
+        email:string,
+        image:string,
+        name:string,
+    },
+    senderId:string,
+    updatedAt: Date,
+}
+
 export async function GET() {
     const session = await auth();
 

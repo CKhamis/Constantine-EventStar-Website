@@ -1,6 +1,6 @@
 'use client'
 
-import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
+import {Card, CardContent, CardFooter} from "@/components/ui/card";
 import AvatarIcon from "@/components/AvatarIcon";
 import axios from "axios";
 import {useEffect, useState} from "react";
@@ -8,6 +8,7 @@ import {LoadingIcon} from "@/components/LoadingIcon";
 import {response} from "@/app/api/user/info/route";
 import {format} from "date-fns";
 import {Button} from "@/components/ui/button";
+import {invitedResponse} from "@/app/api/events/invited/route";
 
 export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
@@ -64,6 +65,16 @@ export default function DynamicContent() {
         setLoading(false);
     }
 
+    async function respondFR(response:boolean, senderId:string){
+        await axios.post("/api/user/connections/respond", {response: response, senderId: senderId})
+            .then(() => {
+                refresh()
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
     useEffect(() => {
         refresh()
     }, []);
@@ -114,7 +125,7 @@ export default function DynamicContent() {
                                 </div>
                             </CardContent>
                         </Card>
-                        {recievedFollows.map((followRequest) => (
+                        {recievedFollows.map((followRequest:invitedResponse) => (
                             <Card className="mt-5 rounded-none" key={followRequest.id}>
                                 <CardContent className="mt-5">
                                     <div className="flex flex-row justify-between items-start">
@@ -129,8 +140,8 @@ export default function DynamicContent() {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex flex-row gap-3.5 justify-start items-center">
-                                    <Button variant="secondary">Accept</Button>
-                                    <Button variant="outline">Deny</Button>
+                                    <Button variant="secondary" onClick={() => respondFR(true, followRequest.sender.id)}>Accept</Button>
+                                    <Button variant="outline" onClick={() => respondFR(false, followRequest.sender.id)}>Deny</Button>
                                 </CardFooter>
                             </Card>
                         ))}

@@ -12,6 +12,7 @@ export async function GET() {
     }
 
     try {
+        //todo: (security) remove id leakage and instead do email only
         const invites = await prisma.followRequest.findMany({
             where: {
                 receiverId: session.user.id,
@@ -19,6 +20,7 @@ export async function GET() {
             include: {
                 sender: {
                     select:{
+                        id:true,
                         name:true,
                         email:true,
                         image: true

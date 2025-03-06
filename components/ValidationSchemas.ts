@@ -36,3 +36,8 @@ export const saveEventSchema = z.object({
         z.string().cuid(),
     ).optional(),
 })
+
+export const followRequestReplySchema = z.object({
+    senderId: z.string().cuid(),
+    response: z.boolean()
+})
