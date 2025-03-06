@@ -13,6 +13,7 @@ import {EIResponse} from "@/app/api/events/invited/route";
 import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
 import {Check, CircleHelp, X} from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
@@ -85,15 +86,22 @@ export default function DynamicContent() {
             {loading && <LoadingIcon/>}
             <div className="w-100 h-screen grid grid-cols-2 lg:grid-cols-3 gap-0 p-0">
                 <div className="w-100 col-span-2 items-centers overflow-y-scroll">
-                    <div className="container flex-col flex gap-3 p-5 max-w-3xl">
-                        <p className="text-3xl font-bold mb-5">Upcoming Events</p>
+                    <div className="top-left-gradient">
+                        <div className="container flex-col flex gap-3 py-3 max-w-3xl">
+                            <div className="flex flex-row justify-start items-center gap-3 ">
+                                <Image src="/icons/Feed.svg" alt="Feed ICon" width={50} height={50}/>
+                                <p className="text-3xl font-bold">Upcoming Events</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="container flex-col flex gap-3 max-w-3xl mt-6">
                         {RSVPs.map((rsvp) => (
                             <Card key={rsvp.id} className="mb-4 rounded-none">
                                 <CardHeader>
                                     <div className="flex flex-row items-center justify-between space-y-0 gap-2">
                                         <CardTitle className="text-2xl">{rsvp.event.title}</CardTitle>
                                         <div>
-                                            <ToggleGroup type="single" variant="default" defaultValue={rsvp.response} disabled={new Date(rsvp.event.rsvpDuedate) < new Date()}>
+                                        <ToggleGroup type="single" variant="default" defaultValue={rsvp.response} disabled={new Date(rsvp.event.rsvpDuedate) < new Date()}>
                                                 <ToggleGroupItem value="YES" aria-label="Toggle check" onClick={() => updateRSVP(event.eventId, "YES")}>
                                                     <Check className="h-4 w-4"/>
                                                 </ToggleGroupItem>
@@ -130,7 +138,7 @@ export default function DynamicContent() {
                     </div>
                 </div>
                 <div className="hidden lg:flex overflow-y-scroll">
-                    <div className="max-w-xl mx-auto">
+                <div className="max-w-xl mx-auto">
                         <Card className="mt-5 rounded-none border-none">
                             <CardContent>
                                 <div className="flex flex-row gap-3 justify-start items-center  p-5">
