@@ -1,11 +1,13 @@
 'use client'
 
-import {Card, CardContent} from "@/components/ui/card";
+import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import AvatarIcon from "@/components/AvatarIcon";
 import axios from "axios";
 import {useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import {response} from "@/app/api/user/info/route";
+import {format} from "date-fns";
+import {Button} from "@/components/ui/button";
 
 export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
@@ -26,6 +28,8 @@ export default function DynamicContent() {
         updatedAt: new Date(),
         event: []
     });
+    const [RSVPs, setRSVPs] = useState([]);
+    const [recievedFollows, setRecievedFollows] = useState([]);
 
     async function refresh(){
         setLoading(true);
@@ -35,8 +39,29 @@ export default function DynamicContent() {
             })
             .catch((error) => {
                 console.log(error);
+            });
+
+        await axios.get("/api/events/invited")
+            .then((response) => {
+                setRSVPs(response.data);
             })
-            .finally(() => setLoading(false));
+            .then((r => {
+                console.log(r);
+            }))
+            .catch((error) => {
+                console.log(error);
+            });
+
+        await axios.get("/api/user/connections/incoming")
+            .then((response) => {
+                setRecievedFollows(response.data);
+                console.log(response.data)
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -62,7 +87,7 @@ export default function DynamicContent() {
                         <div className="bg-amber-900 w-100 p-10">Terence!</div>
                     </div>
                 </div>
-                <div className="hidden lg:flex">
+                <div className="hidden lg:flex overflow-y-scroll">
                     <div className="max-w-xl mx-auto">
                         <Card className="mt-5 rounded-none">
                             <CardContent>
@@ -89,6 +114,26 @@ export default function DynamicContent() {
                                 </div>
                             </CardContent>
                         </Card>
+                        {recievedFollows.map((followRequest) => (
+                            <Card className="mt-5 rounded-none" key={followRequest.id}>
+                                <CardContent className="mt-5">
+                                    <div className="flex flex-row justify-between items-start">
+                                        <p className="font-bold">New Follow Request</p>
+                                        <p className="">{format(followRequest.createdAt, 'MM/dd/yyyy h:mm a')}</p>
+                                    </div>
+                                    <div className="flex flex-row justify-center items-center mt-5 gap-3">
+                                        <div>
+                                            <AvatarIcon image={followRequest.sender.image} name={followRequest.sender.name} size={"small"}/>
+                                        </div>
+                                        <p className="font-bold text-xl">{followRequest.sender.name}</p>
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="flex flex-row gap-3.5 justify-start items-center">
+                                    <Button variant="secondary">Accept</Button>
+                                    <Button variant="outline">Deny</Button>
+                                </CardFooter>
+                            </Card>
+                        ))}
                         <Card className="mt-5 rounded-none">
                             <CardContent>
                                 Next event box

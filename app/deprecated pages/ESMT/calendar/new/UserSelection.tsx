@@ -24,8 +24,8 @@ export default function UserSelection({ onGuestsSelected }: Props) {
         const fetchGuests = async () => {
             try {
                 setIsLoading(true)
-                const response = await axios.get("/api/esmt/users/all")
-                setUsers(response.data)
+                const response = await axios.get("/api/user/info")
+                setUsers(response.data.followedBy);
                 setIsLoading(false)
             } catch (err) {
                 console.error("Error fetching users:", err)

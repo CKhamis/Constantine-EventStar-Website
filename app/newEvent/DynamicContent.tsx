@@ -21,6 +21,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {EventInviteVisibility, EventType} from "@prisma/client";
 import {Textarea} from "@/components/ui/textarea";
 import axios from "axios";
+import UserSelection from "@/app/deprecated pages/ESMT/calendar/new/UserSelection";
 
 export default function DynamicContent() {
     const [loading, setLoading] = useState(false);
@@ -88,7 +89,8 @@ console.log("Submitting...");
                         </div>
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)}>
-                                <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                                <UserSelection onGuestsSelected={(data) => form.setValue("RSVP", data)}/>
+                                <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 mt-6">
                                     <FormField
                                         control={form.control}
                                         name="title"
@@ -336,7 +338,7 @@ console.log("Submitting...");
                         </div>
                         <p className="text-2xl font-bold">About this Page</p>
                         <p className="mt-2">asdf asdf asdf asdf asdfas dfasd fsadf asdfa sdf</p>
-                        <p className="mt-2">asdf asdf asdf dfasd fsadf asdfa sdf</p>
+                        <p className="mt-2">The people you invite must either be in your following or, if you choose no invite rigidity, only the link to the event (you will not be able to see their rsvp status).</p>
                         <p className="mt-2">More advanced formatting features for event descriptions will be added in a future event. As of now, you are only able to write descriptions of events in plaintext.</p>
                     </div>
                 </div>
