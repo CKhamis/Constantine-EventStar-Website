@@ -22,7 +22,7 @@ export const emailSchema = z.object({
 })
 
 export const saveEventSchema = z.object({
-    id: z.string().optional(),
+    id: z.string().uuid().or(z.literal('')),
     title: z.string().min(1).max(255),
     backgroundStyle: z.string().min(1).max(255),
     address: z.string().max(255, "Address cannot exceed 255 characters").optional(),

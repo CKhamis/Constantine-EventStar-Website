@@ -24,6 +24,7 @@ import axios from "axios";
 
 export default function DynamicContent() {
     const [loading, setLoading] = useState(false);
+    const [editing, setEditing] = useState(false);
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([]);
 
     const form = useForm<z.infer<typeof saveEventSchema>>({
@@ -37,7 +38,7 @@ export default function DynamicContent() {
             eventEnd: new Date(),
             rsvpDuedate: new Date(),
             description: '',
-            inviteVisibility: 'INVITED_ONLY',
+            inviteVisibility: 'NONE',
             eventType: 'GENERAL_EVENT',
             RSVP: []
         }
@@ -53,15 +54,18 @@ export default function DynamicContent() {
     }));
 
     async function onSubmit(values: z.infer<typeof saveEventSchema>) {
+console.log("Submitting...");
         try{
             setLoading(true);
-            await axios.post('/api/events/save', values);
+            const response = await axios.post('/api/events/save', values);
             setAlertMessages([...alertMessages, { title: "Event Saved", message: "Event saved to your account", icon: 1 }]);
+            form.setValue("id", response.data.id);
+            setEditing(true);
         }catch(e){
-            setLoading(false);
             console.log(e)
             setAlertMessages([...alertMessages, { title: "Catastrophic Error", message: "Unable to save event", icon: 2 }]);
-
+        }finally {
+            setLoading(false);
         }
     }
 
@@ -74,7 +78,7 @@ export default function DynamicContent() {
                         <div className="container flex-col flex gap-3 py-3 max-w-3xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
                                 <Image src="/icons/NewEvent.svg" alt="New Event" width={50} height={50}/>
-                                <p className="text-3xl font-bold">Create New Event</p>
+                                <p className="text-3xl font-bold">{editing? "Edit Event" : "Create New Event"}</p>
                             </div>
                         </div>
                     </div>
@@ -319,7 +323,7 @@ export default function DynamicContent() {
                                 />
                                 <Button type="submit" disabled={loading} className="mt-6 mb-6">
                                     {loading && <Loader2 className="animate-spin"/>}
-                                    Create Event
+                                    Save
                                 </Button>
                             </form>
                         </Form>
