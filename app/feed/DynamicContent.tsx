@@ -11,9 +11,11 @@ import {Button} from "@/components/ui/button";
 import {FRResponse} from "@/app/api/user/connections/incoming/route";
 import {EIResponse} from "@/app/api/events/invited/route";
 import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
-import {Check, CircleHelp, X} from "lucide-react";
+import {Check, CircleHelp, Clock, LetterText, MapPin, X} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import {RsvpWithEvent} from "@/components/deprecated/Types";
+import {Badge} from "@/components/ui/badge";
 
 export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
@@ -36,6 +38,7 @@ export default function DynamicContent() {
     });
     const [RSVPs, setRSVPs] = useState<EIResponse[]>([]);
     const [recievedFollows, setRecievedFollows] = useState([]);
+    const [nextEvent, setNextEvent] = useState<EIResponse | null>();
 
     async function refresh(){
         setLoading(true);
@@ -50,7 +53,18 @@ export default function DynamicContent() {
         await axios.get("/api/events/invited")
             .then((response) => {
                 setRSVPs(response.data);
-                console.log(response.data)
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        await axios.get("/api/events/next")
+            .then((response) => {
+                if(response.data.message){
+                    setNextEvent(null)
+                }else{
+                    setNextEvent(response.data);
+                }
             })
             .catch((error) => {
                 console.log(error);
@@ -127,7 +141,7 @@ export default function DynamicContent() {
                                             <p className="font-bold">{rsvp.event.author.name}</p>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col justify-start gap-2">
+                                    <div className="flex flex-col justify-center gap-2">
                                         <Link href={"/calendar/view/" + rsvp.event.id}><Button variant={new Date(rsvp.event.eventStart) < new Date() ? "outline" : "default"}>View Event</Button></Link>
                                         {new Date(rsvp.event.eventStart) < new Date() ?
                                             <p className="text-muted-foreground text-xs ml-1">Event ended</p> : <></>}
@@ -138,7 +152,7 @@ export default function DynamicContent() {
                     </div>
                 </div>
                 <div className="hidden lg:flex overflow-y-scroll">
-                <div className="max-w-xl mx-auto">
+                    <div className="max-w-xl mx-auto">
                         <Card className="mt-5 rounded-none border-none">
                             <CardContent>
                                 <div className="flex flex-row gap-3 justify-start items-center  p-5">
@@ -148,7 +162,7 @@ export default function DynamicContent() {
                                         <p className="ml-1 text-muted-foreground">{userInfo.email}</p>
                                     </div>
                                 </div>
-                                <div className="flex flex-row gap-3 px-7 justify-between items-center">
+                                <div className="flex flex-row gap-3 px-0 justify-between items-center">
                                     <div className="flex flex-col items-center">
                                         <p className="text-xl font-bold text-center">{userInfo.followedBy.length}</p>
                                         <p className="text-center">Follower{userInfo.followedBy.length === 1? "" : "s"}</p>
@@ -159,36 +173,89 @@ export default function DynamicContent() {
                                     </div>
                                     <div className="flex flex-col items-center">
                                         <p className="text-xl font-bold text-center">{userInfo.following.length}</p>
-                                        <p className="text-center">Following{userInfo.following.length === 1? "" : "s"}</p>
+                                        <p className="text-center">Following</p>
                                     </div>
                                 </div>
                             </CardContent>
                         </Card>
+                        {recievedFollows.length == 0? <></>: <p className="font-bold mt-6 px-0">Follow requests</p>}
                         {recievedFollows.map((followRequest:FRResponse) => (
-                            <Card className="mt-5 rounded-none" key={followRequest.id}>
-                                <CardContent className="mt-5">
-                                    <div className="flex flex-row justify-between items-start">
-                                        <p className="font-bold">New Follow Request</p>
-                                        <p className="">{format(followRequest.createdAt, 'MM/dd/yyyy h:mm a')}</p>
+                            <div className="flex flex-row items-center justify-between mb-3 px-0" key={followRequest.id}>
+                                <div className="flex flex-row justify-start items-center mt-5 gap-3">
+                                    <div>
+                                        <AvatarIcon image={followRequest.sender.image} name={followRequest.sender.name} size={"small"}/>
                                     </div>
-                                    <div className="flex flex-row justify-center items-center mt-5 gap-3">
-                                        <div>
-                                            <AvatarIcon image={followRequest.sender.image} name={followRequest.sender.name} size={"small"}/>
-                                        </div>
-                                        <p className="font-bold text-xl">{followRequest.sender.name}</p>
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="flex flex-row gap-3.5 justify-start items-center">
-                                    <Button variant="secondary" onClick={() => respondFR(true, followRequest.sender.id)}>Accept</Button>
-                                    <Button variant="outline" onClick={() => respondFR(false, followRequest.sender.id)}>Deny</Button>
-                                </CardFooter>
-                            </Card>
+                                    <p className="font-bold text-xl">{followRequest.sender.name}</p>
+                                </div>
+                                <div className="flex flex-row justify-end items-center mt-5 gap-3">
+                                    <Button variant="secondary" size="icon" onClick={() => respondFR(true, followRequest.sender.id)}><Check className="h-4 w-4"/></Button>
+                                    <Button variant="outline" size="icon" onClick={() => respondFR(false, followRequest.sender.id)}><X className="h-4 w-4"/></Button>
+                                </div>
+                            </div>
                         ))}
-                        <Card className="mt-5 rounded-none border-none">
-                            <CardContent>
-                                Next event box
-                            </CardContent>
-                        </Card>
+                        {nextEvent ?
+                            <div className="col-span-3 lg:col-span-1 hidden md:block">
+                                <div className="flex flex-row justify-between items-center mb-4 mt-10 px-0">
+                                    <p className="font-bold">Next Event</p>
+                                    {nextEvent.response === "NO_RESPONSE" ?
+                                        <Badge variant="destructive">Unanswered</Badge>
+                                        :
+                                        <Badge variant="outline">Responded</Badge>
+                                    }
+                                </div>
+                                <Card className="rounded-none">
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                                        <CardTitle className="text-2xl font-bold">{nextEvent.event.title}</CardTitle>
+                                        <div className="flex flex-row gap-4">
+                                            <Link href={"/calendar/view/" + nextEvent.event.id}>
+                                                <Button variant="secondary">
+                                                    View
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="grid grid-cols-1 gap-5">
+                                            <div className="flex flex-row items-center justify-start gap-2">
+                                                <AvatarIcon image={nextEvent.event.author.image} name={nextEvent.event.author.name} size="xsmall"/>
+                                                <p className="font-bold">{nextEvent.event.author.name}</p>
+                                            </div>
+
+                                            <div>
+                                                <div className="flex flex-row justify-start gap-2 items-center mb-1">
+                                                    <Clock className="h-5 w-5"/>
+                                                    <p>Date / Time</p>
+                                                </div>
+                                                <p className="text-muted-foreground">{format(nextEvent.event.eventStart, "MM/dd/yyyy h:mm a")} - {format(nextEvent.event.eventEnd, "MM/dd/yyyy h:mm a")}</p>
+                                            </div>
+
+                                            <div>
+                                                <div className="flex flex-row justify-start gap-2 items-center mb-1">
+                                                    <MapPin className="h-5 w-5"/>
+                                                    <p>Location</p>
+                                                </div>
+                                                <p className="text-muted-foreground">{nextEvent.event.address ? nextEvent.event.address : "None provided"}</p>
+                                            </div>
+
+                                            <div>
+                                                <div className="flex flex-row justify-start gap-2 items-center mb-1">
+                                                    <LetterText className="h-5 w-5"/>
+                                                    <p>Description</p>
+                                                </div>
+                                                <p className="text-muted-foreground">{nextEvent.event.description ? nextEvent.event.description : "No description provided"}</p>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                            :
+                            <div className="flex-col justify-center items-center hidden md:flex">
+                                <Image src="/agent/empty.png" className="mt-10" alt={"awkward"} height={150} width={150}/>
+                                <p className="text-center text-2xl font-bold">No Events</p>
+                                <p className="text-center text-xs text-muted-foreground w-[250px] mt-3">Confirm your attendance to an upcoming event to see it here</p>
+                            </div>
+                        }
+                        <br />
                     </div>
                 </div>
             </div>
