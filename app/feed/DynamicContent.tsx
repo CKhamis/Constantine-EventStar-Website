@@ -1,6 +1,6 @@
 'use client'
 
-import {Card, CardContent, CardFooter} from "@/components/ui/card";
+import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import AvatarIcon from "@/components/AvatarIcon";
 import axios from "axios";
 import {useEffect, useState} from "react";
@@ -8,7 +8,11 @@ import {LoadingIcon} from "@/components/LoadingIcon";
 import {response} from "@/app/api/user/info/route";
 import {format} from "date-fns";
 import {Button} from "@/components/ui/button";
-import {invitedResponse} from "@/app/api/events/invited/route";
+import {FRResponse} from "@/app/api/user/connections/incoming/route";
+import {EIResponse} from "@/app/api/events/invited/route";
+import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
+import {Check, CircleHelp, X} from "lucide-react";
+import Link from "next/link";
 
 export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
@@ -29,7 +33,7 @@ export default function DynamicContent() {
         updatedAt: new Date(),
         event: []
     });
-    const [RSVPs, setRSVPs] = useState([]);
+    const [RSVPs, setRSVPs] = useState<EIResponse[]>([]);
     const [recievedFollows, setRecievedFollows] = useState([]);
 
     async function refresh(){
@@ -42,14 +46,11 @@ export default function DynamicContent() {
                 console.log(error);
             });
 
-        //todo: (immediate) this does not work
         await axios.get("/api/events/invited")
             .then((response) => {
                 setRSVPs(response.data);
+                console.log(response.data)
             })
-            .then((r => {
-                console.log(r);
-            }))
             .catch((error) => {
                 console.log(error);
             });
@@ -86,21 +87,51 @@ export default function DynamicContent() {
                 <div className="w-100 col-span-2 items-centers overflow-y-scroll">
                     <div className="container flex-col flex gap-3 p-5 max-w-3xl">
                         <p className="text-3xl font-bold mb-5">Upcoming Events</p>
-                        <div className="bg-amber-900 w-100 p-10">Terence!</div>
-                        <div className="bg-amber-900 w-100 p-10">Terence!</div>
-                        <div className="bg-amber-900 w-100 p-10">Terence!</div>
-                        <div className="bg-amber-900 w-100 p-10">Terence!</div>
-                        <div className="bg-amber-900 w-100 p-10">Terence!</div>
-                        <div className="bg-amber-900 w-100 p-10">Terence!</div>
-                        <div className="bg-amber-900 w-100 p-10">Terence!</div>
-                        <div className="bg-amber-900 w-100 p-10">Terence!</div>
-                        <div className="bg-amber-900 w-100 p-10">Terence!</div>
-                        <div className="bg-amber-900 w-100 p-10">Terence!</div>
+                        {RSVPs.map((rsvp) => (
+                            <Card key={rsvp.id} className="mb-4 rounded-none">
+                                <CardHeader>
+                                    <div className="flex flex-row items-center justify-between space-y-0 gap-2">
+                                        <CardTitle className="text-2xl">{rsvp.event.title}</CardTitle>
+                                        <div>
+                                            <ToggleGroup type="single" variant="default" defaultValue={rsvp.response} disabled={new Date(rsvp.event.rsvpDuedate) < new Date()}>
+                                                <ToggleGroupItem value="YES" aria-label="Toggle check" onClick={() => updateRSVP(event.eventId, "YES")}>
+                                                    <Check className="h-4 w-4"/>
+                                                </ToggleGroupItem>
+                                                <ToggleGroupItem value="MAYBE" aria-label="Toggle question" onClick={() => updateRSVP(event.eventId, "MAYBE")}>
+                                                    <CircleHelp className="h-4 w-4"/>
+                                                </ToggleGroupItem>
+                                                <ToggleGroupItem value="NO" aria-label="Toggle x" onClick={() => updateRSVP(event.eventId, "NO")}>
+                                                    <X className="h-4 w-4"/>
+                                                </ToggleGroupItem>
+                                            </ToggleGroup>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">{format(new Date(rsvp.event.eventStart), "M/dd/yyyy hh:mm a")} - {format(new Date(rsvp.event.eventEnd), "M/dd/yyyy hh:mm a")}</p>
+                                </CardHeader>
+                                <CardContent>
+                                    {rsvp.event.description}
+                                </CardContent>
+                                <CardFooter className="gap-4 flex flex-row justify-between items-start">
+                                    <div className="flex flex-col justify-start gap-2">
+                                        <p>Event by:</p>
+                                        <div className="flex flex-row items-center justify-start gap-2">
+                                            <AvatarIcon image={rsvp.event.author.image} name={rsvp.event.author.name} size="xsmall"/>
+                                            <p className="font-bold">{rsvp.event.author.name}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col justify-start gap-2">
+                                        <Link href={"/calendar/view/" + rsvp.event.id}><Button variant={new Date(rsvp.event.eventStart) < new Date() ? "outline" : "default"}>View Event</Button></Link>
+                                        {new Date(rsvp.event.eventStart) < new Date() ?
+                                            <p className="text-muted-foreground text-xs ml-1">Event ended</p> : <></>}
+                                    </div>
+                                </CardFooter>
+                            </Card>
+                        ))}
                     </div>
                 </div>
                 <div className="hidden lg:flex overflow-y-scroll">
                     <div className="max-w-xl mx-auto">
-                        <Card className="mt-5 rounded-none">
+                        <Card className="mt-5 rounded-none border-none">
                             <CardContent>
                                 <div className="flex flex-row gap-3 justify-start items-center  p-5">
                                     <AvatarIcon size="large" image={userInfo.image} name={userInfo.name}/>
@@ -125,7 +156,7 @@ export default function DynamicContent() {
                                 </div>
                             </CardContent>
                         </Card>
-                        {recievedFollows.map((followRequest:invitedResponse) => (
+                        {recievedFollows.map((followRequest:FRResponse) => (
                             <Card className="mt-5 rounded-none" key={followRequest.id}>
                                 <CardContent className="mt-5">
                                     <div className="flex flex-row justify-between items-start">
@@ -145,7 +176,7 @@ export default function DynamicContent() {
                                 </CardFooter>
                             </Card>
                         ))}
-                        <Card className="mt-5 rounded-none">
+                        <Card className="mt-5 rounded-none border-none">
                             <CardContent>
                                 Next event box
                             </CardContent>

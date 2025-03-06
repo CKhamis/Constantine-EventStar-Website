@@ -3,7 +3,7 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 interface Props{
     name?: string | null
     image?: string | null
-    size?: "small" | "large"
+    size?: "small" | "large" | "xsmall"
 }
 export default function AvatarIcon({name, image, size = "small"}: Props){
     const initials = () => {
@@ -17,6 +17,13 @@ export default function AvatarIcon({name, image, size = "small"}: Props){
     if(size === "small"){
         return (
             <Avatar className="h-12 w-12">
+                {image && <AvatarImage src={image} alt={`${name}`}/>}
+                <AvatarFallback>{initials()}</AvatarFallback>
+            </Avatar>
+        );
+    }else if(size === "xsmall"){
+        return (
+            <Avatar className="h-8 w-8">
                 {image && <AvatarImage src={image} alt={`${name}`}/>}
                 <AvatarFallback>{initials()}</AvatarFallback>
             </Avatar>

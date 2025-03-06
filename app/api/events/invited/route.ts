@@ -4,18 +4,32 @@ import {auth} from "@/auth";
 
 const prisma = new PrismaClient();
 
-export type invitedResponse = {
-    createdAt: Date,
+export type EIResponse = {
     id: string,
-    receiverId: string,
-    sender:{
-        id:string,
-        email:string,
-        image:string,
-        name:string,
-    },
-    senderId:string,
-    updatedAt: Date,
+    arrival: null | Date,
+    createdAt: Date,
+    response: string,
+    event: {
+        address: string,
+        author: {
+            id:string,
+            email: string,
+            name: string,
+            image: string,
+        },
+        backgroundStyle: "#000",
+        createdAt: Date,
+        description: string,
+        eventEnd: Date,
+        eventStart: Date,
+        eventType: string,
+        id: string,
+        inviteVisibility: string,
+        reminderCount: number,
+        rsvpDuedate: Date,
+        title: string,
+        updatedAt: Date,
+    }
 }
 
 export async function GET() {
@@ -31,14 +45,23 @@ export async function GET() {
                 userId: session.user.id,
             },
             include: {
-                event:true
+                event: {
+                    include:{
+                        author:{
+                            select:{
+                                id: true,
+                                name: true,
+                                email: true,
+                                image: true
+                            }
+                        }
+                    }
+                }
             },
             orderBy:{
                 createdAt: "desc"
             }
         });
-
-        console.log(events);
 
         return NextResponse.json(events, { status: 200 });
     } catch (error) {

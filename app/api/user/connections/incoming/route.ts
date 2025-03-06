@@ -4,6 +4,20 @@ import {auth} from "@/auth";
 
 const prisma = new PrismaClient();
 
+export type FRResponse = {
+    createdAt: Date,
+    id: string,
+    receiverId: string,
+    sender:{
+        id:string,
+        email:string,
+        image:string,
+        name:string,
+    },
+    senderId:string,
+    updatedAt: Date,
+}
+
 export async function GET() {
     const session = await auth();
 
@@ -12,7 +26,6 @@ export async function GET() {
     }
 
     try {
-        //todo: (security) remove id leakage and instead do email only
         const invites = await prisma.followRequest.findMany({
             where: {
                 receiverId: session.user.id,
