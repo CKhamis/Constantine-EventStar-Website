@@ -1,9 +1,18 @@
 import MainNav from "@/components/MainNav";
+import DynamicContent from "@/app/newEvent/DynamicContent";
+import {auth} from "@/auth";
+import {redirect} from "next/navigation";
 
-export default function page(){
+export default async function page(){
+    const session = await auth();
+
+    if(!session || !session.user){
+        redirect("/api/auth/login");
+    }
+
     return(
         <MainNav>
-            New Event Page
+            <DynamicContent />
         </MainNav>
     )
 }

@@ -6,13 +6,8 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import {response} from "@/app/api/user/info/route";
-import Event from "@/prisma/client";
 
-export interface Props {
-    userId: string
-}
-
-export default function DynamicContent({userId}: Props) {
+export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState<response>({
         createdAt: new Date(),

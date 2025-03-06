@@ -12,7 +12,7 @@ export default async function Page(){
 
     return (
         <MainNav>
-            <DynamicContent userId={session.user.id} />
+            <DynamicContent />
         </MainNav>
     );
 }

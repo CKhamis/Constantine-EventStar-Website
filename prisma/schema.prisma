@@ -166,6 +166,6 @@ enum EventType {
 
 enum EventInviteVisibility {
   FULL
-  TOTALS_ONLY
+  INVITED_ONLY
   NONE
 }

@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 export async function POST(request: NextRequest){
     const session =  await auth();
 
-    if(!session || !session.user || session.user.role !== "ADMIN"){
+    if(!session || !session.user){
         return NextResponse.json("Approved login required", {status: 401});
     }
 
@@ -26,30 +26,55 @@ export async function POST(request: NextRequest){
         return NextResponse.json(validation.error.format(), {status: 400});
     }
 
+    console.log(body);
     try {
-        // Check if user exists
-        const existingUser = await prisma.user.findUnique({
-            where: { id: body.authorId },
-        });
+        // If updating, check for authorship
+        if(body.id){
+            const existingEvent = await prisma.event.findUniqueOrThrow({
+                where: { id: body.id },
+            }).catch(() => {
+                return NextResponse.json({ message: "Event not found" }, { status: 404 });
+            });
 
-        if (!existingUser) {
-            return NextResponse.json({ message: "User not found" }, { status: 404 });
+            if (!existingEvent || existingEvent.authorId !== session.user.id) {
+                return NextResponse.json({ message: "Event not found" }, { status: 404 });
+            }
         }
 
+        console.log("passed exist check")
+
         // Create Event
-        const newEvent = await prisma.event.create({
-            data: {
+        const newEvent = await prisma.event.upsert({
+            where: {
+                id: body.id
+            },
+            update:{
                 title: body.title,
                 address: body.address,
                 eventStart: body.eventStart,
                 eventEnd: body.eventEnd,
                 rsvpDuedate: body.rsvpDuedate,
                 description: body.description,
-                inviteRigidity: body.inviteRigidity,
+                inviteVisibility: body.inviteVisibility,
                 eventType: body.eventType,
-                reminderAmount: body.reminderAmount,
                 backgroundStyle: body.backgroundStyle,
-                authorId: body.authorId,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            create: {
+                id: body.id,
+                title: body.title,
+                address: body.address,
+                eventStart: body.eventStart,
+                eventEnd: body.eventEnd,
+                rsvpDuedate: body.rsvpDuedate,
+                description: body.description,
+                inviteVisibility: body.inviteVisibility,
+                eventType: body.eventType,
+                backgroundStyle: body.backgroundStyle,
+                authorId: session.user.id,
+                createdAt: new Date(),
+                updatedAt: new Date(),
             }
         });
 

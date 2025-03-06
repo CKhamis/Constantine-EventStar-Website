@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import {useForm} from "react-hook-form";
 import * as z from "zod";
-import {createEventSchema} from "@/components/ValidationSchemas";
+import {saveEventSchema} from "@/components/ValidationSchemas";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {TimestampPicker} from "@/components/ui/timestamp-picker";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
@@ -25,8 +25,8 @@ import {GradientPicker} from "@/components/ui/GradientPicker";
 export default function NewEventForm({userId}: {userId: string}) {
     const router = useRouter();
 
-    const form = useForm<z.infer<typeof createEventSchema>>({
-        resolver: zodResolver(createEventSchema),
+    const form = useForm<z.infer<typeof saveEventSchema>>({
+        resolver: zodResolver(saveEventSchema),
         defaultValues: {
             title: '',
             backgroundStyle: '#000',
@@ -60,7 +60,7 @@ export default function NewEventForm({userId}: {userId: string}) {
         value,
     }));
 
-    async function onSubmit (values: z.infer<typeof createEventSchema>) {
+    async function onSubmit (values: z.infer<typeof saveEventSchema>) {
         try{
             setIsLoading(true);
             await axios.post('/api/esmt/events/new', values);
