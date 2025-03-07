@@ -1,13 +1,31 @@
 import { PrismaClient } from '@prisma/client';
-import {NextRequest, NextResponse} from "next/server";
+import {NextResponse} from "next/server";
 import {auth} from "@/auth";
-import {EIResponse} from "@/app/api/events/invited/route";
 
 const prisma = new PrismaClient();
 
-// export type EVResponse = EIResponse | {
-//
-// }
+export type EVResponse = {
+    address: "",
+    author: {
+        id: string,
+        name: string,
+        email: string,
+        image: string
+    },
+    authorId: string,
+    backgroundStyle: "#000",
+    createdAt: Date,
+    description: "",
+    eventEnd: Date,
+    eventStart: Date,
+    eventType: string,
+    id: string,
+    inviteVisibility: string,
+    reminderCount: number,
+    rsvpDuedate: Date,
+    title: string,
+    updatedAt: Date,
+}
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const session = await auth();
