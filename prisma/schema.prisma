@@ -164,6 +164,7 @@ enum EventType {
   CELEBRATION
 }
 
+// Changes must be reflected in event view API
 enum EventInviteVisibility {
   FULL
   INVITED_ONLY

@@ -99,11 +99,11 @@ export default function DynamicContent() {
         <>
             {loading && <LoadingIcon/>}
             <div className="w-100 h-screen grid grid-cols-2 lg:grid-cols-3 gap-0 p-0">
-                <div className="w-100 col-span-2 items-centers overflow-y-scroll">
+                <div className="w-100 col-span-2 items-center overflow-y-scroll">
                     <div className="top-left-gradient">
                         <div className="container flex-col flex gap-3 py-3 max-w-3xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
-                                <Image src="/icons/Feed.svg" alt="Feed ICon" width={50} height={50}/>
+                                <Image src="/icons/Feed.svg" alt="Feed icon" width={50} height={50}/>
                                 <p className="text-3xl font-bold">Upcoming Events</p>
                             </div>
                         </div>
@@ -142,7 +142,7 @@ export default function DynamicContent() {
                                         </div>
                                     </div>
                                     <div className="flex flex-col justify-center gap-2">
-                                        <Link href={"/calendar/view/" + rsvp.event.id}><Button variant={new Date(rsvp.event.eventStart) < new Date() ? "outline" : "default"}>View Event</Button></Link>
+                                        <Link href={"/event/" + rsvp.event.id}><Button variant={new Date(rsvp.event.eventStart) < new Date() ? "outline" : "default"}>View Event</Button></Link>
                                         {new Date(rsvp.event.eventStart) < new Date() ?
                                             <p className="text-muted-foreground text-xs ml-1">Event ended</p> : <></>}
                                     </div>
@@ -207,7 +207,7 @@ export default function DynamicContent() {
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                                         <CardTitle className="text-2xl font-bold">{nextEvent.event.title}</CardTitle>
                                         <div className="flex flex-row gap-4">
-                                            <Link href={"/calendar/view/" + nextEvent.event.id}>
+                                            <Link href={"/event/" + nextEvent.event.id}>
                                                 <Button variant="secondary">
                                                     View
                                                 </Button>

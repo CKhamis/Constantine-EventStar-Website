@@ -26,7 +26,6 @@ import UserSelect from "@/components/UserSelect";
 export default function DynamicContent() {
     const [loading, setLoading] = useState(false);
     const [editing, setEditing] = useState(false);
-    const [followers, setFollowers] = useState([]);
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([]);
 
     const form = useForm<z.infer<typeof saveEventSchema>>({
@@ -337,7 +336,7 @@ console.log("Submitting...");
                         <div className="hidden lg:block">
                             <AlertList alerts={alertMessages} />
                         </div>
-                        <img src="/agent/loading.gif" className="w-1/2 my-7 mx-auto"/>
+                        <img src="/agent/loading.gif" className="w-1/2 my-7 mx-auto" alt="EventStar typing" />
                         <p className="text-2xl font-bold">About Creating Events</p>
                         <p className="mt-2">The people you invite must either be in your following or, if you choose no invite rigidity, only the link to the event (you will not be able to see their rsvp status).</p>
                         <p className="mt-2">More advanced formatting features for event descriptions will be added in a future event. As of now, you are only able to write descriptions of events in plaintext.</p>
