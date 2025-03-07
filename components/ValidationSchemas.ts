@@ -9,6 +9,7 @@ const EventType = z.enum([
     "CELEBRATION",
 ]);
 const InviteVisibility = z.enum(["FULL", "INVITED_ONLY", "NONE",]);
+const RsvpResponse = z.enum(["YES", "NO", "MAYBE"]);
 
 
 export const editBasicUserInfoSchema = z.object({
@@ -44,4 +45,8 @@ export const followRequestReplySchema = z.object({
 
 export const uuidSchema = z.object({
     id: z.string().uuid()
+})
+
+export const rsvpSchema = z.object({
+    response: RsvpResponse
 })

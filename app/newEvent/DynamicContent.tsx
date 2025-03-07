@@ -251,7 +251,7 @@ console.log("Submitting...");
                                         name="inviteVisibility"
                                         render={({field}) => (
                                             <FormItem>
-                                                <FormLabel>Invite Rigidity</FormLabel>
+                                                <FormLabel>Invite Visibility</FormLabel>
                                                 <FormControl>
                                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                         <SelectTrigger>
@@ -338,7 +338,7 @@ console.log("Submitting...");
                         </div>
                         <img src="/agent/loading.gif" className="w-1/2 my-7 mx-auto" alt="EventStar typing" />
                         <p className="text-2xl font-bold">About Creating Events</p>
-                        <p className="mt-2">The people you invite must either be in your following or, if you choose no invite rigidity, only the link to the event (you will not be able to see their rsvp status).</p>
+                        <p className="mt-2">The people you invite must either be in your following or, if you choose no invite visibility, only the link to the event (you will not be able to see their rsvp status).</p>
                         <p className="mt-2">More advanced formatting features for event descriptions will be added in a future event. As of now, you are only able to write descriptions of events in plaintext.</p>
                     </div>
                 </div>
