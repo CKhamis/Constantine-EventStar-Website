@@ -159,7 +159,7 @@ export default function DynamicContent() {
                                     <AvatarIcon size="large" image={userInfo.image} name={userInfo.name}/>
                                     <div>
                                         <p className="font-bold text-2xl">{userInfo.name}</p>
-                                        <p className="ml-1 text-muted-foreground">{userInfo.email}</p>
+                                        <p className="text-muted-foreground">{userInfo.email}</p>
                                     </div>
                                 </div>
                                 <div className="flex flex-row gap-3 px-0 justify-between items-center">

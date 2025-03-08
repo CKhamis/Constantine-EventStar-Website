@@ -9,13 +9,14 @@ import {EVResponse} from "@/app/api/events/view/[id]/route";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {Check, X} from "lucide-react";
+import {CalendarPlus, Check, Clock, LetterText, MapPin, X} from "lucide-react";
 import {useForm} from "react-hook-form";
 import {z} from "zod";
 import {rsvpSchema} from "@/components/ValidationSchemas";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {format} from "date-fns";
 import Link from "next/link";
+import {Badge} from "@/components/ui/badge";
 
 export interface Props {
     eventId: string,
@@ -46,6 +47,7 @@ export default function DynamicContent({eventId}: Props) {
             })
             .catch((error) => {
                 console.log(error.status); // event not found, access denied, or need login
+                document.querySelector("#background")!.style.background = "black";
             });
         setLoading(false);
     }
@@ -69,7 +71,7 @@ export default function DynamicContent({eventId}: Props) {
         <>
             {loading && <LoadingIcon/>}
             <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
-                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-scroll">
+                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
                     <div className="top-left-gradient">
                         <div className="container flex-col flex gap-3 py-3 max-w-5xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
@@ -78,21 +80,66 @@ export default function DynamicContent({eventId}: Props) {
                             </div>
                         </div>
                     </div>
-                    <div id="background">
-                        <div className="container flex-col flex gap-3 py-3 max-w-5xl">
-                            {eventInfo ? (
-                                <p>{eventInfo.title}</p>
-                            ) : (
-                                <p>Event not found</p>
-                            )}
+                    <div id="background" className="flex-grow flex flex-col">
+                        <div className="glass-dark w-100 flex-grow">
+                            <div className="container flex-col flex gap-3 py-3 max-w-5xl">
+                                {eventInfo ? (
+                                    <>
+                                        <div className="flex flex-row justify-between items-center mt-4">
+                                            <p className="font-bold text-4xl">{eventInfo.title}</p>
+                                            <Link target="_blank"
+                                                  href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventInfo.title)}&dates=${encodeURIComponent(format(new Date(eventInfo.eventStart), "yyyyMMdd'T'HHmmss") + '/' + format(new Date(eventInfo.eventEnd), "yyyyMMdd'T'HHmmss"))}&details=${encodeURIComponent(eventInfo.description)}&location=${encodeURIComponent(eventInfo.address)}`}>
+                                                <Button variant="outline"
+                                                        className="flex items-center justify-center gap-2 w-full">
+                                                    <CalendarPlus/>
+                                                    Add to Calendar
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                        <div className="flex flex-row justify-start gap-4">
+                                            <Badge variant="secondary">{eventInfo.eventType}</Badge>
+                                            <Badge variant="outline">{eventInfo.inviteRigidity}</Badge>
+                                        </div>
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-3">
+                                            <div>
+                                                <div className="flex flex-row justify-start gap-2 items-center mb-1">
+                                                    <Clock className="h-5 w-5"/>
+                                                    <p>Date / Time</p>
+                                                </div>
+                                                <p className="text-muted-foreground">{format(eventInfo.eventStart, "MM/dd/yyyy h:mm a")} - {format(eventInfo.eventEnd, "MM/dd/yyyy h:mm a")}</p>
+                                            </div>
+
+                                            <div>
+                                                <div className="flex flex-row justify-start gap-2 items-center mb-1">
+                                                    <MapPin className="h-5 w-5"/>
+                                                    <p>Location</p>
+                                                </div>
+                                                <p className="text-muted-foreground">{eventInfo.address ? eventInfo.address : "None provided"}</p>
+                                            </div>
+
+                                            <div>
+                                                <div className="flex flex-row justify-start gap-2 items-center mb-1">
+                                                    <LetterText className="h-5 w-5"/>
+                                                    <p>Description</p>
+                                                </div>
+                                                <p className="text-muted-foreground">{eventInfo.description ? eventInfo.description : "No description provided"}</p>
+                                            </div>
+                                        </div>
+                                    </>
+
+
+                                ) : (
+                                    <p>Event not found</p>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div className="h-100 border-l-2">
-                    <div className="border-b-2 w-100 p-5">
+                <div className="border-b-2 w-100 p-5">
                         <div className="max-w-xl mx-auto">
                             <p className="text-2xl font-bold">RSVP Status</p>
-                            {RSVP && eventInfo? (
+                            {RSVP && eventInfo ? (
                                 <Form {...form}>
                                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
                                         <FormField
@@ -100,7 +147,8 @@ export default function DynamicContent({eventId}: Props) {
                                             name="response"
                                             render={({field}) => (
                                                 <FormItem>
-                                                    <Select onValueChange={field.onChange} value={field.value} disabled={new Date(eventInfo.rsvpDuedate) < new Date()}>
+                                                    <Select onValueChange={field.onChange} value={field.value}
+                                                            disabled={new Date(eventInfo.rsvpDuedate) < new Date()}>
                                                         <FormControl>
                                                             <SelectTrigger>
                                                                 <SelectValue placeholder="Select your RSVP status"/>
