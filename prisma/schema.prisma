@@ -106,7 +106,7 @@ model Rsvp {
   validator String       @default("none")
   eventId   String
   response  RsvpResponse @default(NO_RESPONSE)
-  User      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
 }
 

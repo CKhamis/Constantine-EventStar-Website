@@ -9,7 +9,7 @@ import {EVResponse} from "@/app/api/events/view/[id]/route";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {CalendarPlus, Check, Clock, LetterText, MapPin, X} from "lucide-react";
+import {CalendarPlus, Check, Clock, LetterText, MapPin, Pencil, X} from "lucide-react";
 import {useForm} from "react-hook-form";
 import {z} from "zod";
 import {rsvpSchema} from "@/components/ValidationSchemas";
@@ -20,11 +20,22 @@ import {Badge} from "@/components/ui/badge";
 
 export interface Props {
     eventId: string,
+    userId: string,
 }
 
-export default function DynamicContent({eventId}: Props) {
+type rsvp = {
+    response: string,
+    user: {
+        email: string,
+        name: string,
+        image: string
+        id: string,
+    }
+}
+
+export default function DynamicContent({eventId, userId}: Props) {
     const [loading, setLoading] = useState(true);
-    const [RSVP, setRSVP] = useState<EIResponse | null>();
+    const [RSVP, setRSVP] = useState<rsvp | null>();
     const [eventInfo, setEventInfo] = useState<EVResponse | null>();
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
@@ -32,17 +43,15 @@ export default function DynamicContent({eventId}: Props) {
         setLoading(true);
         await axios.get("/api/events/view/" + eventId)
             .then((response) => {
-                // Event exists, but can either be just event or rsvp + event
+                // Event exists, but need to know if user was invited
+                setEventInfo(response.data);
+                document.querySelector("#background")!.style.background = response.data.backgroundStyle;
 
-                // Data can either be event or rsvp + event
-                if(response.data.event){
-                    setEventInfo(response.data.event);
-                    setRSVP(response.data);
-                    document.querySelector("#background")!.style.background = response.data.event.backgroundStyle;
-                }else{
-                    setEventInfo(response.data);
-                    setRSVP(null);
-                    document.querySelector("#background")!.style.background = response.data.backgroundStyle;
+                const invitedUser = response.data.RSVP.find((r: rsvp) => r.user.id === userId);
+
+                if(invitedUser){
+                    // user is invited
+                    setRSVP(invitedUser);
                 }
             })
             .catch((error) => {
@@ -87,18 +96,30 @@ export default function DynamicContent({eventId}: Props) {
                                     <>
                                         <div className="flex flex-row justify-between items-center mt-4">
                                             <p className="font-bold text-4xl">{eventInfo.title}</p>
-                                            <Link target="_blank"
-                                                  href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventInfo.title)}&dates=${encodeURIComponent(format(new Date(eventInfo.eventStart), "yyyyMMdd'T'HHmmss") + '/' + format(new Date(eventInfo.eventEnd), "yyyyMMdd'T'HHmmss"))}&details=${encodeURIComponent(eventInfo.description)}&location=${encodeURIComponent(eventInfo.address)}`}>
-                                                <Button variant="outline"
-                                                        className="flex items-center justify-center gap-2 w-full">
-                                                    <CalendarPlus/>
-                                                    Add to Calendar
-                                                </Button>
-                                            </Link>
+                                            <div className="flex flex-row items-center justify-end gap-3">
+                                                {userId === eventInfo.author.id? (
+                                                    <Link target="_blank" href={`/newEvent/${eventInfo.id}`}>
+                                                        <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
+                                                            <Pencil/>
+                                                            Edit
+                                                        </Button>
+                                                    </Link>
+                                                ) : (
+                                                    <></>
+                                                )}
+                                                <Link target="_blank"
+                                                      href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventInfo.title)}&dates=${encodeURIComponent(format(new Date(eventInfo.eventStart), "yyyyMMdd'T'HHmmss") + '/' + format(new Date(eventInfo.eventEnd), "yyyyMMdd'T'HHmmss"))}&details=${encodeURIComponent(eventInfo.description)}&location=${encodeURIComponent(eventInfo.address)}`}>
+                                                    <Button variant="outline"
+                                                            className="flex items-center justify-center gap-2 w-full">
+                                                        <CalendarPlus/>
+                                                        Add to Calendar
+                                                    </Button>
+                                                </Link>
+                                            </div>
                                         </div>
                                         <div className="flex flex-row justify-start gap-4">
                                             <Badge variant="secondary">{eventInfo.eventType}</Badge>
-                                            <Badge variant="outline">{eventInfo.inviteRigidity}</Badge>
+                                            <Badge variant="outline">{eventInfo.inviteVisibility}</Badge>
                                         </div>
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-3">
                                             <div>
@@ -116,17 +137,15 @@ export default function DynamicContent({eventId}: Props) {
                                                 </div>
                                                 <p className="text-muted-foreground">{eventInfo.address ? eventInfo.address : "None provided"}</p>
                                             </div>
-
-                                            <div>
-                                                <div className="flex flex-row justify-start gap-2 items-center mb-1">
-                                                    <LetterText className="h-5 w-5"/>
-                                                    <p>Description</p>
-                                                </div>
-                                                <p className="text-muted-foreground">{eventInfo.description ? eventInfo.description : "No description provided"}</p>
+                                        </div>
+                                        <div className="mt-3">
+                                            <div className="flex flex-row justify-start gap-2 items-center mb-1">
+                                                <LetterText className="h-5 w-5"/>
+                                                <p>Description</p>
                                             </div>
+                                            <p className="text-muted-foreground">{eventInfo.description ? eventInfo.description : "No description provided"}</p>
                                         </div>
                                     </>
-
 
                                 ) : (
                                     <p>Event not found</p>
@@ -136,7 +155,7 @@ export default function DynamicContent({eventId}: Props) {
                     </div>
                 </div>
                 <div className="h-100 border-l-2">
-                <div className="border-b-2 w-100 p-5">
+                    <div className="border-b-2 w-100 p-5">
                         <div className="max-w-xl mx-auto">
                             <p className="text-2xl font-bold">RSVP Status</p>
                             {RSVP && eventInfo ? (
@@ -189,6 +208,11 @@ export default function DynamicContent({eventId}: Props) {
                                     </Link>
                                 </div>
                             )}
+                        </div>
+                    </div>
+                    <div className="border-b-2 w-100 p-5">
+                        <div className="max-w-xl mx-auto">
+                            <p className="text-2xl font-bold">Guest List</p>
                         </div>
                     </div>
                 </div>

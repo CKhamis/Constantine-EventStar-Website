@@ -25,6 +25,15 @@ export type EVResponse = {
     rsvpDuedate: Date,
     title: string,
     updatedAt: Date,
+    RSVP: {
+        response: string,
+        user: {
+            email: string,
+            name: string,
+            image: string
+            id: string,
+        }
+    }[]
 }
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -34,18 +43,31 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const eventId = resolvedParams.id;
 
     try {
-        // Find just the event and author
+        // Fetch all event info
         const event = await prisma.event.findFirst({
             where: {
                 id: eventId
             },
-            include:{
-                author:{
-                    select:{
+            include: {
+                author: {
+                    select: {
                         id: true,
                         name: true,
                         email: true,
                         image: true
+                    }
+                },
+                RSVP: {
+                    select: {
+                        response: true,
+                        user: {
+                            select: {
+                                name: true,
+                                email: true,
+                                image: true,
+                                id: true
+                            }
+                        }
                     }
                 }
             }
@@ -65,36 +87,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                 return NextResponse.json(event, { status: 200 });
             }
 
-            // User IS logged in. Check if they are invited
-            const optionalRSVP = await prisma.rsvp.findFirst({
-                where: {
-                    userId: session.user.id,
-                    eventId: eventId
-                },
-                include: {
-                    event: {
-                        include:{
-                            author:{
-                                select:{
-                                    id: true,
-                                    name: true,
-                                    email: true,
-                                    image: true
-                                }
-                            }
-                        }
-                    }
-                },
-            });
-
-            if(!optionalRSVP){
-                // User is logged in but was not invited. No RSVP exists
-                return NextResponse.json(event, { status: 200 });
-            }else{
-                // User is logged in and invited. Send with rsvp
-                return NextResponse.json(optionalRSVP, { status: 200 });
-            }
-
+            return NextResponse.json(event, { status: 200 });
         }else if(event.inviteVisibility === "INVITED_ONLY"){
             // Only those who are invited can see. Check to see if they are invited
 
@@ -109,20 +102,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                     userId: session.user.id,
                     eventId: eventId
                 },
-                include: {
-                    event: {
-                        include:{
-                            author:{
-                                select:{
-                                    id: true,
-                                    name: true,
-                                    email: true,
-                                    image: true
-                                }
-                            }
-                        }
-                    }
-                },
             });
 
             if(!optionalRSVP){
@@ -130,7 +109,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                 return NextResponse.json({ error: "Event not found" }, { status: 404 });
             }else{
                 // Has an account but is invited
-                return NextResponse.json(optionalRSVP, { status: 200 });
+                return NextResponse.json(event, { status: 200 });
             }
 
         }else{
@@ -146,20 +125,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                         userId: session.user.id,
                         eventId: eventId
                     },
-                    include: {
-                        event: {
-                            include:{
-                                author:{
-                                    select:{
-                                        id: true,
-                                        name: true,
-                                        email: true,
-                                        image: true
-                                    }
-                                }
-                            }
-                        }
-                    },
                 });
 
                 if(!optionalRSVP){
@@ -167,7 +132,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                     return NextResponse.json({ error: "Event not found" }, { status: 500 });
                 }else{
                     // Has an account, owns the event, and has an rsvp
-                    return NextResponse.json(optionalRSVP, { status: 200 });
+                    return NextResponse.json(event, { status: 200 });
                 }
             }
 
