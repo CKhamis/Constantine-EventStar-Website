@@ -12,6 +12,10 @@ body {
   @apply backdrop-blur-xl
 }
 
+.white-gradient{
+  background: linear-gradient(180deg, rgba(255,255,255,.05) 0%, rgba(0,0,0,1) 100%);
+}
+
 .focus-border{
   border-color: rgba(211, 60, 200, 0.5);
   border-width: 3px;

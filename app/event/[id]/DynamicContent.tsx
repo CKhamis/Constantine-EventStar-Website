@@ -9,7 +9,7 @@ import {EVResponse} from "@/app/api/events/view/[id]/route";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {CalendarPlus, Check, Clock, LetterText, MapPin, Pencil, X} from "lucide-react";
+import {CalendarPlus, Check, Clock, House, LetterText, MapPin, Pencil, View, X} from "lucide-react";
 import {useForm} from "react-hook-form";
 import {z} from "zod";
 import {rsvpSchema} from "@/components/ValidationSchemas";
@@ -17,6 +17,8 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {format} from "date-fns";
 import Link from "next/link";
 import {Badge} from "@/components/ui/badge";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import AvatarIcon from "@/components/AvatarIcon";
 
 export interface Props {
     eventId: string,
@@ -52,6 +54,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                 if(invitedUser){
                     // user is invited
                     setRSVP(invitedUser);
+                    form.setValue("response", invitedUser.response)
                 }
             })
             .catch((error) => {
@@ -119,9 +122,19 @@ export default function DynamicContent({eventId, userId}: Props) {
                                         </div>
                                         <div className="flex flex-row justify-start gap-4">
                                             <Badge variant="secondary">{eventInfo.eventType}</Badge>
-                                            <Badge variant="outline">{eventInfo.inviteVisibility}</Badge>
                                         </div>
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-3">
+                                            <div>
+                                                <div className="flex flex-row justify-start gap-2 items-center mb-1">
+                                                    <House className="h-5 w-5"/>
+                                                    <p>Event Host</p>
+                                                </div>
+                                                <div className="flex flex-row items-center justify-start gap-2 mt-2">
+                                                    <AvatarIcon image={eventInfo.author.image}
+                                                                name={eventInfo.author.name} size="xsmall"/>
+                                                    <p className="text-muted-foreground">{eventInfo.author.name}</p>
+                                                </div>
+                                            </div>
                                             <div>
                                                 <div className="flex flex-row justify-start gap-2 items-center mb-1">
                                                     <Clock className="h-5 w-5"/>
@@ -136,6 +149,14 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                     <p>Location</p>
                                                 </div>
                                                 <p className="text-muted-foreground">{eventInfo.address ? eventInfo.address : "None provided"}</p>
+                                            </div>
+
+                                            <div>
+                                                <div className="flex flex-row justify-start gap-2 items-center mb-1">
+                                                    <View className="h-5 w-5"/>
+                                                    <p>Event Visibility</p>
+                                                </div>
+                                                <p className="text-muted-foreground">{eventInfo.inviteVisibility}</p>
                                             </div>
                                         </div>
                                         <div className="mt-3">
@@ -154,10 +175,21 @@ export default function DynamicContent({eventId, userId}: Props) {
                         </div>
                     </div>
                 </div>
-                <div className="h-100 border-l-2">
+                <div className="h-100 border-l-2 white-gradient">
                     <div className="border-b-2 w-100 p-5">
                         <div className="max-w-xl mx-auto">
-                            <p className="text-2xl font-bold">RSVP Status</p>
+                            <div className="flex flex-row justify-between items-center">
+                                <p className="text-2xl font-bold">RSVP Status</p>
+                                {eventInfo && eventInfo.RSVP.find((r) => r.user.id === userId)? (eventInfo.RSVP.find((r) => r.user.id === userId)?.response !== "NO_RESPONSE"? (
+                                    <Badge variant="outline">Answered</Badge>
+
+                                ) : (
+                                    <Badge variant="destructive">Unanswered</Badge>
+
+                                )) : (
+                                    <></>
+                                )}
+                            </div>
                             {RSVP && eventInfo ? (
                                 <Form {...form}>
                                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
@@ -213,6 +245,88 @@ export default function DynamicContent({eventId, userId}: Props) {
                     <div className="border-b-2 w-100 p-5">
                         <div className="max-w-xl mx-auto">
                             <p className="text-2xl font-bold">Guest List</p>
+                            {eventInfo? (
+                                <>
+                                    <Tabs defaultValue="yes" className="w-full mt-6">
+                                        <TabsList className="grid w-full grid-cols-4">
+                                            <TabsTrigger value="yes">Coming</TabsTrigger>
+                                            <TabsTrigger value="no">Not Coming</TabsTrigger>
+                                            <TabsTrigger value="maybe">Tentative</TabsTrigger>
+                                            <TabsTrigger value="no_response">No Reply</TabsTrigger>
+                                        </TabsList>
+                                        <TabsContent value="yes">
+                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "YES").map(rsvp => (
+                                                <div
+                                                    className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer"
+                                                    key={rsvp.user.id}>
+                                                    <AvatarIcon name={rsvp.user.name} image={rsvp.user.image}/>
+                                                    <div>
+                                                        <p className="text-sm font-medium leading-none">{rsvp.user.name}</p>
+                                                        <p className="text-sm text-muted-foreground">{rsvp.user.email}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {eventInfo.RSVP.filter((r) => r.response === "YES").length === 0 ? (
+                                                <p className="text-center mt-9 mb-6 font-bold">None confirmed</p>
+                                            ) : (<></>)}
+                                        </TabsContent>
+                                        <TabsContent value="no">
+                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "NO").map(rsvp => (
+                                                <div
+                                                    className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer"
+                                                    key={rsvp.user.id}>
+                                                    <AvatarIcon name={rsvp.user.name} image={rsvp.user.image}/>
+                                                    <div>
+                                                        <p className="text-sm font-medium leading-none">{rsvp.user.name}</p>
+                                                        <p className="text-sm text-muted-foreground">{rsvp.user.email}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {eventInfo.RSVP.filter((r) => r.response === "NO").length === 0 ? (
+                                                <p className="text-center mt-9 mb-6 font-bold">None</p>
+                                            ) : (<></>)}
+                                        </TabsContent>
+                                        <TabsContent value="maybe">
+                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "MAYBE").map(rsvp => (
+                                                <div
+                                                    className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer"
+                                                    key={rsvp.user.id}>
+                                                    <AvatarIcon name={rsvp.user.name} image={rsvp.user.image}/>
+                                                    <div>
+                                                        <p className="text-sm font-medium leading-none">{rsvp.user.name}</p>
+                                                        <p className="text-sm text-muted-foreground">{rsvp.user.email}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {eventInfo.RSVP.filter((r) => r.response === "MAYBE").length === 0 ? (
+                                                <p className="text-center mt-9 mb-6 font-bold">None</p>
+                                            ) : (<></>)}
+                                        </TabsContent>
+                                        <TabsContent value="no_response">
+                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "NO_RESPONSE").map(rsvp => (
+                                                <div
+                                                    className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer"
+                                                    key={rsvp.user.id}>
+                                                    <AvatarIcon name={rsvp.user.name} image={rsvp.user.image}/>
+                                                    <div>
+                                                        <p className="text-sm font-medium leading-none">{rsvp.user.name}</p>
+                                                        <p className="text-sm text-muted-foreground">{rsvp.user.email}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {eventInfo.RSVP.filter((r) => r.response === "NO_RESPONSE").length === 0 ? (
+                                                <p className="text-center mt-9 mb-6 font-bold">Everyone has
+                                                    responded</p>
+                                            ) : (<></>)}
+                                        </TabsContent>
+                                    </Tabs>
+                                    <p className="text-xs text-muted-foreground mt-3">{eventInfo.RSVP.length} total guests
+                                        invited, {eventInfo.RSVP.filter((r) => r.response === "YES").length} others confirmed will be going, waiting
+                                        for {eventInfo.RSVP.filter((r) => r.response === "NO_RESPONSE").length} to respond</p>
+                                </>
+                            ) : (
+                                <p>None</p>
+                            )}
                         </div>
                     </div>
                 </div>
