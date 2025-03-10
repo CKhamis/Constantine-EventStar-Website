@@ -4,7 +4,6 @@ import {useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import Image from "next/image";
 import axios from "axios";
-import {EIResponse} from "@/app/api/events/invited/route";
 import {EVResponse} from "@/app/api/events/view/[id]/route";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -65,7 +64,16 @@ export default function DynamicContent({eventId, userId}: Props) {
     }
 
     async function onSubmit(data: z.infer<typeof rsvpSchema>) {
-
+        setSubmitStatus('loading')
+        try {
+            await axios.post(`/api/events/rsvp/${eventId}`, {response: data.response})
+            setSubmitStatus('success')
+        } catch (e) {
+            console.log(e);
+            setSubmitStatus('error')
+        } finally {
+            refresh();
+        }
     }
 
     const form = useForm<z.infer<typeof rsvpSchema>>({
@@ -169,7 +177,10 @@ export default function DynamicContent({eventId, userId}: Props) {
                                     </>
 
                                 ) : (
-                                    <p>Event not found</p>
+                                    <div className="w-100 h-100 flex justify-center flex-col items-center">
+                                        <Image src="/agent/empty.png" height={200} width={200} alt="" className="mt-10" />
+                                        <p className="font-bold text-3xl mb-5">Event not found</p>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -215,7 +226,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                 </FormItem>
                                             )}
                                         />
-                                        <p className="text-muted-foreground text-sm">{new Date(eventInfo.rsvpDuedate) < new Date() ? `too late to respond` : `Respond by ${format(new Date(eventInfo.rsvpDuedate), 'PPP')}`}</p>
+                                        <p className="text-muted-foreground text-sm">{new Date(eventInfo.rsvpDuedate) < new Date() ? `too late to respond` : `Respond by ${format(new Date(eventInfo.rsvpDuedate), 'PPP hh:mm a')}`}</p>
                                         <div className="flex flex-row gap-4 items-center justify-start">
                                             <Button type="submit" disabled={submitStatus === 'loading' || new Date(eventInfo.rsvpDuedate) < new Date()}>
                                                 {submitStatus === 'loading' ? 'Submitting...' : 'Save'}

@@ -14,7 +14,6 @@ import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
 import {Check, CircleHelp, Clock, LetterText, MapPin, X} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import {RsvpWithEvent} from "@/components/deprecated/Types";
 import {Badge} from "@/components/ui/badge";
 
 export default function DynamicContent() {
@@ -91,6 +90,16 @@ export default function DynamicContent() {
             });
     }
 
+    async function updateRSVP(eventId: string, response: string){
+        setLoading(true);
+        try{
+            await axios.post(`/api/events/rsvp/${eventId}`, {response: response})
+                .finally(refresh);
+        }catch (e){
+            console.log(e)
+        }
+    }
+
     useEffect(() => {
         refresh()
     }, []);
@@ -116,13 +125,13 @@ export default function DynamicContent() {
                                         <CardTitle className="text-2xl">{rsvp.event.title}</CardTitle>
                                         <div>
                                         <ToggleGroup type="single" variant="default" defaultValue={rsvp.response} disabled={new Date(rsvp.event.rsvpDuedate) < new Date()}>
-                                                <ToggleGroupItem value="YES" aria-label="Toggle check" onClick={() => updateRSVP(event.eventId, "YES")}>
+                                                <ToggleGroupItem value="YES" aria-label="Toggle check" onClick={() => updateRSVP(rsvp.event.id, "YES")}>
                                                     <Check className="h-4 w-4"/>
                                                 </ToggleGroupItem>
-                                                <ToggleGroupItem value="MAYBE" aria-label="Toggle question" onClick={() => updateRSVP(event.eventId, "MAYBE")}>
+                                                <ToggleGroupItem value="MAYBE" aria-label="Toggle question" onClick={() => updateRSVP(rsvp.event.id, "MAYBE")}>
                                                     <CircleHelp className="h-4 w-4"/>
                                                 </ToggleGroupItem>
-                                                <ToggleGroupItem value="NO" aria-label="Toggle x" onClick={() => updateRSVP(event.eventId, "NO")}>
+                                                <ToggleGroupItem value="NO" aria-label="Toggle x" onClick={() => updateRSVP(rsvp.event.id, "NO")}>
                                                     <X className="h-4 w-4"/>
                                                 </ToggleGroupItem>
                                             </ToggleGroup>
@@ -142,8 +151,8 @@ export default function DynamicContent() {
                                         </div>
                                     </div>
                                     <div className="flex flex-col justify-center gap-2">
-                                        <Link href={"/event/" + rsvp.event.id}><Button variant={new Date(rsvp.event.eventStart) < new Date() ? "outline" : "default"}>View Event</Button></Link>
-                                        {new Date(rsvp.event.eventStart) < new Date() ?
+                                        <Link href={"/event/" + rsvp.event.id}><Button variant={new Date(rsvp.event.eventEnd) < new Date() ? "secondary" : "default"}>View Event</Button></Link>
+                                        {new Date(rsvp.event.eventEnd) < new Date() ?
                                             <p className="text-muted-foreground text-xs ml-1">Event ended</p> : <></>}
                                     </div>
                                 </CardFooter>
