@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Footer(){
     return (
-        <footer className="w-full border-t glass-dark" style={{
+        <footer className="border-t glass-dark" style={{
             backgroundImage: `url('/tiles/logoTiles.svg')`,
             backgroundSize: '120px'
         }}>
