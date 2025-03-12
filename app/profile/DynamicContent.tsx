@@ -71,6 +71,36 @@ export default function DynamicContent({session}: Props) {
         setLoading(false);
     }
 
+    async function respondFR(response:boolean, senderId:string){
+        await axios.post("/api/user/connections/respond", {response: response, senderId: senderId})
+            .then(() => {
+                refresh()
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+    async function removeFollower(senderId:string){
+        await axios.post("/api/user/connections/delete", {id: senderId})
+            .then(() => {
+                refresh()
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+    async function updateRSVP(eventId: string, response: string){
+        setLoading(true);
+        try{
+            await axios.post(`/api/events/rsvp/${eventId}`, {response: response})
+                .finally(refresh);
+        }catch (e){
+            console.log(e)
+        }
+    }
+
     useEffect(() => {
         refresh()
     }, []);
@@ -177,7 +207,7 @@ export default function DynamicContent({session}: Props) {
                                         <AvatarIcon image={follower.image} name={follower.name} size="small" />
                                         <p className="font-bold text-xl">{follower.name}</p>
                                     </div>
-                                    <Button size="icon" variant="secondary"><X /></Button>
+                                    <Button size="icon" variant="secondary" onClick={() => removeFollower(follower.id)}><X /></Button>
                                 </div>
                             ))}
                         </div>
@@ -200,7 +230,7 @@ export default function DynamicContent({session}: Props) {
                                         <AvatarIcon image={follower.image} name={follower.name} size="small" />
                                         <p className="font-bold text-xl">{follower.name}</p>
                                     </div>
-                                    <Button size="icon" variant="secondary"><X /></Button>
+                                    <Button size="icon" variant="secondary" onClick={() => removeFollower(follower.id)}><X /></Button>
                                 </div>
                             ))}
                         </div>
@@ -223,7 +253,10 @@ export default function DynamicContent({session}: Props) {
                                         <AvatarIcon image={request.sender.image} name={request.sender.name} size="small" />
                                         <p className="font-bold text-xl">{request.sender.name}</p>
                                     </div>
-                                    <Button size="icon" variant="secondary"><X /></Button>
+                                    <div className="flex flex-row justify-end items-center mt-5 gap-3">
+                                        <Button variant="secondary" size="icon" onClick={() => respondFR(true, request.sender.id)}><Check className="h-4 w-4"/></Button>
+                                        <Button variant="outline" size="icon" onClick={() => respondFR(false, request.sender.id)}><X className="h-4 w-4"/></Button>
+                                    </div>
                                 </div>
                             ))}
                         </div>

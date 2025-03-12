@@ -50,3 +50,7 @@ export const uuidSchema = z.object({
 export const rsvpSchema = z.object({
     response: RsvpResponse
 })
+
+export const cuidSchema = z.object({
+    id: z.string().cuid()
+})
