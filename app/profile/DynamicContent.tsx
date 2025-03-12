@@ -17,12 +17,15 @@ import Image from "next/image";
 import Footer from "@/components/Footer";
 import {FRResponse} from "@/app/api/user/connections/incoming/route";
 import FollowDialog from "@/app/profile/FollowDialog";
+import z from "zod";
+import {emailSchema} from "@/components/ValidationSchemas";
 export interface Props{
     session: {user: {id: string, name: string, image: string, email: string}}
 }
 
 export default function DynamicContent({session}: Props) {
     const [loading, setLoading] = useState(true);
+    const [requestStatusMessage, setRequestStatusMessage] = useState<React.ReactElement>(<></>);
     const [userInfo, setUserInfo] = useState<response>({
         createdAt: new Date(),
         discordId: "",
@@ -83,7 +86,17 @@ export default function DynamicContent({session}: Props) {
     }
 
     async function removeFollower(senderId:string){
-        await axios.post("/api/user/connections/delete", {id: senderId})
+        await axios.post("/api/user/connections/delete/follower", {id: senderId})
+            .then(() => {
+                refresh()
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+    async function removeFollowing(senderId:string){
+        await axios.post("/api/user/connections/delete/following", {id: senderId})
             .then(() => {
                 refresh()
             })
@@ -231,7 +244,7 @@ export default function DynamicContent({session}: Props) {
                                         <AvatarIcon image={follower.image} name={follower.name} size="small" />
                                         <p className="font-bold text-xl">{follower.name}</p>
                                     </div>
-                                    <Button size="icon" variant="secondary" onClick={() => removeFollower(follower.id)}><X /></Button>
+                                    <Button size="icon" variant="secondary" onClick={() => removeFollowing(follower.id)}><X /></Button>
                                 </div>
                             ))}
                         </div>

@@ -1,5 +1,5 @@
 import MainNav from "@/components/MainNav";
-import DynamicContent from "@/app/newEvent/DynamicContent";
+import DynamicContent from "@/app/editEvent/DynamicContent";
 import {auth} from "@/auth";
 import {redirect} from "next/navigation";
 

@@ -24,12 +24,12 @@ export async function POST(request: Request) {
         // Delete request in either scenario
         await prisma.user.update({
             where: {
-                id: session.user.id,
+                id: body.id,
             },
             data: {
                 following: {
                     disconnect: {
-                        id: body.id
+                        id: session.user.id
                     }
                 }
             }
