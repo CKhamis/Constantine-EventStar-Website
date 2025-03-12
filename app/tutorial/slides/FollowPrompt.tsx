@@ -5,7 +5,7 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/
 import {Input} from "@/components/ui/input";
 import {useForm} from "react-hook-form";
 import z from "zod";
-import {editBasicUserInfoSchema, emailSchema} from "@/components/ValidationSchemas";
+import {emailSchema} from "@/components/ValidationSchemas";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Check, Loader2, X} from "lucide-react";
 import {Button} from "@/components/ui/button";

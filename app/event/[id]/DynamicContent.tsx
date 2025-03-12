@@ -109,7 +109,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                             <p className="font-bold text-4xl">{eventInfo.title}</p>
                                             <div className="flex flex-row items-center justify-end gap-3">
                                                 {userId === eventInfo.author.id? (
-                                                    <Link target="_blank" href={`/editEvent/${eventInfo.id}`}>
+                                                    <Link target="_blank" href={`/eventDetails/${eventInfo.id}`}>
                                                         <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
                                                             <Pencil/>
                                                             Edit

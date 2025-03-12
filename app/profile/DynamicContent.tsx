@@ -17,8 +17,6 @@ import Image from "next/image";
 import Footer from "@/components/Footer";
 import {FRResponse} from "@/app/api/user/connections/incoming/route";
 import FollowDialog from "@/app/profile/FollowDialog";
-import z from "zod";
-import {emailSchema} from "@/components/ValidationSchemas";
 export interface Props{
     session: {user: {id: string, name: string, image: string, email: string}}
 }
@@ -157,7 +155,7 @@ export default function DynamicContent({session}: Props) {
                     <TabsContent value="events" className="mt-5">
                         <div className="w-100 flex flex-row justify-between items-center mb-5">
                             <p className="text-3xl font-bold">Your Events</p>
-                            <Link href="/newEvent"><Button>New Event</Button></Link>
+                            <Link href="/editEvent"><Button>New Event</Button></Link>
                         </div>
                         <div className="max-w-2xl mx-auto">
                             {RSVPs.map((rsvp) => (

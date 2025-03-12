@@ -1,7 +1,7 @@
 'use client'
 import Image from "next/image";
 import {LoadingIcon} from "@/components/LoadingIcon";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {saveEventSchema} from "@/components/ValidationSchemas";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -23,10 +23,21 @@ import {Textarea} from "@/components/ui/textarea";
 import axios from "axios";
 import UserSelect from "@/components/UserSelect";
 
-export default function DynamicContent() {
+export interface Props{
+    eventId: string | null
+}
+
+export default function DynamicContent({eventId}: Props) {
     const [loading, setLoading] = useState(false);
     const [editing, setEditing] = useState(false);
+    const [initialRSVP, setInitialRSVP] = useState<string[]>([]);
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([]);
+
+    useEffect(() => {
+        if(eventId !== null){
+            fetchEvent(eventId)
+        }
+    }, []);
 
     const form = useForm<z.infer<typeof saveEventSchema>>({
         resolver: zodResolver(saveEventSchema),
@@ -45,6 +56,33 @@ export default function DynamicContent() {
         }
     });
 
+    async function fetchEvent(eventId: string) {
+        try{
+            setLoading(true);
+            const response = await axios.get('/api/events/view/' + eventId);
+
+            form.setValue("id", response.data.id);
+            form.setValue("title", response.data.title);
+            form.setValue("backgroundStyle", response.data.backgroundStyle);
+            form.setValue("address", response.data.address);
+            form.setValue("eventStart", new Date(response.data.eventStart));
+            form.setValue("eventEnd", new Date(response.data.eventEnd));
+            form.setValue("rsvpDuedate", new Date(response.data.rsvpDuedate));
+            form.setValue("description", response.data.description);
+            form.setValue("inviteVisibility", response.data.inviteVisibility);
+            form.setValue("eventType", response.data.eventType);
+            form.setValue("RSVP", response.data.RSVP.map((r:{user:{id:string}}) => r.user.id));
+            setInitialRSVP(response.data.RSVP.map((r:{user:{id:string}}) => r.user.id));
+
+            setEditing(true);
+        }catch(e){
+            console.log(e)
+            setAlertMessages([...alertMessages, { title: "Catastrophic Error", message: "Unable to find event", icon: 2 }]);
+        }finally {
+            setLoading(false);
+        }
+    }
+
     const eventTypeOptions = Object.values(EventType).map((value) => ({
         label: value.replace(/_/g, " "),
         value,
@@ -55,7 +93,6 @@ export default function DynamicContent() {
     }));
 
     async function onSubmit(values: z.infer<typeof saveEventSchema>) {
-console.log("Submitting...");
         try{
             setLoading(true);
             const response = await axios.post('/api/events/save', values);
@@ -89,7 +126,7 @@ console.log("Submitting...");
                         </div>
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)}>
-                                <UserSelect action={(data) => form.setValue("RSVP", data)} />
+                                <UserSelect action={(data) => form.setValue("RSVP", data)} initialSelectedIds={initialRSVP} />
                                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 mt-6">
                                     <FormField
                                         control={form.control}
@@ -323,7 +360,10 @@ console.log("Submitting...");
                                         </FormItem>
                                     )}
                                 />
-                                <Button type="submit" disabled={loading} className="mt-6 mb-6">
+                                <Button type="submit" disabled={loading} className="mt-6 mb-6" onClick={() => {
+                                    console.log(form.formState);
+                                    console.log(form.formState.errors)
+                                }}>
                                     {loading && <Loader2 className="animate-spin"/>}
                                     Save
                                 </Button>
