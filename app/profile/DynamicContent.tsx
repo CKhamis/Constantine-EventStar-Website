@@ -16,6 +16,7 @@ import {format} from "date-fns";
 import Image from "next/image";
 import Footer from "@/components/Footer";
 import {FRResponse} from "@/app/api/user/connections/incoming/route";
+import FollowDialog from "@/app/profile/FollowDialog";
 export interface Props{
     session: {user: {id: string, name: string, image: string, email: string}}
 }
@@ -198,7 +199,7 @@ export default function DynamicContent({session}: Props) {
                     <TabsContent value="followers" className="mt-5">
                         <div className="w-100 flex flex-row justify-between items-center mb-5">
                             <p className="text-3xl font-bold">Followers</p>
-                            <Link href="/newEvent"><Button>Send Request</Button></Link>
+                            <FollowDialog />
                         </div>
                         <div className="flex flex-col gap-5 max-w-2xl mx-auto">
                             {userInfo.followedBy.map((follower) => (
@@ -221,7 +222,7 @@ export default function DynamicContent({session}: Props) {
                     <TabsContent value="following" className="mt-5">
                         <div className="w-100 flex flex-row justify-between items-center mb-5">
                             <p className="text-3xl font-bold">Following</p>
-                            <Link href="/newEvent"><Button>Send Request</Button></Link>
+                            <FollowDialog />
                         </div>
                         <div className="flex flex-col gap-5 max-w-2xl mx-auto">
                             {userInfo.following.map((follower) => (
@@ -244,7 +245,7 @@ export default function DynamicContent({session}: Props) {
                     <TabsContent value="requests" className="mt-5">
                         <div className="w-100 flex flex-row justify-between items-center mb-5">
                             <p className="text-3xl font-bold">Requests</p>
-                            <Link href="/newEvent"><Button>Send Request</Button></Link>
+                            <FollowDialog />
                         </div>
                         <div className="flex flex-col gap-5 max-w-2xl mx-auto">
                             {recievedFollows.map((request) => (
