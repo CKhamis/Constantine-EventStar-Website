@@ -22,16 +22,28 @@ import {EventInviteVisibility, EventType} from "@prisma/client";
 import {Textarea} from "@/components/ui/textarea";
 import axios from "axios";
 import UserSelect from "@/components/UserSelect";
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
+import dynamic from "next/dynamic";
+import * as commands from "@uiw/react-md-editor/commands"
 
 export interface Props{
     eventId: string | null
 }
+
+const MDEditor = dynamic(
+    () => import("@uiw/react-md-editor"),
+    { ssr: false }
+);
+
 
 export default function DynamicContent({eventId}: Props) {
     const [loading, setLoading] = useState(false);
     const [editing, setEditing] = useState(false);
     const [initialRSVP, setInitialRSVP] = useState<string[]>([]);
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([]);
+
+    const [value, setValue] = useState("**Hello world!!!**");
 
     useEffect(() => {
         if(eventId !== null){
@@ -360,6 +372,7 @@ export default function DynamicContent({eventId}: Props) {
                                         </FormItem>
                                     )}
                                 />
+                                <MDEditor value={value} onChange={setValue} />
                                 <Button type="submit" disabled={loading} className="mt-6 mb-6" onClick={() => {
                                     console.log(form.formState);
                                     console.log(form.formState.errors)
