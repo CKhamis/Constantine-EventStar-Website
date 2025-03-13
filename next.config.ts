@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
-const removeImports = require('next-remove-imports')();
-module.exports = removeImports({});
+import createNextRemoveImports from 'next-remove-imports';
+
+const removeImports = createNextRemoveImports();
+export default removeImports({});
 
 const nextConfig: import('next').NextConfig = {
     eslint:{
