@@ -18,7 +18,7 @@ import Link from "next/link";
 import {Badge} from "@/components/ui/badge";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import AvatarIcon from "@/components/AvatarIcon";
-import MarkdownDisplay from "@uiw/react-md-editor";
+import Markdown from 'react-markdown'
 
 export interface Props {
     eventId: string,
@@ -168,12 +168,13 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                 <p className="text-muted-foreground">{eventInfo.inviteVisibility}</p>
                                             </div>
                                         </div>
-                                        <div className="mt-3">
+                                        <div className="mt-3 rat">
                                             <div className="flex flex-row justify-start gap-2 items-center mb-1">
                                                 <LetterText className="h-5 w-5"/>
                                                 <p>Description</p>
                                             </div>
-                                            <MarkdownDisplay className="h-auto overflow-visible" value={eventInfo.description} preview="preview" hideToolbar={true} />
+                                            <Markdown>{eventInfo.description}</Markdown>
+                                            {/*<MarkdownDisplay className="h-auto overflow-visible" value={eventInfo.description} preview="preview" hideToolbar={true} />*/}
                                             {/*<p className="text-muted-foreground">{eventInfo.description ? eventInfo.description : "No description provided"}</p>*/}
                                         </div>
                                     </>

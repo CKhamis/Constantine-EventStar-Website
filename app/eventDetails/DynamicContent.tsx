@@ -342,6 +342,22 @@ export default function DynamicContent({ eventId }: Props) {
                                                 <FormControl>
                                                     <div>
                                                         <MDEditor
+                                                            commands={[
+                                                                commands.group([
+                                                                    commands.title1,
+                                                                    commands.title2,
+                                                                    commands.title3,
+                                                                    commands.title4,
+                                                                ],
+                                                                    {
+                                                                        name: "Header",
+                                                                        groupName: "Header",
+                                                                        buttonProps: { "aria-label": "Insert title" }
+                                                                    }),
+                                                                commands.bold,
+                                                                commands.italic,
+                                                                commands.hr,
+                                                            ]}
                                                             value={field.value}
                                                             onChange={(value) => field.onChange(value || "")}
                                                             preview="edit"
