@@ -7,6 +7,10 @@ import AvatarIcon from "@/components/AvatarIcon";
 import Image from "next/image";
 import {User} from "@prisma/client";
 import axios from "axios";
+import {Search} from "lucide-react";
+import {Input} from "@/components/ui/input";
+import UserDetailsForm from "@/app/ESMT/UserDetailsForm";
+import {alertContent} from "@/components/AlertList";
 
 export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
@@ -29,6 +33,12 @@ export default function DynamicContent() {
         refresh()
     }, []);
 
+    // Search
+    const [searchTerm, setSearchTerm] = useState('')
+    const filteredUsers = userList.filter(user =>
+        `${user.name}`.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
     return (
         <div className="container">
             {loading && <LoadingIcon/>}
@@ -47,7 +57,23 @@ export default function DynamicContent() {
                         <TabsTrigger value="account">User Accounts</TabsTrigger>
                         <TabsTrigger value="password">Password</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="account">Make changes to your account here.</TabsContent>
+                    <TabsContent value="account">
+                        <div className="relative max-w-sm mb-4">
+                            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
+                            <Input
+                                type="search"
+                                placeholder="Search users..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-8"
+                            />
+                        </div>
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            {filteredUsers.map((user) => (
+                                <UserDetailsForm user={user} key={user.id} refresh={refresh} addMessage={() => console.log("Add user")}/>
+                            ))}
+                        </div>
+                    </TabsContent>
                     <TabsContent value="password">Change your password here.</TabsContent>
                 </Tabs>
             </div>
