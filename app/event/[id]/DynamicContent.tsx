@@ -189,7 +189,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                         </div>
                     </div>
                 </div>
-                <div className="h-100 border-l-2 white-gradient">
+                <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll">
                     <div className="border-b-2 w-100 p-5">
                         <div className="max-w-xl mx-auto">
                             <div className="flex flex-row justify-between items-center">
