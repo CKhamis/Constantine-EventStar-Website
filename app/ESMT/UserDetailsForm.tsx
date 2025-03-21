@@ -19,7 +19,6 @@ import {useState} from "react";
 import axios from "axios";
 import {alertContent} from "@/components/AlertList";
 import AvatarIcon from "@/components/AvatarIcon";
-import Link from "next/link";
 
 interface Props {
     user: User;
@@ -38,6 +37,16 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
             phoneNumber: user.phoneNumber ?? "",
         }
     });
+
+    async function solcilit(id:string){
+        try{
+            await axios.post('/api/ESMT/user/connections/new', {id: id})
+                .finally(refresh);
+        }catch(e){
+            console.log(e);
+        }
+
+    }
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const isFormValid = form.formState.isValid;
@@ -146,7 +155,10 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
                                     Save
                                 </Button>
                             </DialogClose>
-                            <Link href={"/ESMT/users/" + user.id}><Button variant="secondary">Details</Button> </Link>
+                            <Button variant="secondary" type="button" onClick={() => solcilit(user.id)}>
+                                Solicit
+                            </Button>
+                            {/*<Link href={"/ESMT/users/" + user.id}><Button variant="secondary">Details</Button> </Link>*/}
                             <Dialog>
                                 <DialogTrigger asChild>
                                     <Button variant="destructive" className="mb-4">
