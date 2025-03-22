@@ -59,7 +59,9 @@ export async function GET() {
                 }
             },
             orderBy:{
-                createdAt: "desc"
+                event: {
+                    eventStart: "desc"
+                }
             }
         });
 
