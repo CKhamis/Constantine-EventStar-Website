@@ -54,3 +54,11 @@ export const rsvpSchema = z.object({
 export const cuidSchema = z.object({
     id: z.string().cuid()
 })
+
+export const editUserSchema = z.object({
+    name: z.string().max(255),
+    email: z.string().email().max(255),
+    discordId: z.string().optional(),
+    id: z.string().cuid(),
+    phoneNumber: z.string().max(10).min(10).optional(),
+})

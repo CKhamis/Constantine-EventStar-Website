@@ -3,12 +3,19 @@ import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/compon
 import Link from "next/link";
 import Image from "next/image";
 import AccountButton from "@/components/AccountButton";
+import {auth} from "@/auth";
 
-export default function MainNav({children}: PropsWithChildren){
+export default async function MainNav({children}: PropsWithChildren){
+    const session = await auth();
+
     const menuItems = [
         {title: 'Feed', iconUrl: '/icons/Feed.svg', link: '/feed'},
-        {title: 'New Event', iconUrl: '/icons/NewEvent.svg', link: '/eventDetails'}
+        {title: 'New Event', iconUrl: '/icons/NewEvent.svg', link: '/eventDetails'},
     ];
+
+    if(session && session.user && session.user.role === "OWNER"){
+        menuItems.push({title: 'ESMT', iconUrl: '/icons/ESMT.svg', link: '/ESMT'})
+    }
 
     return(
         <TooltipProvider>
