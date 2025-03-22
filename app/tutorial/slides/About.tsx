@@ -16,7 +16,7 @@ export default function About(){
                         </div>
                         <div>
                             <p className="font-bold text-xl">Plan Events</p>
-                            <p className="text-muted-foreground">EventStar allows event planners to modify their events exactly to their liking. This includes background images, descriptions, titles, invite lists, and more!</p>
+                            <p className="text-muted-foreground">EventStar allows event planners to modify their events exactly to their liking. This includes background images, descriptions, titles, visibility, and more!</p>
                         </div>
                     </li>
                     <li className="flex flex-row justify-start gap-5 mb-5">
@@ -33,8 +33,8 @@ export default function About(){
                             <ChartSpline className="w-10 h-10"/>
                         </div>
                         <div>
-                            <p className="font-bold text-xl">Track Punctuality</p>
-                            <p className="text-muted-foreground">Event Planners will gain access to powerful tools to analyze overall attendance and punctuality of their events and followers.</p>
+                            <p className="font-bold text-xl">View Attendees</p>
+                            <p className="text-muted-foreground">Event Planners are now able to see a comprehensive list of guests who RSVP&#39;d to the event. This feature will soon be updated to include even more helpful information like +1s.</p>
                         </div>
                     </li>
                     {/*<li className="flex flex-row justify-start gap-5 mb-5">*/}
@@ -64,7 +64,7 @@ export default function About(){
                         </div>
                         <div>
                             <p className="font-bold text-xl">Follow Planners</p>
-                            <p className="text-muted-foreground">Follow any event planner you like. You will see events they invited to you in your own calendar, where you can directly RSVP from!</p>
+                            <p className="text-muted-foreground">Follow any event planner you like. You will see events they invited to you in your own event feed, where you can directly RSVP from.</p>
                         </div>
                     </li>
                     <li className="flex flex-row justify-start gap-5 mb-5">
@@ -72,7 +72,7 @@ export default function About(){
                             <Bell className="w-10 h-10"/>
                         </div>
                         <div>
-                            <p className="font-bold text-xl">Get Event Reminders</p>
+                            <p className="font-bold text-xl">Get Event Reminders (coming soon)</p>
                             <p className="text-muted-foreground">Event planners can choose to relay event reminders for their events, allowing you to be updated with new events or changes in existing ones.</p>
                         </div>
                     </li>

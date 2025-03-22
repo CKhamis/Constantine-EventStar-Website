@@ -15,7 +15,7 @@ export default function Instructions(){
                     <p className="text-3xl font-bold">2.</p>
                     <div>
                         <p className="font-bold text-xl">Follow Event Planner</p>
-                        <p>You will be asked to enter the email of the person who is inviting you. Once verified, you will see all events they invite you to.</p>
+                        <p>You will be asked to enter the email of the person who is inviting you. Once verified, you will see all events they invite you to. After account setup, you are still able to follow users in the profile page.</p>
                     </div>
                 </div>
                 <div className="flex flex-row justify-start gap-5">
