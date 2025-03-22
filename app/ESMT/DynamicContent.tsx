@@ -72,7 +72,7 @@ export default function DynamicContent({id}: Props) {
                         </div>
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {filteredUsers.map((user) => (
-                                <UserDetailsForm id={id} user={user} key={user.id} refresh={refresh} addMessage={() => console.log("Add user")}/>
+                                <UserDetailsForm id={id} user={user} key={user.id} refresh={refresh} />
                             ))}
                         </div>
                     </TabsContent>
