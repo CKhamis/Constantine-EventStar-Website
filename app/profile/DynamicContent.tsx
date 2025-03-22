@@ -17,6 +17,7 @@ import Image from "next/image";
 import Footer from "@/components/Footer";
 import {FRResponse} from "@/app/api/user/connections/incoming/route";
 import FollowDialog from "@/app/profile/FollowDialog";
+
 export interface Props{
     session: {user: {id: string, name: string, image: string, email: string}}
 }

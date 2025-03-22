@@ -3,18 +3,20 @@
 import {useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import AvatarIcon from "@/components/AvatarIcon";
 import Image from "next/image";
-import {User} from "@prisma/client";
 import axios from "axios";
 import {Search} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import UserDetailsForm from "@/app/ESMT/UserDetailsForm";
-import {alertContent} from "@/components/AlertList";
+import {esmtUser} from "@/app/api/ESMT/user/all/route";
 
-export default function DynamicContent() {
+interface Props {
+    id: string;
+}
+
+export default function DynamicContent({id}: Props) {
     const [loading, setLoading] = useState(true);
-    const [userList, setUserList] = useState<User[]>([]);
+    const [userList, setUserList] = useState<esmtUser[]>([]);
 
     async function refresh(){
         setLoading(true);
@@ -70,7 +72,7 @@ export default function DynamicContent() {
                         </div>
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {filteredUsers.map((user) => (
-                                <UserDetailsForm user={user} key={user.id} refresh={refresh} addMessage={() => console.log("Add user")}/>
+                                <UserDetailsForm id={id} user={user} key={user.id} refresh={refresh} addMessage={() => console.log("Add user")}/>
                             ))}
                         </div>
                     </TabsContent>

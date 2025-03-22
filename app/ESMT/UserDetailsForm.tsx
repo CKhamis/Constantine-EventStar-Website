@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {User} from "@prisma/client";
+import {esmtUser} from "@/app/api/ESMT/user/all/route";
 import {useForm} from "react-hook-form";
 import {editUserSchema} from "@/components/ValidationSchemas";
 import * as z from 'zod'
@@ -21,12 +21,13 @@ import {alertContent} from "@/components/AlertList";
 import AvatarIcon from "@/components/AvatarIcon";
 
 interface Props {
-    user: User;
+    user: esmtUser;
     refresh: () => void;
     addMessage: (alert: alertContent) => void;
+    id: string
 }
 
-export default function UserDetailsForm({user, refresh, addMessage}:Props){
+export default function UserDetailsForm({id, user, refresh, addMessage}:Props){
     const form = useForm<z.infer<typeof editUserSchema>>({
         resolver: zodResolver(editUserSchema),
         defaultValues: {
@@ -38,7 +39,7 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
         }
     });
 
-    async function solcilit(id:string){
+    async function solicit(id:string){
         try{
             await axios.post('/api/ESMT/user/connections/new', {id: id})
                 .finally(refresh);
@@ -155,9 +156,19 @@ export default function UserDetailsForm({user, refresh, addMessage}:Props){
                                     Save
                                 </Button>
                             </DialogClose>
-                            <Button variant="secondary" type="button" onClick={() => solcilit(user.id)}>
-                                Solicit
-                            </Button>
+                            {!(user.id === id)? (
+                                user.following.find((m) => m.id === id)? (
+                                    <Button variant="secondary" type="button" disabled>
+                                        Already Following
+                                    </Button>
+                                ) : (
+                                    <Button variant="secondary" type="button" onClick={() => solicit(user.id)}>
+                                        Solicit
+                                    </Button>
+                                )
+                            ) : <></>}
+                            {}
+
                             {/*<Link href={"/ESMT/users/" + user.id}><Button variant="secondary">Details</Button> </Link>*/}
                             <Dialog>
                                 <DialogTrigger asChild>
