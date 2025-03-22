@@ -72,7 +72,7 @@ export default function EmailForm({enableNextAction}: Props){
             <p className="text-3xl font-bold">Account Setup</p>
             <p className="text-center">Make sure your information is accurate and up to date.</p>
 
-            <Card className="mt-10 w-[25rem]">
+            <Card className="mt-10">
                 <CardHeader>
                     <CardTitle>Account Information</CardTitle>
                 </CardHeader>

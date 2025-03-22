@@ -44,7 +44,7 @@ export default function FollowPrompt(){
         <div className="p-5 flex flex-col justify-center">
             <p className="text-4xl font-bold mb-2">Follow Event Planner?</p>
             <p>Adding an event planner here can streamline the process of getting invites to events. If you don&#39;t want to follow anybody or want to do it later, press next.</p>
-            <Card className="w-1/2 mt-10 mx-auto">
+            <Card className="mt-10 mx-auto">
                 <CardHeader className="text-2xl font-bold">Send Follow Requests</CardHeader>
                 <CardContent>
                     <Form {...form}>
