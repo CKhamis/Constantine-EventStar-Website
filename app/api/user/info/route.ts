@@ -4,7 +4,7 @@ import {auth} from "@/auth";
 
 const prisma = new PrismaClient();
 
-export type response = {
+export type userInfoResponse = {
     createdAt: Date;
     discordId: string | null,
     email: string,

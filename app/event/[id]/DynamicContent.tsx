@@ -19,6 +19,8 @@ import {Badge} from "@/components/ui/badge";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import AvatarIcon from "@/components/AvatarIcon";
 import Markdown from 'react-markdown'
+import GuestListItem from "@/app/event/[id]/GuestListItem";
+import {userInfoResponse} from "@/app/api/user/info/route";
 
 export interface Props {
     eventId: string,
@@ -40,9 +42,11 @@ export default function DynamicContent({eventId, userId}: Props) {
     const [RSVP, setRSVP] = useState<rsvp | null>();
     const [eventInfo, setEventInfo] = useState<EVResponse | null>();
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [userInfo, setUserInfo] = useState<userInfoResponse | null>(null);
 
     async function refresh(){
         setLoading(true);
+
         await axios.get("/api/events/view/" + eventId)
             .then((response) => {
                 // Event exists, but need to know if user was invited
@@ -61,6 +65,16 @@ export default function DynamicContent({eventId, userId}: Props) {
                 console.log(error.status); // event not found, access denied, or need login
                 document.querySelector("#background")!.style.background = "black";
             });
+
+        await axios.get("/api/user/info")
+            .then((response) => {
+                setUserInfo(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+                setUserInfo(null);
+            });
+
         setLoading(false);
     }
 
@@ -270,15 +284,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                         </TabsList>
                                         <TabsContent value="yes">
                                             {eventInfo.RSVP.filter((rsvp) => rsvp.response === "YES").map(rsvp => (
-                                                <div
-                                                    className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer"
-                                                    key={rsvp.user.id}>
-                                                    <AvatarIcon name={rsvp.user.name} image={rsvp.user.image}/>
-                                                    <div>
-                                                        <p className="text-sm font-medium leading-none">{rsvp.user.name}</p>
-                                                        <p className="text-sm text-muted-foreground">{rsvp.user.email}</p>
-                                                    </div>
-                                                </div>
+                                                <GuestListItem key={rsvp.user.id} userEmail={rsvp.user.email} userName={rsvp.user.name} rsvpId={rsvp.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={userId} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh}/>
                                             ))}
                                             {eventInfo.RSVP.filter((r) => r.response === "YES").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">None confirmed</p>
@@ -286,15 +292,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                         </TabsContent>
                                         <TabsContent value="no">
                                             {eventInfo.RSVP.filter((rsvp) => rsvp.response === "NO").map(rsvp => (
-                                                <div
-                                                    className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer"
-                                                    key={rsvp.user.id}>
-                                                    <AvatarIcon name={rsvp.user.name} image={rsvp.user.image}/>
-                                                    <div>
-                                                        <p className="text-sm font-medium leading-none">{rsvp.user.name}</p>
-                                                        <p className="text-sm text-muted-foreground">{rsvp.user.email}</p>
-                                                    </div>
-                                                </div>
+                                                <GuestListItem key={rsvp.user.id} userEmail={rsvp.user.email} userName={rsvp.user.name} rsvpId={rsvp.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={userId} isFollowing={userInfo?.following.find((user) => user.id === rsvp.user.id) !== null} action={refresh}/>
                                             ))}
                                             {eventInfo.RSVP.filter((r) => r.response === "NO").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">None</p>
@@ -302,15 +300,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                         </TabsContent>
                                         <TabsContent value="maybe">
                                             {eventInfo.RSVP.filter((rsvp) => rsvp.response === "MAYBE").map(rsvp => (
-                                                <div
-                                                    className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer"
-                                                    key={rsvp.user.id}>
-                                                    <AvatarIcon name={rsvp.user.name} image={rsvp.user.image}/>
-                                                    <div>
-                                                        <p className="text-sm font-medium leading-none">{rsvp.user.name}</p>
-                                                        <p className="text-sm text-muted-foreground">{rsvp.user.email}</p>
-                                                    </div>
-                                                </div>
+                                                <GuestListItem key={rsvp.user.id} userEmail={rsvp.user.email} userName={rsvp.user.name} rsvpId={rsvp.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={userId} isFollowing={userInfo?.following.find((user) => user.id === rsvp.user.id) !== null} action={refresh}/>
                                             ))}
                                             {eventInfo.RSVP.filter((r) => r.response === "MAYBE").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">None</p>
@@ -318,15 +308,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                         </TabsContent>
                                         <TabsContent value="no_response">
                                             {eventInfo.RSVP.filter((rsvp) => rsvp.response === "NO_RESPONSE").map(rsvp => (
-                                                <div
-                                                    className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer"
-                                                    key={rsvp.user.id}>
-                                                    <AvatarIcon name={rsvp.user.name} image={rsvp.user.image}/>
-                                                    <div>
-                                                        <p className="text-sm font-medium leading-none">{rsvp.user.name}</p>
-                                                        <p className="text-sm text-muted-foreground">{rsvp.user.email}</p>
-                                                    </div>
-                                                </div>
+                                                <GuestListItem key={rsvp.user.id} userEmail={rsvp.user.email} userName={rsvp.user.name} rsvpId={rsvp.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={userId} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh}/>
                                             ))}
                                             {eventInfo.RSVP.filter((r) => r.response === "NO_RESPONSE").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">Everyone has
@@ -335,7 +317,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                         </TabsContent>
                                     </Tabs>
                                     <p className="text-xs text-muted-foreground mt-3">{eventInfo.RSVP.length} total guests
-                                        invited, {eventInfo.RSVP.filter((r) => r.response === "YES").length} others confirmed will be going, waiting
+                                        invited, {eventInfo.RSVP.filter((r) => r.response === "YES").length} confirmed will be going, waiting
                                         for {eventInfo.RSVP.filter((r) => r.response === "NO_RESPONSE").length} to respond</p>
                                 </>
                             ) : (

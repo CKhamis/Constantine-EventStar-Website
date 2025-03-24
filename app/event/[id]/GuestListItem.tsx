@@ -1,0 +1,151 @@
+'use client'
+import AvatarIcon from "@/components/AvatarIcon";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {Button} from "@/components/ui/button";
+import Link from "next/link";
+import axios from "axios";
+import {useState} from "react";
+
+export interface Props {
+    userName: string,
+    userEmail: string,
+    userImage: string,
+    rsvpId: string,
+    isAuthor: boolean,
+    userId: string,
+    isFollowing: boolean,
+    action: () => void
+}
+
+export default function GuestListItem({userName, userImage, userEmail, rsvpId, isAuthor, userId, isFollowing, action}: Props){
+    const [FRMessage, setFRMessage] = useState<string>("");
+
+    async function sendFR(email:string) {
+        try{
+            await axios.post('/api/user/connections/newRequest', {email: email})
+                .then((r: {data: {message: string}}) => {setFRMessage(r.data.message)})
+                .catch((r: {response: {data: {message: string}}}) => {setFRMessage(r.response.data.message)});
+        }catch(e){
+            console.log(e)
+        }finally {
+            action();
+        }
+    }
+
+    let content: JSX.Element;
+
+    if(isAuthor){
+        // viewer is the author. Show tools
+        content = (
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <div className="flex flex-col items-center space-y-4">
+                        <AvatarIcon name={userName} image={userImage} size="large" />
+                        <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
+                    </div>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                            Name
+                        </Label>
+                        <Input
+                            id="name"
+                            defaultValue="Pedro Duarte"
+                            className="col-span-3"
+                        />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="username" className="text-right">
+                            Username
+                        </Label>
+                        <Input
+                            id="username"
+                            defaultValue="@peduarte"
+                            className="col-span-3"
+                        />
+                    </div>
+                </div>
+                <DialogFooter>
+                    {isFollowing? (
+                        <Button type="button" variant="secondary" disabled>Following</Button>
+                    ) : (
+                        <>
+                            <Button type="button" variant="secondary" onClick={() => sendFR(userEmail)}>Follow</Button>
+                            {FRMessage}
+                        </>
+                    )}
+                    <Button type="submit">Save changes</Button>
+                </DialogFooter>
+            </DialogContent>
+        );
+    }else if(userId !== ""){
+        // viewer has a non invited account
+        content = (
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <div className="flex flex-col items-center space-y-4">
+                        <AvatarIcon name={userName} image={userImage} size="large" />
+                        <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
+                        <p className="text-center">{userEmail}</p>
+                    </div>
+                </DialogHeader>
+                <div className="grid gap-4 pt-4">
+                    {isFollowing? (
+                        <Button type="button" variant="secondary" disabled>Following</Button>
+                    ) : (
+                        <>
+                            <Button type="button" variant="default" onClick={() => sendFR(userEmail)}>Follow</Button>
+                            <p className="text-center text-muted-foreground">{FRMessage}</p>
+                        </>
+                    )}
+                </div>
+            </DialogContent>
+        );
+    }else{
+        // viewer is a non-logged in guest
+        content = (
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Login Required</DialogTitle>
+                    <DialogDescription>
+                        Please log in with an account to view guest details and follow.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="flex flex-row justify-center items-center mb-5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/agent/error.gif" alt="Error" />
+                </div>
+                <DialogFooter>
+                    <Link href="/api/auth/signin"><Button type="button" variant="default">Log In</Button></Link>
+                    <Button type="button" variant="secondary">Close</Button>
+                </DialogFooter>
+            </DialogContent>
+        );
+    }
+
+    return (
+    <Dialog>
+        <DialogTrigger asChild>
+            <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer">
+                <AvatarIcon name={userName} image={userImage}/>
+                <div>
+                    <p className="text-sm font-medium leading-none">{userName}</p>
+                    <p className="text-sm text-muted-foreground">{userEmail}</p>
+                </div>
+            </div>
+        </DialogTrigger>
+        {content}
+    </Dialog>
+    );
+}

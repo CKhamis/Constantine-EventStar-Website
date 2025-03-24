@@ -5,7 +5,7 @@ import {Button} from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import axios from "axios";
 import {useEffect, useState} from "react";
-import {response} from "@/app/api/user/info/route";
+import {userInfoResponse} from "@/app/api/user/info/route";
 import {EIResponse} from "@/app/api/events/invited/route";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import Link from "next/link";
@@ -24,8 +24,7 @@ export interface Props{
 
 export default function DynamicContent({session}: Props) {
     const [loading, setLoading] = useState(true);
-    const [requestStatusMessage, setRequestStatusMessage] = useState<React.ReactElement>(<></>);
-    const [userInfo, setUserInfo] = useState<response>({
+    const [userInfo, setUserInfo] = useState<userInfoResponse>({
         createdAt: new Date(),
         discordId: "",
         email: "",

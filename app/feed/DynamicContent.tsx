@@ -5,7 +5,7 @@ import AvatarIcon from "@/components/AvatarIcon";
 import axios from "axios";
 import {useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
-import {response} from "@/app/api/user/info/route";
+import {userInfoResponse} from "@/app/api/user/info/route";
 import {format} from "date-fns";
 import {Button} from "@/components/ui/button";
 import {FRResponse} from "@/app/api/user/connections/incoming/route";
@@ -18,7 +18,7 @@ import {Badge} from "@/components/ui/badge";
 
 export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
-    const [userInfo, setUserInfo] = useState<response>({
+    const [userInfo, setUserInfo] = useState<userInfoResponse>({
         createdAt: new Date(),
         discordId: "",
         email: "",
