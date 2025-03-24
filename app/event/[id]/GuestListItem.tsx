@@ -76,17 +76,22 @@ export default function GuestListItem({userName, userImage, userEmail, rsvpId, i
                         />
                     </div>
                 </div>
-                <DialogFooter>
-                    {isFollowing? (
-                        <Button type="button" variant="secondary" disabled>Following</Button>
+                <div className="grid gap-4 pt-4">
+                    {isFollowing ? (
+                        <div className="flex flex-col space-y-3">
+                            <Button type="button" variant="secondary" disabled>Following</Button>
+                            <Button type="submit">Save changes</Button>
+                        </div>
                     ) : (
-                        <>
-                            <Button type="button" variant="secondary" onClick={() => sendFR(userEmail)}>Follow</Button>
-                            {FRMessage}
-                        </>
+                        <div className="flex flex-col space-y-4">
+                            <div className="grid">
+                                <Button type="button" variant="secondary" onClick={() => sendFR(userEmail)}>Follow</Button>
+                                <p className="text-center text-muted-foreground">{FRMessage}</p>
+                            </div>
+                            <Button type="submit">Save changes</Button>
+                        </div>
                     )}
-                    <Button type="submit">Save changes</Button>
-                </DialogFooter>
+                </div>
             </DialogContent>
         );
     }else if(userId !== ""){
