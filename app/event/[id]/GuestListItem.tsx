@@ -9,12 +9,16 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import axios from "axios";
 import {useState} from "react";
+import {Bold, Check, CircleHelp, Clock, Italic, MailQuestion, Underline, X} from "lucide-react"
+
+import {
+    ToggleGroup,
+    ToggleGroupItem,
+} from "@/components/ui/toggle-group"
 
 export interface Props {
     userName: string,
@@ -54,27 +58,25 @@ export default function GuestListItem({userName, userImage, userEmail, rsvpId, i
                         <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
                     </div>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="name" className="text-right">
-                            Name
-                        </Label>
-                        <Input
-                            id="name"
-                            defaultValue="Pedro Duarte"
-                            className="col-span-3"
-                        />
+                <div className="flex flex-col space-y-4 mt-5">
+                    <div>
+                        <p className="text-center font-bold mb-2">RSVP Status</p>
+                        <ToggleGroup type="single">
+                            <ToggleGroupItem value="YES" aria-label="YES">
+                                <Check className="h-8 w-8" />
+                            </ToggleGroupItem>
+                            <ToggleGroupItem value="NO" aria-label="NO">
+                                <X className="h-8 w-8" />
+                            </ToggleGroupItem>
+                            <ToggleGroupItem value="MAYBE" aria-label="MAYBE">
+                                <CircleHelp className="h-8 w-8" />
+                            </ToggleGroupItem>
+                            <ToggleGroupItem value="NO_RESPONSE" aria-label="NO_RESPONSE">
+                                <Clock className="h-8 w-8" />
+                            </ToggleGroupItem>
+                        </ToggleGroup>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="username" className="text-right">
-                            Username
-                        </Label>
-                        <Input
-                            id="username"
-                            defaultValue="@peduarte"
-                            className="col-span-3"
-                        />
-                    </div>
+
                 </div>
                 <div className="grid gap-4 pt-4">
                     {isFollowing ? (
@@ -105,7 +107,7 @@ export default function GuestListItem({userName, userImage, userEmail, rsvpId, i
                         <p className="text-center">{userEmail}</p>
                     </div>
                 </DialogHeader>
-                <div className="grid gap-4 pt-4">
+                <div className="grid pt-4">
                     {isFollowing? (
                         <Button type="button" variant="secondary" disabled>Following</Button>
                     ) : (
