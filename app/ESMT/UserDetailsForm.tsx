@@ -12,7 +12,6 @@ import {esmtUser} from "@/app/api/ESMT/user/all/route";
 import {useState} from "react";
 import axios from "axios";
 import AvatarIcon from "@/components/AvatarIcon";
-import {DialogBody} from "next/dist/client/components/react-dev-overlay/internal/components/Dialog";
 
 interface Props {
     user: esmtUser;
@@ -63,7 +62,7 @@ export default function UserDetailsForm({id, user, refresh}:Props){
                         <DialogTitle className="text-2xl font-semibold">{user.name}</DialogTitle>
                     </div>
                 </DialogHeader>
-                <DialogBody className="flex flex-col space-y-4">
+                <div className="flex flex-col space-y-4">
                     <div className="flex flex-col space-y-2">
                         <p className="text-xl font-bold">Email</p>
                         <p>{user.email ? user.email : "None"}</p>
@@ -80,7 +79,7 @@ export default function UserDetailsForm({id, user, refresh}:Props){
                         <p className="text-xl font-bold">Role</p>
                         <p>{user.role ? user.role : "None"}</p>
                     </div>
-                </DialogBody>
+                </div>
                 <DialogFooter className="justify-end">
                 <DialogClose asChild>
                     <Button type="submit" variant="outline">
