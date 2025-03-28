@@ -22,7 +22,7 @@ export default async function page(props: { params: Params }){
 
     return(
         <MainNav>
-            <DynamicContent eventId={eventId} />
+            <DynamicContent eventId={eventId} userId={session.user.id} />
         </MainNav>
     )
 }

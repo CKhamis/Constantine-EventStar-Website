@@ -25,18 +25,21 @@ import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
 import * as commands from "@uiw/react-md-editor"
+import {useRouter} from "next/navigation";
 
 export interface Props {
-    eventId: string | null
+    eventId: string | null,
+    userId: string | undefined | null
 }
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false })
 
-export default function DynamicContent({ eventId }: Props) {
+export default function DynamicContent({ eventId, userId }: Props) {
     const [loading, setLoading] = useState(false)
     const [editing, setEditing] = useState(false)
     const [initialRSVP, setInitialRSVP] = useState<string[]>([])
     const [alertMessages, setAlertMessages] = useState<alertContent[]>([])
+    const router = useRouter();
 
     useEffect(() => {
         if (eventId) {
@@ -65,6 +68,10 @@ export default function DynamicContent({ eventId }: Props) {
         try {
             setLoading(true)
             const response = await axios.get("/api/events/view/" + eventId)
+
+            if(!userId || (userId && response.data.author.id !== userId)){
+                router.replace("/event/" + eventId);
+            }
 
             form.setValue("id", response.data.id)
             form.setValue("title", response.data.title)

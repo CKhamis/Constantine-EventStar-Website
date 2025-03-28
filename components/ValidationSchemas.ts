@@ -10,6 +10,8 @@ const EventType = z.enum([
 ]);
 const InviteVisibility = z.enum(["FULL", "INVITED_ONLY", "NONE",]);
 const RsvpResponse = z.enum(["YES", "NO", "MAYBE"]);
+const RsvpResponseAll = z.enum(["YES", "NO", "MAYBE", "NO_RESPONSE"]);
+
 
 
 export const editBasicUserInfoSchema = z.object({
@@ -49,6 +51,11 @@ export const uuidSchema = z.object({
 
 export const rsvpSchema = z.object({
     response: RsvpResponse
+})
+
+export const authorRsvpSchema = z.object({
+    response: RsvpResponseAll,
+    id: z.string().cuid()
 })
 
 export const cuidSchema = z.object({

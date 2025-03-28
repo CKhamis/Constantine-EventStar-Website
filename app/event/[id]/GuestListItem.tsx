@@ -13,8 +13,8 @@ import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import axios from "axios";
 import {useState} from "react";
-import {Bold, Check, CircleHelp, Clock, Italic, MailQuestion, Underline, X} from "lucide-react"
-
+import {Check, CircleHelp, Clock, X} from "lucide-react"
+import { toast } from "sonner"
 import {
     ToggleGroup,
     ToggleGroupItem,
@@ -24,14 +24,15 @@ export interface Props {
     userName: string,
     userEmail: string,
     userImage: string,
-    rsvpId: string,
     isAuthor: boolean,
     userId: string,
     isFollowing: boolean,
-    action: () => void
+    action: () => void,
+    response: string,
+    eventId: string,
 }
 
-export default function GuestListItem({userName, userImage, userEmail, rsvpId, isAuthor, userId, isFollowing, action}: Props){
+export default function GuestListItem({userName, eventId, userImage, response, userEmail, isAuthor, userId, isFollowing, action}: Props){
     const [FRMessage, setFRMessage] = useState<string>("");
 
     async function sendFR(email:string) {
@@ -39,6 +40,18 @@ export default function GuestListItem({userName, userImage, userEmail, rsvpId, i
             await axios.post('/api/user/connections/newRequest', {email: email})
                 .then((r: {data: {message: string}}) => {setFRMessage(r.data.message)})
                 .catch((r: {response: {data: {message: string}}}) => {setFRMessage(r.response.data.message)});
+        }catch(e){
+            console.log(e)
+        }finally {
+            action();
+        }
+    }
+
+    async function overwriteRSVP(response:string) {
+        try{
+            await axios.post('/api/events/authorControl/changeRSVP/' + eventId, {response: response, id: userId})
+                .then((r: {data: string}) => {toast("RSVP Overwritten", {description: r.data})})
+                .catch((r: {response: {data: string}}) => {toast("Error", {description: r.response.data})});
         }catch(e){
             console.log(e)
         }finally {
@@ -60,18 +73,18 @@ export default function GuestListItem({userName, userImage, userEmail, rsvpId, i
                 </DialogHeader>
                 <div className="flex flex-col space-y-4 mt-5">
                     <div>
-                        <p className="text-center font-bold mb-2">RSVP Status</p>
-                        <ToggleGroup type="single">
-                            <ToggleGroupItem value="YES" aria-label="YES">
+                        <p className="text-center font-bold mb-2">Overwrite RSVP Status</p>
+                        <ToggleGroup type="single" defaultValue={response}>
+                            <ToggleGroupItem value="YES" aria-label="YES" onClick={() => overwriteRSVP("YES")}>
                                 <Check className="h-8 w-8" />
                             </ToggleGroupItem>
-                            <ToggleGroupItem value="NO" aria-label="NO">
+                            <ToggleGroupItem value="NO" aria-label="NO" onClick={() => overwriteRSVP("NO")}>
                                 <X className="h-8 w-8" />
                             </ToggleGroupItem>
-                            <ToggleGroupItem value="MAYBE" aria-label="MAYBE">
+                            <ToggleGroupItem value="MAYBE" aria-label="MAYBE" onClick={() => overwriteRSVP("MAYBE")}>
                                 <CircleHelp className="h-8 w-8" />
                             </ToggleGroupItem>
-                            <ToggleGroupItem value="NO_RESPONSE" aria-label="NO_RESPONSE">
+                            <ToggleGroupItem value="NO_RESPONSE" aria-label="NO_RESPONSE" onClick={() => overwriteRSVP("NO_RESPONSE")}>
                                 <Clock className="h-8 w-8" />
                             </ToggleGroupItem>
                         </ToggleGroup>
@@ -82,7 +95,7 @@ export default function GuestListItem({userName, userImage, userEmail, rsvpId, i
                     {isFollowing ? (
                         <div className="flex flex-col space-y-3">
                             <Button type="button" variant="secondary" disabled>Following</Button>
-                            <Button type="submit">Save changes</Button>
+                            {/*<Button type="submit">Save changes</Button>*/}
                         </div>
                     ) : (
                         <div className="flex flex-col space-y-4">
@@ -90,7 +103,7 @@ export default function GuestListItem({userName, userImage, userEmail, rsvpId, i
                                 <Button type="button" variant="secondary" onClick={() => sendFR(userEmail)}>Follow</Button>
                                 <p className="text-center text-muted-foreground">{FRMessage}</p>
                             </div>
-                            <Button type="submit">Save changes</Button>
+                            {/*<Button type="submit">Save changes</Button>*/}
                         </div>
                     )}
                 </div>
