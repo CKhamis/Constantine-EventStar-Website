@@ -123,7 +123,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                         <div className="flex flex-col lg:flex-row justify-between items-center mb-4 lg:mb-0 mt-4">
                                             <p className="font-bold text-4xl">{eventInfo.title}</p>
                                             <div className="flex flex-row items-center justify-end gap-3 mt-5 lg:m-0">
-                                                <Link href="#rsvp">
+                                                <Link href="#rsvp" className="lg:hidden">
                                                     <Button variant="outline" className="flex items-center justify-center gap-2 w-full"><Car/> RSVP</Button>
                                                 </Link>
                                                 {userId === eventInfo.author.id? (
