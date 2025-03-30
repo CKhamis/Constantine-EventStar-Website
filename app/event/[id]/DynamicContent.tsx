@@ -8,7 +8,7 @@ import {EVResponse} from "@/app/api/events/view/[id]/route";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {CalendarPlus, Check, Clock, House, LetterText, MapPin, Pencil, View, X} from "lucide-react";
+import {CalendarPlus, Car, Check, Clock, House, LetterText, MapPin, Pencil, View, X} from "lucide-react";
 import {useForm} from "react-hook-form";
 import {z} from "zod";
 import {rsvpSchema} from "@/components/ValidationSchemas";
@@ -120,9 +120,12 @@ export default function DynamicContent({eventId, userId}: Props) {
                             <div className="container flex-col flex gap-3 py-3 max-w-5xl">
                                 {eventInfo ? (
                                     <>
-                                        <div className="flex flex-row justify-between items-center mt-4">
+                                        <div className="flex flex-col lg:flex-row justify-between items-center mb-4 lg:mb-0 mt-4">
                                             <p className="font-bold text-4xl">{eventInfo.title}</p>
-                                            <div className="flex flex-row items-center justify-end gap-3">
+                                            <div className="flex flex-row items-center justify-end gap-3 mt-5 lg:m-0">
+                                                <Link href="#rsvp">
+                                                    <Button variant="outline" className="flex items-center justify-center gap-2 w-full"><Car/> RSVP</Button>
+                                                </Link>
                                                 {userId === eventInfo.author.id? (
                                                     <Link target="_blank" href={`/eventDetails/${eventInfo.id}`}>
                                                         <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
@@ -207,7 +210,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                     <div className="border-b-2 w-100 p-5">
                         <div className="max-w-xl mx-auto">
                             <div className="flex flex-row justify-between items-center">
-                                <p className="text-2xl font-bold">RSVP Status</p>
+                                <p className="text-2xl font-bold" id="rsvp">RSVP Status</p>
                                 {eventInfo && eventInfo.RSVP.find((r) => r.user.id === userId)? (eventInfo.RSVP.find((r) => r.user.id === userId)?.response !== "NO_RESPONSE"? (
                                     <Badge variant="outline">Answered</Badge>
 
