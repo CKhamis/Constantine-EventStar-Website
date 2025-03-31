@@ -2,7 +2,7 @@
 import Footer from "@/components/Footer";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {
-    CalendarCheck2,
+    CalendarCheck2, CalendarPlus,
     Check,
     CircleHelp,
     Clock,
@@ -25,6 +25,7 @@ import AvatarIcon from "@/components/AvatarIcon";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {LoadingIcon} from "@/components/LoadingIcon";
+import Link from "next/link";
 
 export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
@@ -127,8 +128,15 @@ export default function DynamicContent() {
                                                         <X className="h-4 w-4"/>
                                                     </ToggleGroupItem>
                                                 </ToggleGroup>
-                                                <Button>Add to Calendar</Button>
-                                                <Button>View Event</Button>
+                                                <Link target="_blank"
+                                                      href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(nextEvent.event.title)}&dates=${encodeURIComponent(format(new Date(nextEvent.event.eventStart), "yyyyMMdd'T'HHmmss") + '/' + format(new Date(nextEvent.event.eventEnd), "yyyyMMdd'T'HHmmss"))}&details=${encodeURIComponent(nextEvent.event.description)}&location=${encodeURIComponent(nextEvent.event.address)}`}>
+                                                    <Button variant="outline"
+                                                            className="flex items-center justify-center gap-2 w-full">
+                                                        <CalendarPlus/>
+                                                        Add to Calendar
+                                                    </Button>
+                                                </Link>
+                                                <Link href={"/event/" + nextEvent.event.id}><Button>View Event</Button></Link>
                                             </div>
                                         </div>
                                         {/*<p className="text-xs text-muted-foreground">{format(new Date(nextEvent.event.eventStart), "M/dd/yyyy hh:mm a")} - {format(new Date(nextEvent.event.eventEnd), "M/dd/yyyy hh:mm a")}</p>*/}
