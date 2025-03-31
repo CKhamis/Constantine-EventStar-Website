@@ -27,9 +27,25 @@ import {Button} from "@/components/ui/button";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import Link from "next/link";
 
+type ValuePiece = Date | null;
+type calendarDate = ValuePiece | [ValuePiece, ValuePiece];
+
 export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
     const [nextEvent, setNextEvent] = useState<NEResponse | null>();
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+    function changeDate(date: calendarDate) {
+        if(!Array.isArray(date)) {
+            setSelectedDate(date ?? new Date());
+            return;
+        }
+        if(date === null){
+            setSelectedDate(new Date());
+            return;
+        }
+        setSelectedDate(date[0] ?? date[1] ?? new Date());
+    }
 
     async function refresh(){
         setLoading(true);
@@ -209,13 +225,12 @@ export default function DynamicContent() {
                 <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll hidden lg:block">
                     <div className="border-b-2 w-100">
                         <div className="max-w-md mx-auto pb-4">
-                            <Calendar calendarType="gregory"/>
+                            <Calendar calendarType="gregory" onChange={changeDate} value={selectedDate} />
                         </div>
                     </div>
 
-                    <div className="max-w-2xl mx-auto">
-
-
+                    <div className="max-w-2xl mx-auto p-5">
+                        <p className="text-2xl font-bold text-center">Events on {format(selectedDate, "PPP")}</p>
                     </div>
                 </div>
             </div>
