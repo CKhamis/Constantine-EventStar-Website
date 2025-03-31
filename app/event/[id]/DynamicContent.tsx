@@ -185,7 +185,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                 <p className="text-muted-foreground">{eventInfo.inviteVisibility}</p>
                                             </div>
                                         </div>
-                                        <div className="mt-3 rat">
+                                        <div className="mt-3">
                                             <div className="flex flex-row justify-start gap-2 items-center mb-1">
                                                 <LetterText className="h-5 w-5"/>
                                                 <p>Description</p>

@@ -4,7 +4,7 @@ import {auth} from "@/auth";
 
 const prisma = new PrismaClient();
 
-export type EIResponse = {
+export type NEResponse = {
     id: string,
     arrival: null | Date,
     createdAt: Date,
