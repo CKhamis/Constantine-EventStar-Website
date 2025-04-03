@@ -26,6 +26,7 @@ import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import Link from "next/link";
+import {EIResponse} from "@/app/api/events/invited/route";
 
 type ValuePiece = Date | null;
 type calendarDate = ValuePiece | [ValuePiece, ValuePiece];
@@ -34,6 +35,7 @@ export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
     const [nextEvent, setNextEvent] = useState<NEResponse | null>();
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const [RSVPs, setRSVPs] = useState<EIResponse[]>([]);
 
     function changeDate(date: calendarDate) {
         if(!Array.isArray(date)) {
@@ -49,6 +51,7 @@ export default function DynamicContent() {
 
     async function refresh(){
         setLoading(true);
+
         await axios.get("/api/events/next")
             .then((response) => {
                 if(response.data.message){
@@ -60,6 +63,15 @@ export default function DynamicContent() {
             .catch((error) => {
                 console.log(error);
             });
+
+        await axios.get("/api/events/invited")
+            .then((response) => {
+                setRSVPs(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
         setLoading(false);
     }
 
@@ -230,7 +242,58 @@ export default function DynamicContent() {
                     </div>
 
                     <div className="max-w-2xl mx-auto p-5">
-                        <p className="text-2xl font-bold text-center">Events on {format(selectedDate, "PPP")}</p>
+                        <p className="text-2xl font-bold text-center mb-5">Events on {format(selectedDate, "PPP")}</p>
+                        {RSVPs
+                            .filter((e) => new Date(e.event.eventStart).getDate() === selectedDate.getDate() && new Date(e.event.eventStart).getMonth() === selectedDate.getMonth() && new Date(e.event.eventStart).getFullYear() === selectedDate.getFullYear())
+                            .length === 0? (
+                            <div className="w-100 h-100 flex justify-center flex-col items-center">
+                                <Image src="/agent/empty.png" height={200} width={200} alt="" className="mt-10"/>
+                                <p className="font-bold text-3xl mb-5">Event not found</p>
+                            </div>
+                        ) : (<></>)}
+                        {RSVPs
+                            .filter((e) => new Date(e.event.eventStart).getDate() === selectedDate.getDate() && new Date(e.event.eventStart).getMonth() === selectedDate.getMonth() && new Date(e.event.eventStart).getFullYear() === selectedDate.getFullYear())
+                            .sort((a, b) => {return new Date(a.event.eventStart).getTime() - new Date(b.event.eventStart).getTime()})
+                            .map((rsvp) => (
+                            <Card key={rsvp.id} className="mb-4 rounded-none">
+                                <CardHeader className="flex flex-col justify-center">
+                                    <p className="text-2xl font-bold text-center">{rsvp.event.title}</p>
+                                    <p className="text-muted-foreground text-center">by {rsvp.event.author.name}</p>
+                                    <ToggleGroup type="single" variant="default" defaultValue={rsvp.response} disabled={new Date(rsvp.event.rsvpDuedate) < new Date()}>
+                                        <ToggleGroupItem value="YES" aria-label="Toggle check" onClick={() => updateRSVP(rsvp.event.id, "YES")}>
+                                            <Check className="h-4 w-4"/>
+                                        </ToggleGroupItem>
+                                        <ToggleGroupItem value="MAYBE" aria-label="Toggle question" onClick={() => updateRSVP(rsvp.event.id, "MAYBE")}>
+                                            <CircleHelp className="h-4 w-4"/>
+                                        </ToggleGroupItem>
+                                        <ToggleGroupItem value="NO" aria-label="Toggle x" onClick={() => updateRSVP(rsvp.event.id, "NO")}>
+                                            <X className="h-4 w-4"/>
+                                        </ToggleGroupItem>
+                                    </ToggleGroup>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div>
+                                        <div className="flex flex-row justify-center gap-2 items-center mb-1">
+                                            <Clock className="h-5 w-5"/>
+                                            <p>Date / Time</p>
+                                        </div>
+                                        <p className="text-muted-foreground text-center">{format(rsvp.event.eventStart, "MM/dd/yyyy h:mm a")} - {format(rsvp.event.eventEnd, "MM/dd/yyyy h:mm a")}</p>
+                                    </div>
+
+                                    <div>
+                                        <div className="flex flex-row justify-center gap-2 items-center mb-1">
+                                            <MapPin className="h-5 w-5"/>
+                                            <p>Location</p>
+                                        </div>
+                                        <p className="text-muted-foreground text-center">{rsvp.event.address ? rsvp.event.address : "None provided"}</p>
+                                    </div>
+
+                                    <div className="flex flex-row justify-center pt-5">
+                                        <Link href={"/event/" + rsvp.event.id}><Button variant="secondary">View Event</Button></Link>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            ))}
                     </div>
                 </div>
             </div>
