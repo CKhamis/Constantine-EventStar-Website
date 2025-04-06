@@ -13,11 +13,11 @@ import DynamicContent from "@/app/DynamicContent";
 export default async function home(){
     const session = await auth();
 
-    if(session){
+    if(session && session.user && session.user.id){
         if(session.user && session.user.tutorial){
             redirect("/tutorial");
         }
-        return (<MainNav><DynamicContent /></MainNav>);
+        return (<MainNav><DynamicContent userId={session.user.id}/></MainNav>);
     }else{
         return (
             <MainNav>
@@ -48,7 +48,7 @@ export default async function home(){
                     <br className="my-10"/>
                     <Card className="p-5 top-left-gradient">
                         <div className="flex flex-col md:flex-row justify-start items-center mb:items-start gap-10">
-                            <Image src="/agent/loading.gif" alt="loading" width={300} height={300} className="mb-5 md:mb-0" unoptimized={true}/>
+                            <Image src="/agent/wave.gif" alt="loading" width={300} height={300} className="mb-5 md:mb-0" unoptimized={true}/>
                             <div>
                                 <CardTitle className="text-4xl mb-4">Welcome to EventStar!</CardTitle>
                                 <p className="mb-2">EventStar is a brand new Costi Online service that allows event organizers to distribute event information efficiently and in a more centralized way.</p>

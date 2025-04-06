@@ -2,14 +2,14 @@
 import Footer from "@/components/Footer";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {
-    CalendarCheck2, CalendarPlus,
+    CalendarCheck2, CalendarDays, CalendarPlus,
     Check,
     CircleHelp,
     Clock,
     House,
     LetterText,
-    MapPin,
-    PersonStanding,
+    MapPin, NotebookPen,
+    PersonStanding, UserRoundPen,
     View,
     X
 } from "lucide-react";
@@ -27,11 +27,16 @@ import {Button} from "@/components/ui/button";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import Link from "next/link";
 import {EIResponse} from "@/app/api/events/invited/route";
+import {Carousel, CarouselContent, CarouselItem} from "@/components/ui/carousel";
 
 type ValuePiece = Date | null;
 type calendarDate = ValuePiece | [ValuePiece, ValuePiece];
 
-export default function DynamicContent() {
+export interface Props {
+    userId:string
+}
+
+export default function DynamicContent({userId} : Props) {
     const [loading, setLoading] = useState(true);
     const [nextEvent, setNextEvent] = useState<NEResponse | null>();
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -94,48 +99,90 @@ export default function DynamicContent() {
             {loading && <LoadingIcon/>}
             <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-4">
                 <div className="lg:col-span-3 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
-                    <div className="top-left-gradient">
-                        <div className="container flex-col flex gap-3 py-3">
-                            <div className="flex flex-row justify-start items-center gap-3">
-                                <Image src="/icons/Logo.svg" alt="EventStar Logo" width={50} height={50}/>
-                                <p className="text-3xl font-bold">EventStar Home</p>
-                            </div>
-                        </div>
-                    </div>
+                    {/*<div className="top-left-gradient">*/}
+                    {/*    <div className="container flex-col flex gap-3 py-3">*/}
+                    {/*        <div className="flex flex-row justify-start items-center gap-3">*/}
+                    {/*            <Image src="/icons/Logo.svg" alt="EventStar Logo" width={50} height={50}/>*/}
+                    {/*            <p className="text-3xl font-bold">EventStar Home</p>*/}
+                    {/*        </div>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
                     <div className="container mt-4">
-                        <p className="mb-3 font-bold text-4xl"></p>
+                        <Carousel className="mb-4">
+                            <CarouselContent>
+                                <CarouselItem>
+                                    <div>
+                                        <Card style={{
+                                            backgroundImage: `url('/tiles/logoTiles.svg')`,
+                                            backgroundSize: '120px'
+                                        }} className="rounded-none">
+                                            <CardContent className="flex items-center flex-col justify-center p-6 my-10">
+                                                <div className="flex flex-row justify-start gap-5 items-center">
+                                                    <Image src={"/icons/Logo.svg"} alt={"EventStar logo"} width={100} height={100}/>
+                                                    <div>
+                                                        <span className="text-4xl md:text-6xl font-semibold">EventStar</span>
+                                                        <p className="text-muted-foreground ml-1">A Costi Online Service</p>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </CarouselItem>
+                            </CarouselContent>
+                        </Carousel>
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                             <Card className="rounded-none">
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <CardTitle className="text-sm font-medium">Total Events</CardTitle>
-                                    <CalendarCheck2 className="-4 w-4 text-muted-foreground"/>
+                                    <CalendarDays className="-4 w-4 text-muted-foreground"/>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">r</div>
-                                    <p className="text-xs text-muted-foreground">Currently in database</p>
+                                    <div className="text-2xl font-bold">{RSVPs.length}</div>
+                                    <p className="text-xs text-muted-foreground">For your account</p>
                                 </CardContent>
                             </Card>
                             <Card className="rounded-none">
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                    <CardTitle className="text-sm font-medium">RSVP Frequency</CardTitle>
-                                    <CalendarCheck2 className="-4 w-4 text-muted-foreground"/>
+                                    <CardTitle className="text-sm font-medium">RSVP Responses</CardTitle>
+                                    <UserRoundPen className="-4 w-4 text-muted-foreground"/>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">1 / 1 / 1 / 1</div>
-                                    <p className="text-xs text-muted-foreground">Currently in database</p>
+                                    <div className="text-2xl font-bold">
+                                        {RSVPs.filter((r) => r.response === "YES").length + " / "}
+                                        {RSVPs.filter((r) => r.response === "NO").length + " / "}
+                                        {RSVPs.filter((r) => r.response === "MAYBE").length + " / "}
+                                        {RSVPs.filter((r) => r.response === "NO_RESPONSE").length}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">Yes / No / Maybe / None</p>
                                 </CardContent>
                             </Card>
                             <Card className="rounded-none">
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                    <CardTitle className="text-sm font-medium">RSVP Frequency</CardTitle>
-                                    <CalendarCheck2 className="-4 w-4 text-muted-foreground"/>
+                                    <CardTitle className="text-sm font-medium">Your Events</CardTitle>
+                                    <NotebookPen className="-4 w-4 text-muted-foreground"/>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">1 / 1 / 1 / 1</div>
-                                    <p className="text-xs text-muted-foreground">Currently in database</p>
+                                    <div className="text-2xl font-bold">
+                                        {RSVPs.filter((r) => r.event.author.id === userId).length}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">Events you posted</p>
                                 </CardContent>
                             </Card>
                         </div>
+
+                        <Card className="p-5 top-left-gradient rounded-none my-5">
+                            <div className="flex flex-col md:flex-row justify-start items-center mb:items-start gap-10">
+                                <Image src="/agent/wave.gif" alt="loading" width={200} height={200} className="mb-5 md:mb-0" unoptimized={true}/>
+                                <div>
+                                    <CardTitle className="text-4xl mb-4">Welcome back!</CardTitle>
+                                    <p className="mb-3">This is where you&#39;ll see all the important stuff about you and your events. To see more events you&#39;re invited to, simply go to the feed tab!</p>
+                                    <p className="mb-3">Below, you&#39;ll see the next event you&#39;re invited to. On desktop, you can take a look on the right side to see a calendar and the events that happen on days you click on. You can even RSVP to events while staying on this page for your convenience.</p>
+                                    <p className="mb-6">Oh, also if you want to make your own event invites, just go to the box with a plus icon in the menu and start filling in the deetz! Just make sure you have your guests follow your account first.</p>
+                                    <Link href="/feed" className="mr-3"><Button>View Feed</Button></Link>
+                                    <Link href="/eventDetails"><Button>Create new Event</Button></Link>
+                                </div>
+                            </div>
+                        </Card>
 
                         <p className="text-xl font-bold mt-5 mb-2">Next event</p>
                         <Card className="rounded-none mb-5">
@@ -227,7 +274,7 @@ export default function DynamicContent() {
                             ) : (
                                 <div className="flex flex-col justify-center items-center py-5">
                                     <img src="/agent/empty.png" alt="No events found"/>
-                                    <p className="p-10 font-bold">No upcoming events</p>
+                                    <p className="p-8 font-bold">No events planned</p>
                                 </div>
                             )}
                         </Card>
