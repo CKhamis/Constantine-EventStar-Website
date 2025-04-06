@@ -54,6 +54,17 @@ export default function DynamicContent({userId} : Props) {
         setSelectedDate(date[0] ?? date[1] ?? new Date());
     }
 
+    const highlightDates = ({date, view}: {date: Date, view: string}) => {
+        if(view === 'month'){
+
+            // Check if date exists in the startDates
+
+            if(RSVPs.filter((d) => new Date(d.event.eventStart).getDate() === date.getDate() && new Date(d.event.eventStart).getMonth() === date.getMonth() && new Date(d.event.eventStart).getFullYear() === date.getFullYear()).length > 0){
+                return 'highlight-date'
+            }
+        }
+    };
+
     async function refresh(){
         setLoading(true);
 
@@ -284,7 +295,7 @@ export default function DynamicContent({userId} : Props) {
                 <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll hidden lg:block">
                     <div className="border-b-2 w-100">
                         <div className="max-w-md mx-auto pb-4">
-                            <Calendar calendarType="gregory" onChange={changeDate} value={selectedDate} />
+                            <Calendar calendarType="gregory" onChange={changeDate} value={selectedDate} tileClassName={highlightDates} />
                         </div>
                     </div>
 

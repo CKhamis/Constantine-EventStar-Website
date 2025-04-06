@@ -114,7 +114,7 @@
 
 .react-calendar__tile:enabled:hover,
 .react-calendar__tile:enabled:focus {
-  @apply bg-accent;
+  @apply bg-[#d33cc8]/30;
 }
 
 .react-calendar__tile--now {
@@ -136,15 +136,19 @@
 }
 
 .react-calendar__tile--active {
-  @apply bg-accent;
-  color: white;
+  @apply bg-white/90 text-black;
 }
 
 .react-calendar__tile--active:enabled:hover,
 .react-calendar__tile--active:enabled:focus {
-  @apply bg-accent;
+  @apply bg-white text-black;
 }
 
 .react-calendar--selectRange .react-calendar__tile--hover {
   @apply bg-accent;
+}
+
+.highlight-date{
+  color: #d33cc8;
+  @apply bg-[#d33cc8]/20;
 }
