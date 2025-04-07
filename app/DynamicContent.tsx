@@ -289,6 +289,19 @@ export default function DynamicContent({userId} : Props) {
                                 </div>
                             )}
                         </Card>
+
+                        <p className="text-xl font-bold mt-5 mb-2">Frequent Pages</p>
+                        <div className="my-5 flex justify-center gap-10 align-center">
+                            <Link className="flex flex-col items-center gap-2" href="/feed">
+                                <Image src="/icons/Feed.svg" className="hover-minimize" alt="feed" width="80" height="80"/>
+                                <p className="font-bold text-center">Feed</p>
+                            </Link>
+                            <Link className="flex flex-col items-center gap-2" href="/feed">
+                                <Image src="/icons/NewEvent.svg" className="hover-minimize" alt="new event" width="80" height="80"/>
+                                <p className="font-bold text-center">Create Event</p>
+                            </Link>
+                        </div>
+
                         <Footer/>
                     </div>
                 </div>
