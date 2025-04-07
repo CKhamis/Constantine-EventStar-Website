@@ -2,7 +2,7 @@
 import Footer from "@/components/Footer";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {
-    CalendarCheck2, CalendarDays, CalendarPlus,
+    CalendarDays, CalendarPlus,
     Check,
     CircleHelp,
     Clock,
@@ -28,6 +28,7 @@ import {LoadingIcon} from "@/components/LoadingIcon";
 import Link from "next/link";
 import {EIResponse} from "@/app/api/events/invited/route";
 import {Carousel, CarouselContent, CarouselItem} from "@/components/ui/carousel";
+import {FRResponse} from "@/app/api/user/connections/incoming/route";
 
 type ValuePiece = Date | null;
 type calendarDate = ValuePiece | [ValuePiece, ValuePiece];
@@ -41,6 +42,7 @@ export default function DynamicContent({userId} : Props) {
     const [nextEvent, setNextEvent] = useState<NEResponse | null>();
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [RSVPs, setRSVPs] = useState<EIResponse[]>([]);
+    const [recievedFollows, setRecievedFollows] = useState([]);
 
     function changeDate(date: calendarDate) {
         if(!Array.isArray(date)) {
@@ -67,6 +69,14 @@ export default function DynamicContent({userId} : Props) {
 
     async function refresh(){
         setLoading(true);
+
+        await axios.get("/api/user/connections/incoming")
+            .then((response) => {
+                setRecievedFollows(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
 
         await axios.get("/api/events/next")
             .then((response) => {
@@ -99,6 +109,16 @@ export default function DynamicContent({userId} : Props) {
         }catch (e){
             console.log(e)
         }
+    }
+
+    async function respondFR(response:boolean, senderId:string){
+        await axios.post("/api/user/connections/respond", {response: response, senderId: senderId})
+            .then(() => {
+                refresh()
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 
     useEffect(() => {
@@ -180,6 +200,27 @@ export default function DynamicContent({userId} : Props) {
                                 </CardContent>
                             </Card>
                         </div>
+
+                        {recievedFollows.length > 0 && <p className="text-xl font-bold mt-5 mb-2">Incoming Follow Requests</p>}
+                        {recievedFollows.map((followRequest:FRResponse) => (
+                            <Card key={followRequest.id} className="rounded-none mb-5">
+                                <CardContent className="flex flex-row justify-between items-center pt-5">
+                                    <div className="flex flex-row justify-start items-center gap-3">
+                                        <div>
+                                            <AvatarIcon image={followRequest.sender.image} name={followRequest.sender.name} size={"small"}/>
+                                        </div>
+                                        <p className="font-bold text-xl">{followRequest.sender.name}</p>
+                                    </div>
+                                    <div className="lg:flex flex-col items-center hidden h-100">
+                                        <p className="text-center">{format(new Date(followRequest.updatedAt), "PPP")}</p>
+                                    </div>
+                                    <div className="flex flex-row justify-end items-center gap-3">
+                                        <Button variant="secondary" size="icon" onClick={() => respondFR(true, followRequest.sender.id)}><Check className="h-4 w-4"/></Button>
+                                        <Button variant="outline" size="icon" onClick={() => respondFR(false, followRequest.sender.id)}><X className="h-4 w-4"/></Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
 
                         <Card className="p-5 top-left-gradient rounded-none my-5">
                             <div className="flex flex-col md:flex-row justify-start items-center mb:items-start gap-10">
@@ -284,7 +325,7 @@ export default function DynamicContent({userId} : Props) {
                                 </>
                             ) : (
                                 <div className="flex flex-col justify-center items-center py-5">
-                                    <img src="/agent/empty.png" alt="No events found"/>
+                                    <Image src="/agent/empty.png" height={200} width={200} alt="No events found"/>
                                     <p className="p-8 font-bold">No events planned</p>
                                 </div>
                             )}
