@@ -29,6 +29,8 @@ import Link from "next/link";
 import {EIResponse} from "@/app/api/events/invited/route";
 import {Carousel, CarouselContent, CarouselItem} from "@/components/ui/carousel";
 import {FRResponse} from "@/app/api/user/connections/incoming/route";
+import { toast } from "sonner"
+
 
 type ValuePiece = Date | null;
 type calendarDate = ValuePiece | [ValuePiece, ValuePiece];
@@ -105,6 +107,7 @@ export default function DynamicContent({userId} : Props) {
         setLoading(true);
         try{
             await axios.post(`/api/events/rsvp/${eventId}`, {response: response})
+                .then(() => toast("RSVP Updated", {description: "Changed response to: " + response}))
                 .finally(refresh);
         }catch (e){
             console.log(e)
@@ -113,9 +116,8 @@ export default function DynamicContent({userId} : Props) {
 
     async function respondFR(response:boolean, senderId:string){
         await axios.post("/api/user/connections/respond", {response: response, senderId: senderId})
-            .then(() => {
-                refresh()
-            })
+            .then(() => toast("Request" + (response? "Accepted" : "Rejected"), {description: "Request deleted"}))
+            .then(refresh)
             .catch((error) => {
                 console.log(error);
             });
@@ -139,7 +141,7 @@ export default function DynamicContent({userId} : Props) {
                     {/*    </div>*/}
                     {/*</div>*/}
                     <div className="container mt-4">
-                        <Carousel className="mb-4">
+                        <Carousel>
                             <CarouselContent>
                                 <CarouselItem>
                                     <div>
@@ -161,6 +163,8 @@ export default function DynamicContent({userId} : Props) {
                                 </CarouselItem>
                             </CarouselContent>
                         </Carousel>
+                        <p className="text-muted-foreground text-xs mb-5">Version {process.env.version}</p>
+
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                             <Card className="rounded-none">
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -201,8 +205,9 @@ export default function DynamicContent({userId} : Props) {
                             </Card>
                         </div>
 
-                        {recievedFollows.length > 0 && <p className="text-xl font-bold mt-5 mb-2">Incoming Follow Requests</p>}
-                        {recievedFollows.map((followRequest:FRResponse) => (
+                        {recievedFollows.length > 0 &&
+                            <p className="text-xl font-bold mt-5 mb-2">Incoming Follow Requests</p>}
+                        {recievedFollows.map((followRequest: FRResponse) => (
                             <Card key={followRequest.id} className="rounded-none mb-5">
                                 <CardContent className="flex flex-row justify-between items-center pt-5">
                                     <div className="flex flex-row justify-start items-center gap-3">
