@@ -246,7 +246,7 @@ export default function DynamicContent({userId} : Props) {
                             {nextEvent ? (
                                 <>
                                     <CardHeader>
-                                        <div className="flex flex-row items-center justify-between space-y-0 gap-2">
+                                        <div className="flex flex-col md:flex-row items-center justify-between space-y-0 gap-2">
                                             <CardTitle className="text-3xl">{nextEvent.event.title}</CardTitle>
                                             <div className="flex flex-row justify-end gap-3">
                                                 <ToggleGroup type="single" variant="default" defaultValue={nextEvent.response} disabled={new Date(nextEvent.event.rsvpDuedate) < new Date()}>
@@ -325,7 +325,7 @@ export default function DynamicContent({userId} : Props) {
                                             <LetterText className="h-5 w-5"/>
                                             <p>Description</p>
                                         </div>
-                                        <p className="text-muted-foreground">{nextEvent.event.description ? nextEvent.event.description : "No description provided"}</p>
+                                        <p className="text-muted-foreground overflow-x-hidden">{nextEvent.event.description ? nextEvent.event.description : "No description provided"}</p>
                                     </CardContent>
                                 </>
                             ) : (

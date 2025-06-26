@@ -140,7 +140,7 @@ export default function DynamicContent() {
                                     <p className="text-xs text-muted-foreground">{format(new Date(rsvp.event.eventStart), "M/dd/yyyy hh:mm a")} - {format(new Date(rsvp.event.eventEnd), "M/dd/yyyy hh:mm a")}</p>
                                 </CardHeader>
                                 <CardContent>
-                                    {rsvp.event.description}
+                                    <p className="overflow-x-hidden">{rsvp.event.description}</p>
                                 </CardContent>
                                 <CardFooter className="gap-4 flex flex-row justify-between items-start">
                                     <div className="flex flex-col justify-start gap-2">
@@ -251,7 +251,7 @@ export default function DynamicContent() {
                                                     <LetterText className="h-5 w-5"/>
                                                     <p>Description</p>
                                                 </div>
-                                                <p className="text-muted-foreground">{nextEvent.event.description ? nextEvent.event.description : "No description provided"}</p>
+                                                <p className="text-muted-foreground overflow-x-hidden">{nextEvent.event.description ? nextEvent.event.description : "No description provided"}</p>
                                             </div>
                                         </div>
                                     </CardContent>
