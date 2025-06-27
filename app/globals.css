@@ -6,22 +6,22 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.rat > h1{
+.markdown > h1{
   @apply font-bold text-3xl mt-3;
 }
 
-.rat > h2{
+.markdown > h2{
   @apply font-bold text-2xl mt-3;
 }
 
-.rat > h3{
+.markdown > h3{
   @apply font-bold text-xl mt-3;
 }
-.rat > h4{
+.markdown > h4{
   @apply font-bold text-lg mt-3;
 }
 
-.rat > p{
+.markdown > p{
   @apply mb-4;
 }
 
