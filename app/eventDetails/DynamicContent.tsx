@@ -59,6 +59,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
             rsvpDuedate: new Date(),
             description: "",
             inviteVisibility: "NONE",
+            maxGuests: 0,
             eventType: "GENERAL_EVENT",
             RSVP: [],
         },
@@ -83,6 +84,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
             form.setValue("description", response.data.description)
             form.setValue("inviteVisibility", response.data.inviteVisibility)
             form.setValue("eventType", response.data.eventType)
+            form.setValue("maxGuests", response.data.maxGuests)
             form.setValue(
                 "RSVP",
                 response.data.RSVP.map((r: { user: { id: string } }) => r.user.id),
@@ -141,24 +143,24 @@ export default function DynamicContent({ eventId, userId }: Props) {
                             </div>
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                                    <UserSelect action={(data) => form.setValue("RSVP", data)} initialSelectedIds={initialRSVP} />
+                                    <UserSelect action={(data) => form.setValue("RSVP", data)} initialSelectedIds={initialRSVP}/>
+                                    <FormField
+                                        control={form.control}
+                                        name="title"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Title</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Event title" {...field} />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
                                     <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 mt-6">
                                         <FormField
                                             control={form.control}
-                                            name="title"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Title</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Event title" {...field} />
-                                                    </FormControl>
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
                                             name="address"
-                                            render={({ field }) => (
+                                            render={({field}) => (
                                                 <FormItem>
                                                     <FormLabel>Address</FormLabel>
                                                     <FormControl>
@@ -167,12 +169,32 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                 </FormItem>
                                             )}
                                         />
+                                        <FormField
+                                            control={form.control}
+                                            name="maxGuests"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Max +1s per guest</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            placeholder="0"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                                                            value={field.value || 0}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
                                     </div>
                                     <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 mt-6">
                                         <FormField
                                             control={form.control}
                                             name="rsvpDuedate"
-                                            render={({ field }) => (
+                                            render={({field}) => (
                                                 <FormItem className="flex flex-col items-start">
                                                     <FormLabel>RSVP Due Date</FormLabel>
                                                     <Popover>
@@ -184,8 +206,9 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                                     !field.value && "text-muted-foreground",
                                                                 )}
                                                             >
-                                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                                {field.value ? format(field.value, "PPP hh:mm a") : <span>Pick a date</span>}
+                                                                <CalendarIcon className="mr-2 h-4 w-4"/>
+                                                                {field.value ? format(field.value, "PPP hh:mm a") :
+                                                                    <span>Pick a date</span>}
                                                             </Button>
                                                         </PopoverTrigger>
                                                         <PopoverContent className="w-auto p-0">
@@ -197,11 +220,11 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                                 initialFocus
                                                             />
                                                             <div className="p-3 border-t border-border">
-                                                                <TimestampPicker setDate={field.onChange} date={field.value} />
+                                                                <TimestampPicker setDate={field.onChange} date={field.value}/>
                                                             </div>
                                                         </PopoverContent>
                                                     </Popover>
-                                                    <FormMessage />
+                                                    <FormMessage/>
                                                 </FormItem>
                                             )}
                                         />
@@ -209,7 +232,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                         <FormField
                                             control={form.control}
                                             name="eventStart"
-                                            render={({ field }) => (
+                                            render={({field}) => (
                                                 <FormItem className="flex flex-col items-start">
                                                     <FormLabel>Event Start</FormLabel>
                                                     <Popover>
@@ -221,8 +244,9 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                                     !field.value && "text-muted-foreground",
                                                                 )}
                                                             >
-                                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                                {field.value ? format(field.value, "PPP hh:mm a") : <span>Pick a date</span>}
+                                                                <CalendarIcon className="mr-2 h-4 w-4"/>
+                                                                {field.value ? format(field.value, "PPP hh:mm a") :
+                                                                    <span>Pick a date</span>}
                                                             </Button>
                                                         </PopoverTrigger>
                                                         <PopoverContent className="w-auto p-0">
@@ -234,18 +258,18 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                                 initialFocus
                                                             />
                                                             <div className="p-3 border-t border-border">
-                                                                <TimestampPicker setDate={field.onChange} date={field.value} />
+                                                                <TimestampPicker setDate={field.onChange} date={field.value}/>
                                                             </div>
                                                         </PopoverContent>
                                                     </Popover>
-                                                    <FormMessage />
+                                                    <FormMessage/>
                                                 </FormItem>
                                             )}
                                         />
                                         <FormField
                                             control={form.control}
                                             name="eventEnd"
-                                            render={({ field }) => (
+                                            render={({field}) => (
                                                 <FormItem className="flex flex-col items-start">
                                                     <FormLabel className="mt-5 md:mt-0">Event End</FormLabel>
                                                     <Popover>
@@ -257,8 +281,9 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                                     !field.value && "text-muted-foreground",
                                                                 )}
                                                             >
-                                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                                {field.value ? format(field.value, "PPP hh:mm a") : <span>Pick a date</span>}
+                                                                <CalendarIcon className="mr-2 h-4 w-4"/>
+                                                                {field.value ? format(field.value, "PPP hh:mm a") :
+                                                                    <span>Pick a date</span>}
                                                             </Button>
                                                         </PopoverTrigger>
                                                         <PopoverContent className="w-auto p-0">
@@ -270,11 +295,11 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                                 initialFocus
                                                             />
                                                             <div className="p-3 border-t border-border">
-                                                                <TimestampPicker setDate={field.onChange} date={field.value} />
+                                                                <TimestampPicker setDate={field.onChange} date={field.value}/>
                                                             </div>
                                                         </PopoverContent>
                                                     </Popover>
-                                                    <FormMessage />
+                                                    <FormMessage/>
                                                 </FormItem>
                                             )}
                                         />
@@ -283,13 +308,13 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                         <FormField
                                             control={form.control}
                                             name="inviteVisibility"
-                                            render={({ field }) => (
+                                            render={({field}) => (
                                                 <FormItem>
                                                     <FormLabel>Invite Visibility</FormLabel>
                                                     <FormControl>
                                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                             <SelectTrigger>
-                                                                <SelectValue placeholder="Select invite visibility" />
+                                                                <SelectValue placeholder="Select invite visibility"/>
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 {inviteVisibilityOptions.map((option) => (
@@ -306,13 +331,13 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                         <FormField
                                             control={form.control}
                                             name="eventType"
-                                            render={({ field }) => (
+                                            render={({field}) => (
                                                 <FormItem>
                                                     <FormLabel>Event Type</FormLabel>
                                                     <FormControl>
                                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                             <SelectTrigger>
-                                                                <SelectValue placeholder="Select event type" />
+                                                                <SelectValue placeholder="Select event type"/>
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 {eventTypeOptions.map((option) => (
@@ -329,10 +354,10 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                         <FormField
                                             control={form.control}
                                             name="backgroundStyle"
-                                            render={({ field }) => (
-                                                <FormItem style={{ marginTop: "-8px" }}>
+                                            render={({field}) => (
+                                                <FormItem style={{marginTop: "-8px"}}>
                                                     <FormLabel>Background Style</FormLabel>
-                                                    <br />
+                                                    <br/>
                                                     <FormControl>
                                                         <GradientPicker {...field} />
                                                     </FormControl>
@@ -343,7 +368,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                     <FormField
                                         control={form.control}
                                         name="description"
-                                        render={({ field }) => (
+                                        render={({field}) => (
                                             <FormItem className="mt-6">
                                                 <FormLabel>Description</FormLabel>
                                                 <FormControl>
@@ -351,15 +376,15 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                         <MDEditor
                                                             commands={[
                                                                 commands.group([
-                                                                    commands.title1,
-                                                                    commands.title2,
-                                                                    commands.title3,
-                                                                    commands.title4,
-                                                                ],
+                                                                        commands.title1,
+                                                                        commands.title2,
+                                                                        commands.title3,
+                                                                        commands.title4,
+                                                                    ],
                                                                     {
                                                                         name: "Header",
                                                                         groupName: "Header",
-                                                                        buttonProps: { "aria-label": "Insert title" }
+                                                                        buttonProps: {"aria-label": "Insert title"}
                                                                     }),
                                                                 commands.bold,
                                                                 commands.italic,
@@ -372,7 +397,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                         />
                                                     </div>
                                                 </FormControl>
-                                                <FormMessage />
+                                                <FormMessage/>
                                             </FormItem>
                                         )}
                                     />
@@ -385,7 +410,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                             console.log(form.formState.errors)
                                         }}
                                     >
-                                        {loading && <Loader2 className="animate-spin" />}
+                                        {loading && <Loader2 className="animate-spin"/>}
                                         Save
                                     </Button>
                                 </form>
@@ -395,9 +420,9 @@ export default function DynamicContent({ eventId, userId }: Props) {
                     <div className="hidden lg:flex overflow-y-scroll">
                         <div className="max-w-md mx-auto mt-5">
                             <div className="hidden lg:block">
-                                <AlertList alerts={alertMessages} />
+                                <AlertList alerts={alertMessages}/>
                             </div>
-                            <img src="/agent/loading.gif" className="w-1/2 my-7 mx-auto" alt="EventStar typing" />
+                            <img src="/agent/loading.gif" className="w-1/2 my-7 mx-auto" alt="EventStar typing"/>
                             <p className="text-2xl font-bold">About Creating Events</p>
                             <p className="mt-2">
                                 The people you invite must either be in your following or, if you choose no invite visibility, only the

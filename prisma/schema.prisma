@@ -127,7 +127,7 @@ model Event {
   eventType        EventType
   inviteVisibility EventInviteVisibility @default(FULL)
   reminderCount    Int                   @default(0)
-  allowGuests      Boolean               @default(false)
+  maxGuests        Int                   @default(0)
   RSVP             Rsvp[]
   author           User                  @relation(fields: [authorId], references: [id])
   authorId         String

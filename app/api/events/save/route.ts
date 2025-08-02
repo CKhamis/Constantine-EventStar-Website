@@ -53,6 +53,7 @@ export async function POST(request: NextRequest){
                     inviteVisibility: body.inviteVisibility,
                     eventType: body.eventType,
                     backgroundStyle: body.backgroundStyle,
+                    maxGuests: body.maxGuests,
                 },
             });
 
@@ -103,6 +104,7 @@ export async function POST(request: NextRequest){
                     authorId: session.user.id,
                     createdAt: new Date(),
                     updatedAt: new Date(),
+                    maxGuests: body.maxGuests
                 }
             });
 

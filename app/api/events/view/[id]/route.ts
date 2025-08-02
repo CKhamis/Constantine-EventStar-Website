@@ -15,6 +15,7 @@ export type EVResponse = {
     authorId: string,
     backgroundStyle: "#000",
     createdAt: Date,
+    maxGuests: number,
     description: "",
     eventEnd: Date,
     eventStart: Date,

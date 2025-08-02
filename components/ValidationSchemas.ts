@@ -35,6 +35,7 @@ export const saveEventSchema = z.object({
     description: z.string().optional(),
     inviteVisibility: InviteVisibility,
     eventType: EventType,
+    maxGuests: z.coerce.number().int().min(0, "Must be a positive number"),
     RSVP: z.array(
         z.string().cuid(),
     ).optional(),
