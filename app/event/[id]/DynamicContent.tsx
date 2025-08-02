@@ -5,7 +5,7 @@ import {LoadingIcon} from "@/components/LoadingIcon";
 import Image from "next/image";
 import axios from "axios";
 import {EVResponse} from "@/app/api/events/view/[id]/route";
-import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {CalendarPlus, Car, Check, Clock, House, LetterText, MapPin, Pencil, View, X} from "lucide-react";
@@ -21,6 +21,7 @@ import AvatarIcon from "@/components/AvatarIcon";
 import Markdown from 'react-markdown'
 import GuestListItem from "@/app/event/[id]/GuestListItem";
 import {userInfoResponse} from "@/app/api/user/info/route";
+import {Input} from "@/components/ui/input";
 
 export interface Props {
     eventId: string,
@@ -81,7 +82,7 @@ export default function DynamicContent({eventId, userId}: Props) {
     async function onSubmit(data: z.infer<typeof rsvpSchema>) {
         setSubmitStatus('loading')
         try {
-            await axios.post(`/api/events/rsvp/${eventId}`, {response: data.response})
+            await axios.post(`/api/events/rsvp/${eventId}`, {response: data.response, guests: data.guests})
             setSubmitStatus('success')
         } catch (e) {
             console.log(e);
@@ -95,6 +96,7 @@ export default function DynamicContent({eventId, userId}: Props) {
         resolver: zodResolver(rsvpSchema),
         defaultValues: {
             response: undefined,
+            guests: 0
         },
     })
 
@@ -229,6 +231,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                             name="response"
                                             render={({field}) => (
                                                 <FormItem>
+                                                    <FormLabel>Your Attendance</FormLabel>
                                                     <Select onValueChange={field.onChange} value={field.value}
                                                             disabled={new Date(eventInfo.rsvpDuedate) < new Date()}>
                                                         <FormControl>
@@ -246,6 +249,29 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                 </FormItem>
                                             )}
                                         />
+                                        <div className={eventInfo.maxGuests === 0? "hidden" : ""}>
+                                            <FormField
+                                                control={form.control}
+                                                name="guests"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>+1s (max {eventInfo?.maxGuests})</FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                type="number"
+                                                                min="0"
+                                                                max={eventInfo?.maxGuests}
+                                                                placeholder="0"
+                                                                {...field}
+                                                                onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                                                                value={field.value || 0}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
                                         <p className="text-muted-foreground text-sm">{new Date(eventInfo.rsvpDuedate) < new Date() ? `too late to respond` : `Respond by ${format(new Date(eventInfo.rsvpDuedate), 'PPP hh:mm a')}`}</p>
                                         <div className="flex flex-row gap-4 items-center justify-start">
                                             <Button type="submit" disabled={submitStatus === 'loading' || new Date(eventInfo.rsvpDuedate) < new Date()}>

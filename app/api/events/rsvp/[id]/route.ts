@@ -53,6 +53,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             return NextResponse.json({ error: "Cannot change RSVP after due date" }, { status: 403 });
         }
 
+        // Check to see if the guest count exceeds max
+        if(event.maxGuests < body.guests){
+            return NextResponse.json({ error: "Too many guests added. Max " + event.maxGuests}, { status: 403 });
+        }
+
         // Edit the rsvp value
         if(body.response != rsvp.response){
             const updatedRsvp = await prisma.rsvp.update({
@@ -61,6 +66,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
                 },
                 data: {
                     response: body.response,
+                    guests: body.guests
                 },
             });
             return NextResponse.json(updatedRsvp, { status: 200 });

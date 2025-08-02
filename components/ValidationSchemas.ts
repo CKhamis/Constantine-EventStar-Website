@@ -51,7 +51,8 @@ export const uuidSchema = z.object({
 })
 
 export const rsvpSchema = z.object({
-    response: RsvpResponse
+    response: RsvpResponse,
+    guests: z.coerce.number().int().min(0, "Must be a positive number"),
 })
 
 export const authorRsvpSchema = z.object({
