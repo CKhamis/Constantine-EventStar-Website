@@ -29,6 +29,7 @@ export type EVResponse = {
     RSVP: {
         id: string,
         response: string,
+        guests: number,
         user: {
             email: string,
             name: string,
@@ -63,6 +64,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                     select: {
                         id: true,
                         response: true,
+                        guests: true,
                         user: {
                             select: {
                                 name: true,

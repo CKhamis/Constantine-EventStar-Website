@@ -19,6 +19,8 @@ import {
     ToggleGroup,
     ToggleGroupItem,
 } from "@/components/ui/toggle-group"
+import {FormControl} from "@/components/ui/form";
+import {Input} from "@/components/ui/input";
 
 export interface Props {
     userName: string,
@@ -30,9 +32,10 @@ export interface Props {
     action: () => void,
     response: string,
     eventId: string,
+    guests: number,
 }
 
-export default function GuestListItem({userName, eventId, userImage, response, userEmail, isAuthor, userId, isFollowing, action}: Props){
+export default function GuestListItem({userName, eventId, userImage, response, userEmail, isAuthor, userId, isFollowing, action, guests = 0}: Props){
     const [FRMessage, setFRMessage] = useState<string>("");
 
     async function sendFR(email:string) {
@@ -89,7 +92,19 @@ export default function GuestListItem({userName, eventId, userImage, response, u
                             </ToggleGroupItem>
                         </ToggleGroup>
                     </div>
-
+                    <div>
+                        {/*<FormControl>*/}
+                        {/*    <Input*/}
+                        {/*        type="number"*/}
+                        {/*        min="0"*/}
+                        {/*        max={eventInfo?.maxGuests}*/}
+                        {/*        placeholder="0"*/}
+                        {/*        {...field}*/}
+                        {/*        onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}*/}
+                        {/*        value={field.value || 0}*/}
+                        {/*    />*/}
+                        {/*</FormControl>*/}
+                    </div>
                 </div>
                 <div className="grid gap-4 pt-4">
                     {isFollowing ? (
@@ -157,12 +172,15 @@ export default function GuestListItem({userName, eventId, userImage, response, u
     return (
     <Dialog>
         <DialogTrigger asChild>
-            <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer">
-                <AvatarIcon name={userName} image={userImage}/>
-                <div>
-                    <p className="text-sm font-medium leading-none">{userName}</p>
-                    <p className="text-sm text-muted-foreground">{userEmail}</p>
+            <div className="flex justify-between items-center p-2 rounded-lg hover:bg-accent cursor-pointer">
+                <div className="flex space-x-4 items-center">
+                    <AvatarIcon name={userName} image={userImage}/>
+                    <div>
+                        <p className="text-sm font-medium leading-none">{userName}</p>
+                        <p className="text-sm text-muted-foreground">{userEmail}</p>
+                    </div>
                 </div>
+                <p className="text-muted-foreground text-xl">{guests > 0? "+" + guests : ""}</p>
             </div>
         </DialogTrigger>
         {content}

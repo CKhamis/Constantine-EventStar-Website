@@ -59,7 +59,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         }
 
         // Edit the rsvp value
-        if(body.response != rsvp.response){
+        if(body.response != rsvp.response || body.guests != rsvp.guests){
             const updatedRsvp = await prisma.rsvp.update({
                 where: {
                     id: rsvp.id,
