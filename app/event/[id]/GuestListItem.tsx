@@ -19,7 +19,7 @@ import {
     ToggleGroup,
     ToggleGroupItem,
 } from "@/components/ui/toggle-group"
-import {FormControl} from "@/components/ui/form";
+import {FormControl, FormItem, FormLabel} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 
 export interface Props {
@@ -33,10 +33,12 @@ export interface Props {
     response: string,
     eventId: string,
     guests: number,
+    maxGuests: number
 }
 
-export default function GuestListItem({userName, eventId, userImage, response, userEmail, isAuthor, userId, isFollowing, action, guests = 0}: Props){
+export default function GuestListItem({userName, eventId, userImage, response, userEmail, isAuthor, userId, isFollowing, action, guests = 0, maxGuests = 0}: Props){
     const [FRMessage, setFRMessage] = useState<string>("");
+    const [guestCount, setGuestCount] = useState(guests);
 
     async function sendFR(email:string) {
         try{
@@ -50,14 +52,18 @@ export default function GuestListItem({userName, eventId, userImage, response, u
         }
     }
 
-    async function overwriteRSVP(response:string) {
+    async function overwriteRSVP(response:string, guestOverride: number = guests) {
+        console.log(guests)
+        console.log(guestCount)
+        console.log(guestOverride)
         try{
-            await axios.post('/api/events/authorControl/changeRSVP/' + eventId, {response: response, id: userId})
+            await axios.post('/api/events/authorControl/changeRSVP/' + eventId, {response: response, id: userId, guests: guestOverride})
                 .then((r: {data: string}) => {toast("RSVP Overwritten", {description: r.data})})
                 .catch((r: {response: {data: string}}) => {toast("Error", {description: r.response.data})});
         }catch(e){
             console.log(e)
         }finally {
+            console.log(guestOverride)
             action();
         }
     }
@@ -93,17 +99,19 @@ export default function GuestListItem({userName, eventId, userImage, response, u
                         </ToggleGroup>
                     </div>
                     <div>
-                        {/*<FormControl>*/}
-                        {/*    <Input*/}
-                        {/*        type="number"*/}
-                        {/*        min="0"*/}
-                        {/*        max={eventInfo?.maxGuests}*/}
-                        {/*        placeholder="0"*/}
-                        {/*        {...field}*/}
-                        {/*        onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}*/}
-                        {/*        value={field.value || 0}*/}
-                        {/*    />*/}
-                        {/*</FormControl>*/}
+                        <p className="text-sm">+1s (Max {maxGuests})</p>
+                        <Input
+                            type="number"
+                            min="0"
+                            max={maxGuests}
+                            placeholder="0"
+                            onChange={(e) => {
+                                const g:number = e.target.valueAsNumber || 0;
+                                setGuestCount(g)
+                                overwriteRSVP(response, g)
+                            }}
+                            value={guestCount}
+                        />
                     </div>
                 </div>
                 <div className="grid gap-4 pt-4">

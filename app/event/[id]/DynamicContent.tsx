@@ -260,6 +260,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                         <FormControl>
                                                             <Input
                                                                 type="number"
+                                                                disabled={new Date(eventInfo.rsvpDuedate) < new Date()}
                                                                 min="0"
                                                                 max={eventInfo?.maxGuests}
                                                                 placeholder="0"
@@ -314,7 +315,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                         </TabsList>
                                         <TabsContent value="yes">
                                             {eventInfo.RSVP.filter((rsvp) => rsvp.response === "YES").map(rsvp => (
-                                                <GuestListItem key={rsvp.user.id} response={rsvp.response} userEmail={rsvp.user.email} userName={rsvp.user.name} eventId={eventInfo.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={rsvp.user.id} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh} guests={rsvp.guests} />
+                                                <GuestListItem key={rsvp.user.id} response={rsvp.response} userEmail={rsvp.user.email} userName={rsvp.user.name} eventId={eventInfo.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={rsvp.user.id} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh} guests={rsvp.guests} maxGuests={eventInfo.maxGuests} />
                                             ))}
                                             {eventInfo.RSVP.filter((r) => r.response === "YES").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">None confirmed</p>
@@ -322,7 +323,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                         </TabsContent>
                                         <TabsContent value="no">
                                             {eventInfo.RSVP.filter((rsvp) => rsvp.response === "NO").map(rsvp => (
-                                                <GuestListItem key={rsvp.user.id} response={rsvp.response} userEmail={rsvp.user.email} userName={rsvp.user.name} eventId={eventInfo.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={rsvp.user.id} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh} guests={rsvp.guests} />
+                                                <GuestListItem key={rsvp.user.id} response={rsvp.response} userEmail={rsvp.user.email} userName={rsvp.user.name} eventId={eventInfo.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={rsvp.user.id} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh} guests={rsvp.guests} maxGuests={eventInfo.maxGuests} />
                                             ))}
                                             {eventInfo.RSVP.filter((r) => r.response === "NO").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">None</p>
@@ -330,7 +331,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                         </TabsContent>
                                         <TabsContent value="maybe">
                                             {eventInfo.RSVP.filter((rsvp) => rsvp.response === "MAYBE").map(rsvp => (
-                                                <GuestListItem key={rsvp.user.id} response={rsvp.response} userEmail={rsvp.user.email} userName={rsvp.user.name} eventId={eventInfo.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={rsvp.user.id} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh} guests={rsvp.guests} />
+                                                <GuestListItem key={rsvp.user.id} response={rsvp.response} userEmail={rsvp.user.email} userName={rsvp.user.name} eventId={eventInfo.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={rsvp.user.id} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh} guests={rsvp.guests} maxGuests={eventInfo.maxGuests} />
                                             ))}
                                             {eventInfo.RSVP.filter((r) => r.response === "MAYBE").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">None</p>
@@ -338,7 +339,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                         </TabsContent>
                                         <TabsContent value="no_response">
                                             {eventInfo.RSVP.filter((rsvp) => rsvp.response === "NO_RESPONSE").map(rsvp => (
-                                                <GuestListItem key={rsvp.user.id} response={rsvp.response} userEmail={rsvp.user.email} userName={rsvp.user.name} eventId={eventInfo.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={rsvp.user.id} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh} guests={rsvp.guests} />
+                                                <GuestListItem key={rsvp.user.id} response={rsvp.response} userEmail={rsvp.user.email} userName={rsvp.user.name} eventId={eventInfo.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={rsvp.user.id} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh} guests={rsvp.guests} maxGuests={eventInfo.maxGuests} />
                                             ))}
                                             {eventInfo.RSVP.filter((r) => r.response === "NO_RESPONSE").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">Everyone has

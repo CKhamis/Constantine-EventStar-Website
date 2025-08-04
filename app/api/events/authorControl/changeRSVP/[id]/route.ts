@@ -65,11 +65,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
                 id: optionalRSVP.id
             },
             data: {
+                guests: body.guests,
                 response: body.response,
             }
         })
 
-        return NextResponse.json("You have changed an RSVP to " + body.response, { status: 200 });
+        return NextResponse.json("You have changed an RSVP to " + body.response + " with " + body.guests + " +1s.", { status: 200 });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error: "An error occurred while fetching the event" }, { status: 500 });
