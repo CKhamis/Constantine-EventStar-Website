@@ -22,6 +22,8 @@ import Markdown from 'react-markdown'
 import GuestListItem from "@/app/event/[id]/GuestListItem";
 import {userInfoResponse} from "@/app/api/user/info/route";
 import {Input} from "@/components/ui/input";
+import { useCookies } from 'react-cookie';
+import {GuestPopup} from "@/components/tutorials/guests/guests";
 
 export interface Props {
     eventId: string,
@@ -44,6 +46,7 @@ export default function DynamicContent({eventId, userId}: Props) {
     const [eventInfo, setEventInfo] = useState<EVResponse | null>();
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [userInfo, setUserInfo] = useState<userInfoResponse | null>(null);
+    const [cookies, setCookie, removeCookie] = useCookies(['guestsTutorial']);
 
     async function refresh(){
         setLoading(true);
@@ -108,6 +111,7 @@ export default function DynamicContent({eventId, userId}: Props) {
     return (
         <>
             {loading && <LoadingIcon/>}
+            {!cookies.guestsTutorial && <GuestPopup />}
             <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
                 <div className="lg:col-span-2 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
                     <div className="top-left-gradient">
