@@ -14,18 +14,13 @@ export default function Footer(){
                 </div>
                 <div></div>
                 <div className="mt-4">
+                </div>
+                <div className="mt-4">
                     <p className="text-lg font-bold">You</p>
                     <ul>
                         <li className="mt-3"><a className="hover-underline" href="/profile">Profile</a></li>
-                        <li className="mt-3"><a className="hover-underline" href="/calendar">Upcoming Events</a></li>
+                        <li className="mt-3"><a className="hover-underline" href="/feed">Invites</a></li>
                         {/*<li className="mt-3"><a className="hover-underline" href="">Costifications(TM)</a></li>*/}
-                    </ul>
-                </div>
-                <div className="mt-4">
-                    <p className="text-lg font-bold">Community</p>
-                    <ul>
-                        <li className="mt-3"><a className="hover-underline" href="">Coming soon</a></li>
-                        {/*<li className="mt-3"><a className="hover-underline" href="">Restaurant Ratings</a></li>*/}
                     </ul>
                 </div>
                 <div className="mt-4">

@@ -163,7 +163,7 @@ export default function DynamicContent({userId} : Props) {
                                 </CarouselItem>
                             </CarouselContent>
                         </Carousel>
-                        <p className="text-muted-foreground text-xs mb-5">Version {process.env.version}</p>
+                        <p className="text-muted-foreground text-xs mb-5">Version 4.5.0</p>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                             <Card className="rounded-none">
@@ -248,7 +248,7 @@ export default function DynamicContent({userId} : Props) {
                                     <CardHeader>
                                         <div className="flex flex-col md:flex-row items-center justify-between space-y-0 gap-2">
                                             <CardTitle className="text-3xl">{nextEvent.event.title}</CardTitle>
-                                            <div className="flex flex-row justify-end gap-3">
+                                            <div className="md:flex flex-row justify-end gap-3">
                                                 <ToggleGroup type="single" variant="default" defaultValue={nextEvent.response} disabled={new Date(nextEvent.event.rsvpDuedate) < new Date()}>
                                                     <ToggleGroupItem value="YES" aria-label="Toggle check" onClick={() => updateRSVP(nextEvent.event.id, "YES")}>
                                                         <Check className="h-4 w-4"/>
@@ -260,15 +260,19 @@ export default function DynamicContent({userId} : Props) {
                                                         <X className="h-4 w-4"/>
                                                     </ToggleGroupItem>
                                                 </ToggleGroup>
-                                                <Link target="_blank"
-                                                      href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(nextEvent.event.title)}&dates=${encodeURIComponent(format(new Date(nextEvent.event.eventStart), "yyyyMMdd'T'HHmmss") + '/' + format(new Date(nextEvent.event.eventEnd), "yyyyMMdd'T'HHmmss"))}&details=${encodeURIComponent(nextEvent.event.description)}&location=${encodeURIComponent(nextEvent.event.address)}`}>
-                                                    <Button variant="outline"
-                                                            className="flex items-center justify-center gap-2 w-full">
-                                                        <CalendarPlus/>
-                                                        Add to Calendar
-                                                    </Button>
-                                                </Link>
-                                                <Link href={"/event/" + nextEvent.event.id}><Button>View Event</Button></Link>
+                                                <div className="flex flex-col md:flex-row justify-center gap-3 pt-3 md:pt-0">
+                                                    <Link target="_blank"
+                                                          href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(nextEvent.event.title)}&dates=${encodeURIComponent(format(new Date(nextEvent.event.eventStart), "yyyyMMdd'T'HHmmss") + '/' + format(new Date(nextEvent.event.eventEnd), "yyyyMMdd'T'HHmmss"))}&details=${encodeURIComponent(nextEvent.event.description)}&location=${encodeURIComponent(nextEvent.event.address)}`}>
+                                                        <Button variant="outline"
+                                                                className="flex items-center justify-center gap-2 w-full">
+                                                            <CalendarPlus/>
+                                                            Add to Calendar
+                                                        </Button>
+                                                    </Link>
+                                                    <Link href={"/event/" + nextEvent.event.id} className="w-full">
+                                                        <Button className="flex items-center justify-center w-full">View Event</Button>
+                                                    </Link>
+                                                </div>
                                             </div>
                                         </div>
                                         {/*<p className="text-xs text-muted-foreground">{format(new Date(nextEvent.event.eventStart), "M/dd/yyyy hh:mm a")} - {format(new Date(nextEvent.event.eventEnd), "M/dd/yyyy hh:mm a")}</p>*/}
