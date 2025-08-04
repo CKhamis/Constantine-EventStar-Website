@@ -48,6 +48,10 @@ export default function DynamicContent({eventId, userId}: Props) {
     const [userInfo, setUserInfo] = useState<userInfoResponse | null>(null);
     const [cookies, setCookie, removeCookie] = useCookies(['guestsTutorial']);
 
+    function closeGuestTutorial(){
+        setCookie("guestsTutorial", false);
+    }
+
     async function refresh(){
         setLoading(true);
 
@@ -111,7 +115,9 @@ export default function DynamicContent({eventId, userId}: Props) {
     return (
         <>
             {loading && <LoadingIcon/>}
-            {!cookies.guestsTutorial && <GuestPopup />}
+            {cookies.guestsTutorial !== false && (
+                <GuestPopup setOpen={closeGuestTutorial} />
+            )}
             <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
                 <div className="lg:col-span-2 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
                     <div className="top-left-gradient">
