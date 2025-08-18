@@ -225,7 +225,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                     <div className="border-b-2 w-100 p-5">
                         <div className="max-w-xl mx-auto">
                             <div className="flex flex-row justify-between items-center">
-                                <p className="text-2xl font-bold" id="rsvp">RSVP Status</p>
+                                <p className="text-2xl font-bold" id="rsvp">RSVP Status {eventInfo?.inviteVisibility === "FULL" && RSVP === undefined ? "(Write - In)" : ""}</p>
                                 {eventInfo && eventInfo.RSVP.find((r) => r.user.id === userId)? (eventInfo.RSVP.find((r) => r.user.id === userId)?.response !== "NO_RESPONSE"? (
                                     <Badge variant="outline">Answered</Badge>
 
@@ -303,12 +303,124 @@ export default function DynamicContent({eventId, userId}: Props) {
                                 </Form>
                             ) : (
                                 <div className="flex flex-col gap-5 mt-5">
-                                    <p>Please log in with an invited EventStar account to RSVP to this event!</p>
-                                    <Link href="/api/auth/signin">
-                                        <Button size="sm">
-                                            Log in
-                                        </Button>
-                                    </Link>
+                                    {eventInfo?.inviteVisibility === "FULL" ? (
+                                        <>
+                                            {/* When inviteVisibility is FULL but they are not signed in */}
+                                            <Form {...form}>
+                                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="firstName"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>First Name</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        type="text"
+                                                                        placeholder="Enter your first name"
+                                                                        disabled={new Date(eventInfo.rsvpDuedate) < new Date()}
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="lastName"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>Last Name</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        type="text"
+                                                                        placeholder="Enter your last name"
+                                                                        disabled={new Date(eventInfo.rsvpDuedate) < new Date()}
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
+
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="response"
+                                                        render={({field}) => (
+                                                            <FormItem>
+                                                                <FormLabel>Your Attendance</FormLabel>
+                                                                <Select onValueChange={field.onChange} value={field.value}
+                                                                        disabled={new Date(eventInfo.rsvpDuedate) < new Date()}>
+                                                                    <FormControl>
+                                                                        <SelectTrigger>
+                                                                            <SelectValue placeholder="Select your RSVP status"/>
+                                                                        </SelectTrigger>
+                                                                    </FormControl>
+                                                                    <SelectContent>
+                                                                        <SelectItem value="YES">Yes</SelectItem>
+                                                                        <SelectItem value="NO">No</SelectItem>
+                                                                        <SelectItem value="MAYBE">Maybe</SelectItem>
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                <FormMessage/>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <div className={eventInfo.maxGuests === 0? "hidden" : ""}>
+                                                        <FormField
+                                                            control={form.control}
+                                                            name="guests"
+                                                            render={({ field }) => (
+                                                                <FormItem>
+                                                                    <FormLabel>+1s (max {eventInfo?.maxGuests} per invite)</FormLabel>
+                                                                    <FormControl>
+                                                                        <Input
+                                                                            type="number"
+                                                                            disabled={new Date(eventInfo.rsvpDuedate) < new Date()}
+                                                                            min="0"
+                                                                            max={eventInfo?.maxGuests}
+                                                                            placeholder="0"
+                                                                            {...field}
+                                                                            onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                                                                            value={field.value || 0}
+                                                                        />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                    </div>
+                                                    <p className="text-muted-foreground text-sm">{new Date(eventInfo.rsvpDuedate) < new Date() ? `too late to respond` : `Respond by ${format(new Date(eventInfo.rsvpDuedate), 'PPP hh:mm a')}`}</p>
+                                                    <div className="flex flex-row gap-4 items-center justify-start">
+                                                        <Button type="submit" disabled={submitStatus === 'loading' || new Date(eventInfo.rsvpDuedate) < new Date()}>
+                                                            {submitStatus === 'loading' ? 'Submitting...' : 'Save'}
+                                                        </Button>
+                                                        <Link href="/api/auth/signin" >
+                                                            <Button variant="secondary">I have an account</Button>
+                                                        </Link>
+
+                                                        {submitStatus === 'success' && (
+                                                            <Check className="h-4 w-4 text-green-500"/>
+                                                        )}
+                                                        {submitStatus === 'error' && (
+                                                            <X className="h-4 w-4 text-red-500"/>
+                                                        )}
+                                                    </div>
+                                                </form>
+                                            </Form>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* When inviteVisibility is not FULL and they are not signed in (404) */}
+                                            <p>Please log in with an invited EventStar account to RSVP to this event!</p>
+                                            <Link href="/api/auth/signin">
+                                                <Button size="sm">Log in</Button>
+                                            </Link>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
