@@ -53,6 +53,8 @@ export const uuidSchema = z.object({
 export const rsvpSchema = z.object({
     response: RsvpResponse,
     guests: z.coerce.number().int().min(0, "Must be a positive number"),
+    firstName: z.string().max(20, "First name too long").min(1, "First name too short").optional().or(z.literal("")),
+    lastName: z.string().max(20, "Last name too long").min(1, "Last name too short").optional().or(z.literal("")),
 })
 
 export const authorRsvpSchema = z.object({

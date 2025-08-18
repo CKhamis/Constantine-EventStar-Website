@@ -90,7 +90,7 @@ export default function DynamicContent({eventId, userId}: Props) {
     async function onSubmit(data: z.infer<typeof rsvpSchema>) {
         setSubmitStatus('loading')
         try {
-            await axios.post(`/api/events/rsvp/${eventId}`, {response: data.response, guests: data.guests})
+            await axios.post(`/api/events/rsvp/${eventId}`, {response: data.response, guests: data.guests, firstName: data.firstName, lastName: data.lastName})
             setSubmitStatus('success')
         } catch (e) {
             console.log(e);
@@ -104,7 +104,9 @@ export default function DynamicContent({eventId, userId}: Props) {
         resolver: zodResolver(rsvpSchema),
         defaultValues: {
             response: undefined,
-            guests: 0
+            guests: 0,
+            firstName: "",
+            lastName: "",
         },
     })
 

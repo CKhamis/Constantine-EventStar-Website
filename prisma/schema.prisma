@@ -99,6 +99,8 @@ model VerificationToken {
 
 model Rsvp {
   id        String       @id @default(uuid())
+  firstName String?
+  lastName  String?
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   guests    Int          @default(0)
@@ -107,8 +109,8 @@ model Rsvp {
   validator String       @default("none")
   eventId   String
   response  RsvpResponse @default(NO_RESPONSE)
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
+  user      User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
 }
 
 model Event {
