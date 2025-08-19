@@ -262,11 +262,11 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                 </FormItem>
                                             )}
                                         />
-                                        <div className={eventInfo.maxGuests === 0? "hidden" : ""}>
+                                        <div className={eventInfo.maxGuests === 0 ? "hidden" : ""}>
                                             <FormField
                                                 control={form.control}
                                                 name="guests"
-                                                render={({ field }) => (
+                                                render={({field}) => (
                                                     <FormItem>
                                                         <FormLabel>+1s (max {eventInfo?.maxGuests} per invite)</FormLabel>
                                                         <FormControl>
@@ -281,7 +281,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                                 value={field.value || 0}
                                                             />
                                                         </FormControl>
-                                                        <FormMessage />
+                                                        <FormMessage/>
                                                     </FormItem>
                                                 )}
                                             />
@@ -311,7 +311,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                     <FormField
                                                         control={form.control}
                                                         name="firstName"
-                                                        render={({ field }) => (
+                                                        render={({field}) => (
                                                             <FormItem>
                                                                 <FormLabel>First Name</FormLabel>
                                                                 <FormControl>
@@ -322,7 +322,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                                         {...field}
                                                                     />
                                                                 </FormControl>
-                                                                <FormMessage />
+                                                                <FormMessage/>
                                                             </FormItem>
                                                         )}
                                                     />
@@ -330,7 +330,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                     <FormField
                                                         control={form.control}
                                                         name="lastName"
-                                                        render={({ field }) => (
+                                                        render={({field}) => (
                                                             <FormItem>
                                                                 <FormLabel>Last Name</FormLabel>
                                                                 <FormControl>
@@ -341,7 +341,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                                         {...field}
                                                                     />
                                                                 </FormControl>
-                                                                <FormMessage />
+                                                                <FormMessage/>
                                                             </FormItem>
                                                         )}
                                                     />
@@ -369,11 +369,11 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                             </FormItem>
                                                         )}
                                                     />
-                                                    <div className={eventInfo.maxGuests === 0? "hidden" : ""}>
+                                                    <div className={eventInfo.maxGuests === 0 ? "hidden" : ""}>
                                                         <FormField
                                                             control={form.control}
                                                             name="guests"
-                                                            render={({ field }) => (
+                                                            render={({field}) => (
                                                                 <FormItem>
                                                                     <FormLabel>+1s (max {eventInfo?.maxGuests} per invite)</FormLabel>
                                                                     <FormControl>
@@ -388,17 +388,18 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                                             value={field.value || 0}
                                                                         />
                                                                     </FormControl>
-                                                                    <FormMessage />
+                                                                    <FormMessage/>
                                                                 </FormItem>
                                                             )}
                                                         />
                                                     </div>
+                                                    <p className="text-foreground text-sm">Write the same first and last names to change your RSVP</p>
                                                     <p className="text-muted-foreground text-sm">{new Date(eventInfo.rsvpDuedate) < new Date() ? `too late to respond` : `Respond by ${format(new Date(eventInfo.rsvpDuedate), 'PPP hh:mm a')}`}</p>
                                                     <div className="flex flex-row gap-4 items-center justify-start">
                                                         <Button type="submit" disabled={submitStatus === 'loading' || new Date(eventInfo.rsvpDuedate) < new Date()}>
                                                             {submitStatus === 'loading' ? 'Submitting...' : 'Save'}
                                                         </Button>
-                                                        <Link href="/api/auth/signin" >
+                                                        <Link href="/api/auth/signin">
                                                             <Button variant="secondary">I have an account</Button>
                                                         </Link>
 
