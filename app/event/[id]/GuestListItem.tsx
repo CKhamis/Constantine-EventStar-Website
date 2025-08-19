@@ -25,9 +25,9 @@ import {Input} from "@/components/ui/input";
 export interface Props {
     userName: string,
     userEmail: string,
-    userImage: string,
+    userImage: string | null,
     isAuthor: boolean,
-    userId: string,
+    userId: string | null,
     isFollowing: boolean,
     action: () => void,
     response: string,
@@ -70,112 +70,236 @@ export default function GuestListItem({userName, eventId, userImage, response, u
 
     let content: JSX.Element;
 
-    if(isAuthor){
-        // viewer is the author. Show tools
-        content = (
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <div className="flex flex-col items-center space-y-4">
-                        <AvatarIcon name={userName} image={userImage} size="large" />
-                        <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
-                    </div>
-                </DialogHeader>
-                <div className="flex flex-col space-y-4 mt-5">
-                    <div>
-                        <p className="text-center font-bold mb-2">Overwrite RSVP Status</p>
-                        <ToggleGroup type="single" defaultValue={response}>
-                            <ToggleGroupItem value="YES" aria-label="YES" onClick={() => overwriteRSVP("YES")}>
-                                <Check className="h-8 w-8" />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="NO" aria-label="NO" onClick={() => overwriteRSVP("NO")}>
-                                <X className="h-8 w-8" />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="MAYBE" aria-label="MAYBE" onClick={() => overwriteRSVP("MAYBE")}>
-                                <CircleHelp className="h-8 w-8" />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="NO_RESPONSE" aria-label="NO_RESPONSE" onClick={() => overwriteRSVP("NO_RESPONSE")}>
-                                <Clock className="h-8 w-8" />
-                            </ToggleGroupItem>
-                        </ToggleGroup>
-                    </div>
-                    <div>
-                        <p className="text-sm">+1s (Max {maxGuests})</p>
-                        <Input
-                            type="number"
-                            min="0"
-                            max={maxGuests}
-                            placeholder="0"
-                            onChange={(e) => {
-                                const g:number = e.target.valueAsNumber || 0;
-                                setGuestCount(g)
-                                overwriteRSVP(response, g)
-                            }}
-                            value={guestCount}
-                        />
-                    </div>
-                </div>
-                <div className="grid gap-4 pt-4">
-                    {isFollowing ? (
-                        <div className="flex flex-col space-y-3">
-                            <Button type="button" variant="secondary" disabled>Following</Button>
-                            {/*<Button type="submit">Save changes</Button>*/}
+    // Write-In was clicked
+    if(userId === ""){
+        // author clicked on write-in guest
+        if(isAuthor){
+            content = (
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <div className="flex flex-col items-center space-y-4">
+                            <AvatarIcon name={userName} image={userImage} size="large" />
+                            <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
+                            <p className="text-center">{userEmail}</p>
                         </div>
-                    ) : (
-                        <div className="flex flex-col space-y-4">
-                            <div className="grid">
-                                <Button type="button" variant="secondary" onClick={() => sendFR(userEmail)}>Follow</Button>
-                                <p className="text-center text-muted-foreground">{FRMessage}</p>
-                            </div>
-                            {/*<Button type="submit">Save changes</Button>*/}
-                        </div>
-                    )}
-                </div>
-            </DialogContent>
-        );
-    }else if(userId !== ""){
-        // viewer has a non invited account
-        content = (
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <div className="flex flex-col items-center space-y-4">
-                        <AvatarIcon name={userName} image={userImage} size="large" />
-                        <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
-                        <p className="text-center">{userEmail}</p>
+                    </DialogHeader>
+                    <div className="grid pt-4">
+                        {/*TODO: implement deleting write-ins*/}
+                        <Button type="button" variant="secondary">Delete write-in</Button>
                     </div>
-                </DialogHeader>
-                <div className="grid pt-4">
-                    {isFollowing? (
-                        <Button type="button" variant="secondary" disabled>Following</Button>
-                    ) : (
-                        <>
-                            <Button type="button" variant="default" onClick={() => sendFR(userEmail)}>Follow</Button>
-                            <p className="text-center text-muted-foreground">{FRMessage}</p>
-                        </>
-                    )}
-                </div>
-            </DialogContent>
-        );
+                </DialogContent>
+            );
+        }else{
+            content = (
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <div className="flex flex-col items-center space-y-4">
+                            <AvatarIcon name={userName} image={userImage} size="small" />
+                            <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
+                            <p className="text-center">{userEmail}</p>
+                        </div>
+                    </DialogHeader>
+                </DialogContent>
+            );
+        }
     }else{
-        // viewer is a non-logged in guest
-        content = (
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>Login Required</DialogTitle>
-                    <DialogDescription>
-                        Please log in with an account to view guest details and follow.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="flex flex-row justify-center items-center mb-5">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/agent/error.gif" alt="Error" />
-                </div>
-                <DialogFooter>
-                    <Link href="/api/auth/signin"><Button type="button" variant="default">Log In</Button></Link>
-                    <Button type="button" variant="secondary">Close</Button>
-                </DialogFooter>
-            </DialogContent>
-        );
+
+        // Clicked guest has an account. Could either be invited, joined, or author
+        if (isAuthor) {
+            // Author view: always show RSVP overwrite tools
+            content = (
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <div className="flex flex-col items-center space-y-4">
+                            <AvatarIcon name={userName} image={userImage ?? undefined} size="large" />
+                            <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
+                            {userEmail && <p className="text-center">{userEmail}</p>}
+                        </div>
+                    </DialogHeader>
+                    <div className="flex flex-col space-y-4 mt-5">
+                        <div>
+                            <p className="text-center font-bold mb-2">Overwrite RSVP Status</p>
+                            <ToggleGroup type="single" defaultValue={response}>
+                                <ToggleGroupItem value="YES" onClick={() => overwriteRSVP("YES")}>
+                                    <Check className="h-8 w-8" />
+                                </ToggleGroupItem>
+                                <ToggleGroupItem value="NO" onClick={() => overwriteRSVP("NO")}>
+                                    <X className="h-8 w-8" />
+                                </ToggleGroupItem>
+                                <ToggleGroupItem value="MAYBE" onClick={() => overwriteRSVP("MAYBE")}>
+                                    <CircleHelp className="h-8 w-8" />
+                                </ToggleGroupItem>
+                                <ToggleGroupItem value="NO_RESPONSE" onClick={() => overwriteRSVP("NO_RESPONSE")}>
+                                    <Clock className="h-8 w-8" />
+                                </ToggleGroupItem>
+                            </ToggleGroup>
+                        </div>
+                        <div>
+                            <p className="text-sm">+1s (Max {maxGuests})</p>
+                            <Input
+                                type="number"
+                                min="0"
+                                max={maxGuests}
+                                value={guestCount}
+                                onChange={(e) => {
+                                    const g = e.target.valueAsNumber || 0;
+                                    setGuestCount(g);
+                                    overwriteRSVP(response, g);
+                                }}
+                            />
+                        </div>
+                    </div>
+                    <div className="grid gap-4 pt-4">
+                        {userEmail && (
+                            isFollowing ? (
+                                <Button type="button" variant="secondary" disabled>Following</Button>
+                            ) : (
+                                <div className="flex flex-col space-y-4">
+                                    <div className="grid">
+                                        <Button type="button" variant="secondary" onClick={() => sendFR(userEmail)}>Follow</Button>
+                                        <p className="text-center text-muted-foreground">{FRMessage}</p>
+                                    </div>
+                                </div>
+                            )
+                        )}
+                    </div>
+                </DialogContent>
+            );
+        } else if (userId) {
+            // Registered user (non-author)
+            content = (
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <div className="flex flex-col items-center space-y-4">
+                            <AvatarIcon name={userName} image={userImage ?? undefined} size="large" />
+                            <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
+                            {userEmail && <p className="text-center">{userEmail}</p>}
+                        </div>
+                    </DialogHeader>
+                    <div className="grid pt-4">
+                        {isFollowing ? (
+                            <Button type="button" variant="secondary" disabled>Following</Button>
+                        ) : (
+                            <>
+                                {userEmail && (
+                                    <Button type="button" variant="default" onClick={() => sendFR(userEmail)}>Follow</Button>
+                                )}
+                                <p className="text-center text-muted-foreground">{FRMessage}</p>
+                            </>
+                        )}
+                    </div>
+                </DialogContent>
+            );
+        }
+
     }
+
+    // if(isAuthor){
+    //     // viewer is the author. Show tools
+    //     content = (
+    //         <DialogContent className="sm:max-w-[425px]">
+    //             <DialogHeader>
+    //                 <div className="flex flex-col items-center space-y-4">
+    //                     <AvatarIcon name={userName} image={userImage} size="large" />
+    //                     <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
+    //                 </div>
+    //             </DialogHeader>
+    //             <div className="flex flex-col space-y-4 mt-5">
+    //                 <div>
+    //                     <p className="text-center font-bold mb-2">Overwrite RSVP Status</p>
+    //                     <ToggleGroup type="single" defaultValue={response}>
+    //                         <ToggleGroupItem value="YES" aria-label="YES" onClick={() => overwriteRSVP("YES")}>
+    //                             <Check className="h-8 w-8" />
+    //                         </ToggleGroupItem>
+    //                         <ToggleGroupItem value="NO" aria-label="NO" onClick={() => overwriteRSVP("NO")}>
+    //                             <X className="h-8 w-8" />
+    //                         </ToggleGroupItem>
+    //                         <ToggleGroupItem value="MAYBE" aria-label="MAYBE" onClick={() => overwriteRSVP("MAYBE")}>
+    //                             <CircleHelp className="h-8 w-8" />
+    //                         </ToggleGroupItem>
+    //                         <ToggleGroupItem value="NO_RESPONSE" aria-label="NO_RESPONSE" onClick={() => overwriteRSVP("NO_RESPONSE")}>
+    //                             <Clock className="h-8 w-8" />
+    //                         </ToggleGroupItem>
+    //                     </ToggleGroup>
+    //                 </div>
+    //                 <div>
+    //                     <p className="text-sm">+1s (Max {maxGuests})</p>
+    //                     <Input
+    //                         type="number"
+    //                         min="0"
+    //                         max={maxGuests}
+    //                         placeholder="0"
+    //                         onChange={(e) => {
+    //                             const g:number = e.target.valueAsNumber || 0;
+    //                             setGuestCount(g)
+    //                             overwriteRSVP(response, g)
+    //                         }}
+    //                         value={guestCount}
+    //                     />
+    //                 </div>
+    //             </div>
+    //             <div className="grid gap-4 pt-4">
+    //                 {isFollowing ? (
+    //                     <div className="flex flex-col space-y-3">
+    //                         <Button type="button" variant="secondary" disabled>Following</Button>
+    //                         {/*<Button type="submit">Save changes</Button>*/}
+    //                     </div>
+    //                 ) : (
+    //                     <div className="flex flex-col space-y-4">
+    //                         <div className="grid">
+    //                             <Button type="button" variant="secondary" onClick={() => sendFR(userEmail)}>Follow</Button>
+    //                             <p className="text-center text-muted-foreground">{FRMessage}</p>
+    //                         </div>
+    //                         {/*<Button type="submit">Save changes</Button>*/}
+    //                     </div>
+    //                 )}
+    //             </div>
+    //         </DialogContent>
+    //     );
+    // }else if(userId !== ""){
+    //     // viewer has a non invited account
+    //     content = (
+    //         <DialogContent className="sm:max-w-[425px]">
+    //             <DialogHeader>
+    //                 <div className="flex flex-col items-center space-y-4">
+    //                     <AvatarIcon name={userName} image={userImage} size="large" />
+    //                     <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
+    //                     <p className="text-center">{userEmail}</p>
+    //                 </div>
+    //             </DialogHeader>
+    //             <div className="grid pt-4">
+    //                 {isFollowing? (
+    //                     <Button type="button" variant="secondary" disabled>Following</Button>
+    //                 ) : (
+    //                     <>
+    //                         <Button type="button" variant="default" onClick={() => sendFR(userEmail)}>Follow</Button>
+    //                         <p className="text-center text-muted-foreground">{FRMessage}</p>
+    //                     </>
+    //                 )}
+    //             </div>
+    //         </DialogContent>
+    //     );
+    // }else{
+    //     // viewer is a non-logged in guest
+    //     content = (
+    //         <DialogContent className="sm:max-w-[425px]">
+    //             <DialogHeader>
+    //                 <DialogTitle>Login Required</DialogTitle>
+    //                 <DialogDescription>
+    //                     Please log in with an account to view guest details and follow.
+    //                 </DialogDescription>
+    //             </DialogHeader>
+    //             <div className="flex flex-row justify-center items-center mb-5">
+    //                 {/* eslint-disable-next-line @next/next/no-img-element */}
+    //                 <img src="/agent/error.gif" alt="Error" />
+    //             </div>
+    //             <DialogFooter>
+    //                 <Link href="/api/auth/signin"><Button type="button" variant="default">Log In</Button></Link>
+    //                 <Button type="button" variant="secondary">Close</Button>
+    //             </DialogFooter>
+    //         </DialogContent>
+    //     );
+    // }
 
     return (
     <Dialog>

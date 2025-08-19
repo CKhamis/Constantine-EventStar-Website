@@ -127,7 +127,7 @@ model Event {
   rsvpDuedate      DateTime              @db.DateTime(0)
   description      String                @db.LongText
   eventType        EventType
-  inviteVisibility EventInviteVisibility @default(FULL)
+  inviteVisibility EventInviteVisibility @default(NONE)
   reminderCount    Int                   @default(0)
   maxGuests        Int                   @default(0)
   RSVP             Rsvp[]

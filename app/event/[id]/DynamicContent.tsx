@@ -473,7 +473,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                         userName={userNameSafe}
                                                         eventId={eventInfo.id}
                                                         userImage={userImageSafe}
-                                                        isAuthor={userIdSafe === eventInfo.author.id}
+                                                        isAuthor={userInfo !== null && userInfo.id === eventInfo.author.id}
                                                         userId={userIdSafe}
                                                         isFollowing={
                                                             !!userInfo && userInfo.following.some(user => user.id === userIdSafe)
@@ -524,7 +524,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                         userName={userNameSafe}
                                                         eventId={eventInfo.id}
                                                         userImage={userImageSafe}
-                                                        isAuthor={userIdSafe === eventInfo.author.id}
+                                                        isAuthor={userInfo !== null && userInfo.id === eventInfo.author.id}
                                                         userId={userIdSafe}
                                                         isFollowing={
                                                             !!userInfo && userInfo.following.some(user => user.id === userIdSafe)
@@ -574,7 +574,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                         userName={userNameSafe}
                                                         eventId={eventInfo.id}
                                                         userImage={userImageSafe}
-                                                        isAuthor={userIdSafe === eventInfo.author.id}
+                                                        isAuthor={userInfo !== null && userInfo.id === eventInfo.author.id}
                                                         userId={userIdSafe}
                                                         isFollowing={
                                                             !!userInfo && userInfo.following.some(user => user.id === userIdSafe)
@@ -624,7 +624,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                         userName={userNameSafe}
                                                         eventId={eventInfo.id}
                                                         userImage={userImageSafe}
-                                                        isAuthor={userIdSafe === eventInfo.author.id}
+                                                        isAuthor={userInfo !== null && userInfo.id === eventInfo.author.id}
                                                         userId={userIdSafe}
                                                         isFollowing={
                                                             !!userInfo && userInfo.following.some(user => user.id === userIdSafe)
