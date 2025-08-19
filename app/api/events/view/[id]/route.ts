@@ -30,12 +30,14 @@ export type EVResponse = {
         id: string,
         response: string,
         guests: number,
+        firstName: string | undefined,
+        lastName: string | undefined,
         user: {
             email: string,
             name: string,
             image: string
             id: string,
-        }
+        } | undefined,
     }[]
 }
 
@@ -65,6 +67,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                         id: true,
                         response: true,
                         guests: true,
+                        firstName: true,
+                        lastName: true,
                         user: {
                             select: {
                                 name: true,

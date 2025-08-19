@@ -225,205 +225,205 @@ export default function DynamicContent({eventId, userId}: Props) {
                     <div className="border-b-2 w-100 p-5">
                         <div className="max-w-xl mx-auto">
                             <div className="flex flex-row justify-between items-center">
-                                <p className="text-2xl font-bold" id="rsvp">RSVP Status {eventInfo?.inviteVisibility === "FULL" && RSVP === undefined ? "(Write - In)" : ""}</p>
-                                {eventInfo && eventInfo.RSVP.find((r) => r.user.id === userId)? (eventInfo.RSVP.find((r) => r.user.id === userId)?.response !== "NO_RESPONSE"? (
-                                    <Badge variant="outline">Answered</Badge>
+                                <p className="text-2xl font-bold" id="rsvp">RSVP Status {eventInfo?.inviteVisibility === "FULL" && userId ? "" : "(Write-In)"}</p>
+                                {eventInfo && userId && (
+                                    (() => {
+                                        const rsvp = eventInfo.RSVP.find((r) => r.user && r.user.id === userId);
+                                        if (!rsvp) return null;
 
-                                ) : (
-                                    <Badge variant="destructive">Unanswered</Badge>
-
-                                )) : (
-                                    <></>
+                                        return rsvp.response !== "NO_RESPONSE" ? (
+                                            <Badge variant="outline">Answered</Badge>
+                                        ) : (
+                                            <Badge variant="destructive">Unanswered</Badge>
+                                        );
+                                    })()
                                 )}
                             </div>
-                            {RSVP && eventInfo ? (
-                                <Form {...form}>
-                                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
-                                        <FormField
-                                            control={form.control}
-                                            name="response"
-                                            render={({field}) => (
-                                                <FormItem>
-                                                    <FormLabel>Your Attendance</FormLabel>
-                                                    <Select onValueChange={field.onChange} value={field.value}
-                                                            disabled={new Date(eventInfo.rsvpDuedate) < new Date()}>
-                                                        <FormControl>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select your RSVP status"/>
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            <SelectItem value="YES">Yes</SelectItem>
-                                                            <SelectItem value="NO">No</SelectItem>
-                                                            <SelectItem value="MAYBE">Maybe</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage/>
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <div className={eventInfo.maxGuests === 0 ? "hidden" : ""}>
-                                            <FormField
-                                                control={form.control}
-                                                name="guests"
-                                                render={({field}) => (
-                                                    <FormItem>
-                                                        <FormLabel>+1s (max {eventInfo?.maxGuests} per invite)</FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                type="number"
-                                                                disabled={new Date(eventInfo.rsvpDuedate) < new Date()}
-                                                                min="0"
-                                                                max={eventInfo?.maxGuests}
-                                                                placeholder="0"
-                                                                {...field}
-                                                                onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                                                                value={field.value || 0}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage/>
-                                                    </FormItem>
+                            {(() => {
+                                // helper: check if event is expired
+                                const isExpired = eventInfo ? new Date(eventInfo.rsvpDuedate) < new Date() : true;
+
+                                // CASE 1: no logged-in user, event is FULL
+                                if (!userId && eventInfo?.inviteVisibility === "FULL") {
+                                    return (
+                                        <Form {...form}>
+                                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="firstName"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>First Name</FormLabel>
+                                                            <FormControl>
+                                                                <Input type="text" placeholder="Enter your first name" disabled={isExpired} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="lastName"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Last Name</FormLabel>
+                                                            <FormControl>
+                                                                <Input type="text" placeholder="Enter your last name" disabled={isExpired} {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="response"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Your Attendance</FormLabel>
+                                                            <Select onValueChange={field.onChange} value={field.value} disabled={isExpired}>
+                                                                <FormControl>
+                                                                    <SelectTrigger>
+                                                                        <SelectValue placeholder="Select your RSVP status" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    <SelectItem value="YES">Yes</SelectItem>
+                                                                    <SelectItem value="NO">No</SelectItem>
+                                                                    <SelectItem value="MAYBE">Maybe</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                {eventInfo.maxGuests > 0 && (
+                                                    <FormField
+                                                        control={form.control}
+                                                        name="guests"
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormLabel>+1s (max {eventInfo.maxGuests} per invite)</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        type="number"
+                                                                        disabled={isExpired}
+                                                                        min="0"
+                                                                        max={eventInfo.maxGuests}
+                                                                        placeholder="0"
+                                                                        {...field}
+                                                                        onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                                                                        value={field.value || 0}
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage />
+                                                            </FormItem>
+                                                        )}
+                                                    />
                                                 )}
-                                            />
-                                        </div>
-                                        <p className="text-muted-foreground text-sm">{new Date(eventInfo.rsvpDuedate) < new Date() ? `too late to respond` : `Respond by ${format(new Date(eventInfo.rsvpDuedate), 'PPP hh:mm a')}`}</p>
-                                        <div className="flex flex-row gap-4 items-center justify-start">
-                                            <Button type="submit" disabled={submitStatus === 'loading' || new Date(eventInfo.rsvpDuedate) < new Date()}>
-                                                {submitStatus === 'loading' ? 'Submitting...' : 'Save'}
-                                            </Button>
 
-                                            {submitStatus === 'success' && (
-                                                <Check className="h-4 w-4 text-green-500"/>
-                                            )}
-                                            {submitStatus === 'error' && (
-                                                <X className="h-4 w-4 text-red-500"/>
-                                            )}
-                                        </div>
-                                    </form>
-                                </Form>
-                            ) : (
-                                <div className="flex flex-col gap-5 mt-5">
-                                    {eventInfo?.inviteVisibility === "FULL" ? (
-                                        <>
-                                            {/* When inviteVisibility is FULL but they are not signed in */}
-                                            <Form {...form}>
-                                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                                                <p className="text-foreground text-sm">Write the same first and last names to change your RSVP</p>
+                                                <p className="text-muted-foreground text-sm">
+                                                    {isExpired ? "too late to respond" : `Respond by ${format(new Date(eventInfo.rsvpDuedate), "PPP hh:mm a")}`}
+                                                </p>
+
+                                                <div className="flex flex-row gap-4 items-center justify-start">
+                                                    <Button type="submit" disabled={submitStatus === "loading" || isExpired}>
+                                                        {submitStatus === "loading" ? "Submitting..." : "Save"}
+                                                    </Button>
+                                                    <Link href="/api/auth/signin">
+                                                        <Button variant="secondary">I have an account</Button>
+                                                    </Link>
+                                                    {submitStatus === "success" && <Check className="h-4 w-4 text-green-500" />}
+                                                    {submitStatus === "error" && <X className="h-4 w-4 text-red-500" />}
+                                                </div>
+                                            </form>
+                                        </Form>
+                                    );
+                                }
+
+                                // CASE 2: logged-in user, event is FULL
+                                if (userId && eventInfo?.inviteVisibility === "FULL") {
+                                    return (
+                                        <Form {...form}>
+                                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
+                                                {/* RSVP dropdown */}
+                                                <FormField
+                                                    control={form.control}
+                                                    name="response"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Your Attendance</FormLabel>
+                                                            <Select onValueChange={field.onChange} value={field.value} disabled={isExpired}>
+                                                                <FormControl>
+                                                                    <SelectTrigger>
+                                                                        <SelectValue placeholder="Select your RSVP status" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    <SelectItem value="YES">Yes</SelectItem>
+                                                                    <SelectItem value="NO">No</SelectItem>
+                                                                    <SelectItem value="MAYBE">Maybe</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                {eventInfo.maxGuests > 0 && (
                                                     <FormField
                                                         control={form.control}
-                                                        name="firstName"
-                                                        render={({field}) => (
+                                                        name="guests"
+                                                        render={({ field }) => (
                                                             <FormItem>
-                                                                <FormLabel>First Name</FormLabel>
+                                                                <FormLabel>+1s (max {eventInfo.maxGuests} per invite)</FormLabel>
                                                                 <FormControl>
                                                                     <Input
-                                                                        type="text"
-                                                                        placeholder="Enter your first name"
-                                                                        disabled={new Date(eventInfo.rsvpDuedate) < new Date()}
+                                                                        type="number"
+                                                                        disabled={isExpired}
+                                                                        min="0"
+                                                                        max={eventInfo.maxGuests}
+                                                                        placeholder="0"
                                                                         {...field}
+                                                                        onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                                                                        value={field.value || 0}
                                                                     />
                                                                 </FormControl>
-                                                                <FormMessage/>
+                                                                <FormMessage />
                                                             </FormItem>
                                                         )}
                                                     />
+                                                )}
 
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="lastName"
-                                                        render={({field}) => (
-                                                            <FormItem>
-                                                                <FormLabel>Last Name</FormLabel>
-                                                                <FormControl>
-                                                                    <Input
-                                                                        type="text"
-                                                                        placeholder="Enter your last name"
-                                                                        disabled={new Date(eventInfo.rsvpDuedate) < new Date()}
-                                                                        {...field}
-                                                                    />
-                                                                </FormControl>
-                                                                <FormMessage/>
-                                                            </FormItem>
-                                                        )}
-                                                    />
+                                                <p className="text-muted-foreground text-sm">
+                                                    {isExpired ? "too late to respond" : `Respond by ${format(new Date(eventInfo.rsvpDuedate), "PPP hh:mm a")}`}
+                                                </p>
 
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="response"
-                                                        render={({field}) => (
-                                                            <FormItem>
-                                                                <FormLabel>Your Attendance</FormLabel>
-                                                                <Select onValueChange={field.onChange} value={field.value}
-                                                                        disabled={new Date(eventInfo.rsvpDuedate) < new Date()}>
-                                                                    <FormControl>
-                                                                        <SelectTrigger>
-                                                                            <SelectValue placeholder="Select your RSVP status"/>
-                                                                        </SelectTrigger>
-                                                                    </FormControl>
-                                                                    <SelectContent>
-                                                                        <SelectItem value="YES">Yes</SelectItem>
-                                                                        <SelectItem value="NO">No</SelectItem>
-                                                                        <SelectItem value="MAYBE">Maybe</SelectItem>
-                                                                    </SelectContent>
-                                                                </Select>
-                                                                <FormMessage/>
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                    <div className={eventInfo.maxGuests === 0 ? "hidden" : ""}>
-                                                        <FormField
-                                                            control={form.control}
-                                                            name="guests"
-                                                            render={({field}) => (
-                                                                <FormItem>
-                                                                    <FormLabel>+1s (max {eventInfo?.maxGuests} per invite)</FormLabel>
-                                                                    <FormControl>
-                                                                        <Input
-                                                                            type="number"
-                                                                            disabled={new Date(eventInfo.rsvpDuedate) < new Date()}
-                                                                            min="0"
-                                                                            max={eventInfo?.maxGuests}
-                                                                            placeholder="0"
-                                                                            {...field}
-                                                                            onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                                                                            value={field.value || 0}
-                                                                        />
-                                                                    </FormControl>
-                                                                    <FormMessage/>
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                    </div>
-                                                    <p className="text-foreground text-sm">Write the same first and last names to change your RSVP</p>
-                                                    <p className="text-muted-foreground text-sm">{new Date(eventInfo.rsvpDuedate) < new Date() ? `too late to respond` : `Respond by ${format(new Date(eventInfo.rsvpDuedate), 'PPP hh:mm a')}`}</p>
-                                                    <div className="flex flex-row gap-4 items-center justify-start">
-                                                        <Button type="submit" disabled={submitStatus === 'loading' || new Date(eventInfo.rsvpDuedate) < new Date()}>
-                                                            {submitStatus === 'loading' ? 'Submitting...' : 'Save'}
-                                                        </Button>
-                                                        <Link href="/api/auth/signin">
-                                                            <Button variant="secondary">I have an account</Button>
-                                                        </Link>
+                                                <div className="flex flex-row gap-4 items-center justify-start">
+                                                    <Button type="submit" disabled={submitStatus === "loading" || isExpired}>
+                                                        {submitStatus === "loading" ? "Submitting..." : "Save"}
+                                                    </Button>
+                                                    {submitStatus === "success" && <Check className="h-4 w-4 text-green-500" />}
+                                                    {submitStatus === "error" && <X className="h-4 w-4 text-red-500" />}
+                                                </div>
+                                            </form>
+                                        </Form>
+                                    );
+                                }
 
-                                                        {submitStatus === 'success' && (
-                                                            <Check className="h-4 w-4 text-green-500"/>
-                                                        )}
-                                                        {submitStatus === 'error' && (
-                                                            <X className="h-4 w-4 text-red-500"/>
-                                                        )}
-                                                    </div>
-                                                </form>
-                                            </Form>
-                                        </>
-                                    ) : (
-                                        <>
-                                            {/* When inviteVisibility is not FULL and they are not signed in (404) */}
-                                            <p>Please log in with an invited EventStar account to RSVP to this event!</p>
-                                            <Link href="/api/auth/signin">
-                                                <Button size="sm">Log in</Button>
-                                            </Link>
-                                        </>
-                                    )}
-                                </div>
-                            )}
+                                // CASE 3: logged-in but no eventInfo, or not logged-in and not FULL
+                                return (
+                                    <div className="flex flex-col gap-5 mt-5">
+                                        <p>Please log in with an invited EventStar account to RSVP to this event!</p>
+                                        <Link href="/api/auth/signin">
+                                            <Button size="sm">Log in</Button>
+                                        </Link>
+                                    </div>
+                                );
+                            })()}
                         </div>
                     </div>
                     <div className="border-b-2 w-100 p-5">
@@ -439,33 +439,202 @@ export default function DynamicContent({eventId, userId}: Props) {
                                             <TabsTrigger value="no_response">No Reply</TabsTrigger>
                                         </TabsList>
                                         <TabsContent value="yes">
-                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "YES").map(rsvp => (
-                                                <GuestListItem key={rsvp.user.id} response={rsvp.response} userEmail={rsvp.user.email} userName={rsvp.user.name} eventId={eventInfo.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={rsvp.user.id} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh} guests={rsvp.guests} maxGuests={eventInfo.maxGuests} />
-                                            ))}
+                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "YES").map((rsvp, index) => {
+                                                let userIdSafe: string;
+                                                let userNameSafe: string;
+                                                let userEmailSafe: string;
+                                                let userImageSafe: string;
+
+                                                if (rsvp.user) {
+                                                    // Case: RSVP tied to an existing user
+                                                    userIdSafe = rsvp.user.id;
+                                                    userNameSafe = rsvp.user.name;
+                                                    userEmailSafe = rsvp.user.email;
+                                                    userImageSafe = rsvp.user.image;
+                                                } else if (rsvp.firstName && rsvp.lastName) {
+                                                    // Case: RSVP with manual first/last name
+                                                    userIdSafe = "";
+                                                    userNameSafe = `${rsvp.firstName} ${rsvp.lastName}`;
+                                                    userEmailSafe = "Write-In Guest";
+                                                    userImageSafe = "";
+                                                } else {
+                                                    // Error / unexpected state
+                                                    userIdSafe = rsvp.id;
+                                                    userNameSafe = "Error: Invalid RSVP data";
+                                                    userEmailSafe = "Error";
+                                                    userImageSafe = "";
+                                                }
+
+                                                return (
+                                                    <GuestListItem
+                                                        key={index}
+                                                        response={rsvp.response}
+                                                        userEmail={userEmailSafe}
+                                                        userName={userNameSafe}
+                                                        eventId={eventInfo.id}
+                                                        userImage={userImageSafe}
+                                                        isAuthor={userIdSafe === eventInfo.author.id}
+                                                        userId={userIdSafe}
+                                                        isFollowing={
+                                                            !!userInfo && userInfo.following.some(user => user.id === userIdSafe)
+                                                        }
+                                                        action={refresh}
+                                                        guests={rsvp.guests}
+                                                        maxGuests={eventInfo.maxGuests}
+                                                    />
+                                                );
+                                            })}
+
                                             {eventInfo.RSVP.filter((r) => r.response === "YES").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">None confirmed</p>
                                             ) : (<></>)}
                                         </TabsContent>
                                         <TabsContent value="no">
-                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "NO").map(rsvp => (
-                                                <GuestListItem key={rsvp.user.id} response={rsvp.response} userEmail={rsvp.user.email} userName={rsvp.user.name} eventId={eventInfo.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={rsvp.user.id} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh} guests={rsvp.guests} maxGuests={eventInfo.maxGuests} />
-                                            ))}
+                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "NO").map((rsvp, index) => {
+                                                let userIdSafe: string;
+                                                let userNameSafe: string;
+                                                let userEmailSafe: string;
+                                                let userImageSafe: string;
+
+                                                if (rsvp.user) {
+                                                    // Case: RSVP tied to an existing user
+                                                    userIdSafe = rsvp.user.id;
+                                                    userNameSafe = rsvp.user.name;
+                                                    userEmailSafe = rsvp.user.email;
+                                                    userImageSafe = rsvp.user.image;
+                                                } else if (rsvp.firstName && rsvp.lastName) {
+                                                    // Case: RSVP with manual first/last name
+                                                    userIdSafe = "";
+                                                    userNameSafe = `${rsvp.firstName} ${rsvp.lastName}`;
+                                                    userEmailSafe = "Write-In Guest";
+                                                    userImageSafe = "";
+                                                } else {
+                                                    // Error / unexpected state
+                                                    userIdSafe = rsvp.id;
+                                                    userNameSafe = "Error: Invalid RSVP data";
+                                                    userEmailSafe = "Error";
+                                                    userImageSafe = "";
+                                                }
+
+                                                return (
+                                                    <GuestListItem
+                                                        key={index}
+                                                        response={rsvp.response}
+                                                        userEmail={userEmailSafe}
+                                                        userName={userNameSafe}
+                                                        eventId={eventInfo.id}
+                                                        userImage={userImageSafe}
+                                                        isAuthor={userIdSafe === eventInfo.author.id}
+                                                        userId={userIdSafe}
+                                                        isFollowing={
+                                                            !!userInfo && userInfo.following.some(user => user.id === userIdSafe)
+                                                        }
+                                                        action={refresh}
+                                                        guests={rsvp.guests}
+                                                        maxGuests={eventInfo.maxGuests}
+                                                    />
+                                                );
+                                            })}
                                             {eventInfo.RSVP.filter((r) => r.response === "NO").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">None</p>
                                             ) : (<></>)}
                                         </TabsContent>
                                         <TabsContent value="maybe">
-                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "MAYBE").map(rsvp => (
-                                                <GuestListItem key={rsvp.user.id} response={rsvp.response} userEmail={rsvp.user.email} userName={rsvp.user.name} eventId={eventInfo.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={rsvp.user.id} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh} guests={rsvp.guests} maxGuests={eventInfo.maxGuests} />
-                                            ))}
+                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "MAYBE").map((rsvp, index) => {
+                                                let userIdSafe: string;
+                                                let userNameSafe: string;
+                                                let userEmailSafe: string;
+                                                let userImageSafe: string;
+
+                                                if (rsvp.user) {
+                                                    // Case: RSVP tied to an existing user
+                                                    userIdSafe = rsvp.user.id;
+                                                    userNameSafe = rsvp.user.name;
+                                                    userEmailSafe = rsvp.user.email;
+                                                    userImageSafe = rsvp.user.image;
+                                                } else if (rsvp.firstName && rsvp.lastName) {
+                                                    // Case: RSVP with manual first/last name
+                                                    userIdSafe = "";
+                                                    userNameSafe = `${rsvp.firstName} ${rsvp.lastName}`;
+                                                    userEmailSafe = "Write-In Guest";
+                                                    userImageSafe = "";
+                                                } else {
+                                                    // Error / unexpected state
+                                                    userIdSafe = rsvp.id;
+                                                    userNameSafe = "Error: Invalid RSVP data";
+                                                    userEmailSafe = "Error";
+                                                    userImageSafe = "";
+                                                }
+
+                                                return (
+                                                    <GuestListItem
+                                                        key={index}
+                                                        response={rsvp.response}
+                                                        userEmail={userEmailSafe}
+                                                        userName={userNameSafe}
+                                                        eventId={eventInfo.id}
+                                                        userImage={userImageSafe}
+                                                        isAuthor={userIdSafe === eventInfo.author.id}
+                                                        userId={userIdSafe}
+                                                        isFollowing={
+                                                            !!userInfo && userInfo.following.some(user => user.id === userIdSafe)
+                                                        }
+                                                        action={refresh}
+                                                        guests={rsvp.guests}
+                                                        maxGuests={eventInfo.maxGuests}
+                                                    />
+                                                );
+                                            })}
                                             {eventInfo.RSVP.filter((r) => r.response === "MAYBE").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">None</p>
                                             ) : (<></>)}
                                         </TabsContent>
                                         <TabsContent value="no_response">
-                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "NO_RESPONSE").map(rsvp => (
-                                                <GuestListItem key={rsvp.user.id} response={rsvp.response} userEmail={rsvp.user.email} userName={rsvp.user.name} eventId={eventInfo.id} userImage={rsvp.user.image} isAuthor={userId === eventInfo.author.id} userId={rsvp.user.id} isFollowing={userInfo !== null && userInfo.following.some(user => user.id === rsvp.user.id)} action={refresh} guests={rsvp.guests} maxGuests={eventInfo.maxGuests} />
-                                            ))}
+                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "NO_RESPONSE").map((rsvp, index) => {
+                                                let userIdSafe: string;
+                                                let userNameSafe: string;
+                                                let userEmailSafe: string;
+                                                let userImageSafe: string;
+
+                                                if (rsvp.user) {
+                                                    // Case: RSVP tied to an existing user
+                                                    userIdSafe = rsvp.user.id;
+                                                    userNameSafe = rsvp.user.name;
+                                                    userEmailSafe = rsvp.user.email;
+                                                    userImageSafe = rsvp.user.image;
+                                                } else if (rsvp.firstName && rsvp.lastName) {
+                                                    // Case: RSVP with manual first/last name
+                                                    userIdSafe = "";
+                                                    userNameSafe = `${rsvp.firstName} ${rsvp.lastName}`;
+                                                    userEmailSafe = "Write-In Guest";
+                                                    userImageSafe = "";
+                                                } else {
+                                                    // Error / unexpected state
+                                                    userIdSafe = rsvp.id;
+                                                    userNameSafe = "Error: Invalid RSVP data";
+                                                    userEmailSafe = "Error";
+                                                    userImageSafe = "";
+                                                }
+
+                                                return (
+                                                    <GuestListItem
+                                                        key={index}
+                                                        response={rsvp.response}
+                                                        userEmail={userEmailSafe}
+                                                        userName={userNameSafe}
+                                                        eventId={eventInfo.id}
+                                                        userImage={userImageSafe}
+                                                        isAuthor={userIdSafe === eventInfo.author.id}
+                                                        userId={userIdSafe}
+                                                        isFollowing={
+                                                            !!userInfo && userInfo.following.some(user => user.id === userIdSafe)
+                                                        }
+                                                        action={refresh}
+                                                        guests={rsvp.guests}
+                                                        maxGuests={eventInfo.maxGuests}
+                                                    />
+                                                );
+                                            })}
                                             {eventInfo.RSVP.filter((r) => r.response === "NO_RESPONSE").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">Everyone has
                                                     responded</p>
