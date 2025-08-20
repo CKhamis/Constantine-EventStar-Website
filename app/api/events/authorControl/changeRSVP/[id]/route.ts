@@ -50,7 +50,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         const optionalRSVP = await prisma.rsvp.findFirst({
             where: {
                 eventId:eventId,
-                userId: body.id
+                userId: body.id //TODO: (Must-do) change this from a userID requirement to RSVP id
             }
         });
 

@@ -2,9 +2,7 @@
 import AvatarIcon from "@/components/AvatarIcon";
 import {
     Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
+    DialogContent, DialogDescription, DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -19,26 +17,55 @@ import {
     ToggleGroup,
     ToggleGroupItem,
 } from "@/components/ui/toggle-group"
-import {FormControl, FormItem, FormLabel} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 
 export interface Props {
-    userName: string,
-    userEmail: string,
-    userImage: string | null,
-    isAuthor: boolean,
-    userId: string | null,
+    RSVP:{
+        id: string,
+        response: string,
+        guests: number,
+        firstName: string | undefined,
+        lastName: string | undefined,
+        user: {
+            email: string,
+            name: string,
+            image: string
+            id: string,
+        } | undefined,
+    },
     isFollowing: boolean,
     action: () => void,
-    response: string,
     eventId: string,
-    guests: number,
-    maxGuests: number
+    maxGuests: number,
+    viewerRole: "A" | "V" | "W",
+    authorId: string
 }
 
-export default function GuestListItem({userName, eventId, userImage, response, userEmail, isAuthor, userId, isFollowing, action, guests = 0, maxGuests = 0}: Props){
+export default function GuestListItem({RSVP, viewerRole, isFollowing, action, eventId, maxGuests, authorId}: Props){
     const [FRMessage, setFRMessage] = useState<string>("");
-    const [guestCount, setGuestCount] = useState(guests);
+    const [guestCount, setGuestCount] = useState(RSVP.guests);
+
+    let nameSafe: string;
+    let emailSafe: string;
+    let imageSafe: string;
+
+    if(RSVP.user){
+        // EventStar user
+        nameSafe = RSVP.user.name;
+        emailSafe = RSVP.user.email;
+        imageSafe = RSVP.user.image;
+    }else if(RSVP.firstName && RSVP.lastName){
+        // Write-In guest
+        nameSafe = RSVP.firstName + " " + RSVP.lastName;
+        emailSafe = "Write-In Guest";
+        imageSafe = "";
+    }else{
+        // Error
+        console.error("Unable to render RSVP:" + RSVP);
+        nameSafe = "Invalid RSVP";
+        emailSafe = "Error";
+        imageSafe = "";
+    }
 
     async function sendFR(email:string) {
         try{
@@ -52,12 +79,9 @@ export default function GuestListItem({userName, eventId, userImage, response, u
         }
     }
 
-    async function overwriteRSVP(response:string, guestOverride: number = guests) {
-        console.log(guests)
-        console.log(guestCount)
-        console.log(guestOverride)
+    async function overwriteRSVP(response:string, guestOverride: number = RSVP.guests) {
         try{
-            await axios.post('/api/events/authorControl/changeRSVP/' + eventId, {response: response, id: userId, guests: guestOverride})
+            await axios.post('/api/events/authorControl/changeRSVP/' + eventId, {response: response, id: RSVP.id, guests: guestOverride})
                 .then((r: {data: string}) => {toast("RSVP Overwritten", {description: r.data})})
                 .catch((r: {response: {data: string}}) => {toast("Error", {description: r.response.data})});
         }catch(e){
@@ -70,110 +94,170 @@ export default function GuestListItem({userName, eventId, userImage, response, u
 
     let content: JSX.Element;
 
-    // Write-In was clicked
-    if(userId === ""){
-        // author clicked on write-in guest
-        if(isAuthor){
+    if(viewerRole == "A"){
+        // Viewer is author
+
+        if(RSVP.user){
+            // Author is viewing a guest with an account
+
+            if(RSVP.user.id === authorId){
+                // Author is viewing their own RSVP
+                content = (
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <div className="flex flex-col items-center space-y-4">
+                                <AvatarIcon name={nameSafe} image={imageSafe} size="large" />
+                                <DialogTitle className="text-2xl font-semibold">{nameSafe}</DialogTitle>
+                                <p className="text-center">{emailSafe}</p>
+                            </div>
+                        </DialogHeader>
+                        <div className="flex flex-col space-y-4 mt-5">
+                            <div>
+                                <p className="text-center font-bold mb-2">Overwrite RSVP Status</p>
+                                <ToggleGroup type="single" defaultValue={RSVP.response}>
+                                    <ToggleGroupItem value="YES" onClick={() => overwriteRSVP("YES")}>
+                                        <Check className="h-8 w-8" />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="NO" onClick={() => overwriteRSVP("NO")}>
+                                        <X className="h-8 w-8" />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="MAYBE" onClick={() => overwriteRSVP("MAYBE")}>
+                                        <CircleHelp className="h-8 w-8" />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="NO_RESPONSE" onClick={() => overwriteRSVP("NO_RESPONSE")}>
+                                        <Clock className="h-8 w-8" />
+                                    </ToggleGroupItem>
+                                </ToggleGroup>
+                            </div>
+                            <div>
+                                <p className="text-sm">+1s (Max {maxGuests})</p>
+                                <Input
+                                    type="number"
+                                    min="0"
+                                    max={maxGuests}
+                                    value={guestCount}
+                                    onChange={(e) => {
+                                        const g = e.target.valueAsNumber || 0;
+                                        setGuestCount(g);
+                                        overwriteRSVP(RSVP.response, g);
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </DialogContent>
+                );
+            }else{
+                // Author is viewing another EventStar user's RSVP
+                content = (
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <div className="flex flex-col items-center space-y-4">
+                                <AvatarIcon name={nameSafe} image={imageSafe} size="large" />
+                                <DialogTitle className="text-2xl font-semibold">{nameSafe}</DialogTitle>
+                                <p className="text-center">{emailSafe}</p>
+                            </div>
+                        </DialogHeader>
+                        <div className="flex flex-col space-y-4 mt-5">
+                            <div>
+                                <p className="text-center font-bold mb-2">Overwrite RSVP Status</p>
+                                <ToggleGroup type="single" defaultValue={RSVP.response}>
+                                    <ToggleGroupItem value="YES" onClick={() => overwriteRSVP("YES")}>
+                                        <Check className="h-8 w-8" />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="NO" onClick={() => overwriteRSVP("NO")}>
+                                        <X className="h-8 w-8" />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="MAYBE" onClick={() => overwriteRSVP("MAYBE")}>
+                                        <CircleHelp className="h-8 w-8" />
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="NO_RESPONSE" onClick={() => overwriteRSVP("NO_RESPONSE")}>
+                                        <Clock className="h-8 w-8" />
+                                    </ToggleGroupItem>
+                                </ToggleGroup>
+                            </div>
+                            <div>
+                                <p className="text-sm">+1s (Max {maxGuests})</p>
+                                <Input
+                                    type="number"
+                                    min="0"
+                                    max={maxGuests}
+                                    value={guestCount}
+                                    onChange={(e) => {
+                                        const g = e.target.valueAsNumber || 0;
+                                        setGuestCount(g);
+                                        overwriteRSVP(RSVP.response, g);
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div className="grid gap-4 pt-4">
+                            {emailSafe && (
+                                isFollowing ? (
+                                    <Button type="button" variant="secondary" disabled>Following</Button>
+                                ) : (
+                                    <div className="flex flex-col space-y-4">
+                                        <div className="grid">
+                                            <Button type="button" variant="secondary" onClick={() => sendFR(emailSafe)}>Follow</Button>
+                                            <p className="text-center text-muted-foreground">{FRMessage}</p>
+                                        </div>
+                                    </div>
+                                )
+                            )}
+                        </div>
+                    </DialogContent>
+                );
+            }
+        }else if(RSVP.firstName && RSVP.lastName){
+            // Author viewing a guest account
             content = (
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <div className="flex flex-col items-center space-y-4">
-                            <AvatarIcon name={userName} image={userImage} size="large" />
-                            <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
-                            <p className="text-center">{userEmail}</p>
+                            <AvatarIcon name={nameSafe} image={imageSafe} size="large" />
+                            <DialogTitle className="text-2xl font-semibold">{nameSafe}</DialogTitle>
+                            <p className="text-center">{emailSafe}</p>
                         </div>
                     </DialogHeader>
                     <div className="grid pt-4">
-                        {/*TODO: implement deleting write-ins*/}
+                        {/*TODO: implement deleting RSVPS*/}
                         <Button type="button" variant="secondary">Delete write-in</Button>
                     </div>
                 </DialogContent>
             );
+
         }else{
+            // Something wrong happened. Malformed RSVP
             content = (
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <div className="flex flex-col items-center space-y-4">
-                            <AvatarIcon name={userName} image={userImage} size="small" />
-                            <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
-                            <p className="text-center">{userEmail}</p>
-                        </div>
+                        <DialogTitle>Error Viewing User</DialogTitle>
+                        <DialogDescription>
+                            RSVP information was malformed!
+                        </DialogDescription>
                     </DialogHeader>
+                    <div className="flex flex-row justify-center items-center mb-5">
+                        <img src="/agent/error.gif" alt="Error" />
+                    </div>
+                    <DialogFooter>
+                        {/*TODO: implement deleting RSVPS*/}
+                        <Button type="button" variant="default">Delete RSVP</Button>
+                        <Button type="button" variant="secondary">Close</Button>
+                    </DialogFooter>
                 </DialogContent>
             );
         }
-    }else{
+    }else if(viewerRole == "V"){
+        // Viewer is normal guest
 
-        // Clicked guest has an account. Could either be invited, joined, or author
-        if (isAuthor) {
-            // Author view: always show RSVP overwrite tools
+        if(RSVP.user){
+            // Guest with account is viewing another guest with account (can be organizer)
             content = (
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <div className="flex flex-col items-center space-y-4">
-                            <AvatarIcon name={userName} image={userImage ?? undefined} size="large" />
-                            <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
-                            {userEmail && <p className="text-center">{userEmail}</p>}
-                        </div>
-                    </DialogHeader>
-                    <div className="flex flex-col space-y-4 mt-5">
-                        <div>
-                            <p className="text-center font-bold mb-2">Overwrite RSVP Status</p>
-                            <ToggleGroup type="single" defaultValue={response}>
-                                <ToggleGroupItem value="YES" onClick={() => overwriteRSVP("YES")}>
-                                    <Check className="h-8 w-8" />
-                                </ToggleGroupItem>
-                                <ToggleGroupItem value="NO" onClick={() => overwriteRSVP("NO")}>
-                                    <X className="h-8 w-8" />
-                                </ToggleGroupItem>
-                                <ToggleGroupItem value="MAYBE" onClick={() => overwriteRSVP("MAYBE")}>
-                                    <CircleHelp className="h-8 w-8" />
-                                </ToggleGroupItem>
-                                <ToggleGroupItem value="NO_RESPONSE" onClick={() => overwriteRSVP("NO_RESPONSE")}>
-                                    <Clock className="h-8 w-8" />
-                                </ToggleGroupItem>
-                            </ToggleGroup>
-                        </div>
-                        <div>
-                            <p className="text-sm">+1s (Max {maxGuests})</p>
-                            <Input
-                                type="number"
-                                min="0"
-                                max={maxGuests}
-                                value={guestCount}
-                                onChange={(e) => {
-                                    const g = e.target.valueAsNumber || 0;
-                                    setGuestCount(g);
-                                    overwriteRSVP(response, g);
-                                }}
-                            />
-                        </div>
-                    </div>
-                    <div className="grid gap-4 pt-4">
-                        {userEmail && (
-                            isFollowing ? (
-                                <Button type="button" variant="secondary" disabled>Following</Button>
-                            ) : (
-                                <div className="flex flex-col space-y-4">
-                                    <div className="grid">
-                                        <Button type="button" variant="secondary" onClick={() => sendFR(userEmail)}>Follow</Button>
-                                        <p className="text-center text-muted-foreground">{FRMessage}</p>
-                                    </div>
-                                </div>
-                            )
-                        )}
-                    </div>
-                </DialogContent>
-            );
-        } else if (userId) {
-            // Registered user (non-author)
-            content = (
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <div className="flex flex-col items-center space-y-4">
-                            <AvatarIcon name={userName} image={userImage ?? undefined} size="large" />
-                            <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
-                            {userEmail && <p className="text-center">{userEmail}</p>}
+                            <AvatarIcon name={nameSafe} image={imageSafe} size="large" />
+                            <DialogTitle className="text-2xl font-semibold">{nameSafe}</DialogTitle>
+                            <p className="text-center">{emailSafe}</p>
                         </div>
                     </DialogHeader>
                     <div className="grid pt-4">
@@ -181,8 +265,8 @@ export default function GuestListItem({userName, eventId, userImage, response, u
                             <Button type="button" variant="secondary" disabled>Following</Button>
                         ) : (
                             <>
-                                {userEmail && (
-                                    <Button type="button" variant="default" onClick={() => sendFR(userEmail)}>Follow</Button>
+                                {emailSafe && (
+                                    <Button type="button" variant="default" onClick={() => sendFR(emailSafe)}>Follow</Button>
                                 )}
                                 <p className="text-center text-muted-foreground">{FRMessage}</p>
                             </>
@@ -190,129 +274,93 @@ export default function GuestListItem({userName, eventId, userImage, response, u
                     </div>
                 </DialogContent>
             );
+
+        }else if(RSVP.firstName && RSVP.lastName){
+            // EventStar user viewing a Write-in guest
+
+            content = (
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <div className="flex flex-col items-center space-y-4">
+                            <AvatarIcon name={nameSafe} image={imageSafe} size="large" />
+                            <DialogTitle className="text-2xl font-semibold">{nameSafe}</DialogTitle>
+                            <p className="text-center">{emailSafe}</p>
+                        </div>
+                    </DialogHeader>
+                </DialogContent>
+            );
+
+        }else{
+            // Something wrong happened. Malformed RSVP
+            content = (
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Error Viewing User</DialogTitle>
+                        <DialogDescription>
+                            RSVP information was malformed!
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-row justify-center items-center mb-5">
+                        <img src="/agent/error.gif" alt="Error" />
+                    </div>
+                    <DialogFooter>
+                        <Button type="button" variant="secondary">Close</Button>
+                    </DialogFooter>
+                </DialogContent>
+            );
         }
 
+    }else if(viewerRole == "W"){
+        // Viewer is write-in guest
+        content = (
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <div className="flex flex-col items-center space-y-4">
+                        <AvatarIcon name={nameSafe} image={imageSafe} size="large"/>
+                        <DialogTitle className="text-2xl font-semibold">{nameSafe}</DialogTitle>
+                        <p className="text-center">{emailSafe}</p>
+                    </div>
+                </DialogHeader>
+                <Link href="/api/auth/signin" className="w-full">
+                    <Button type="button" variant="secondary" className="w-full">
+                        Sign in / Create Account
+                    </Button>
+                </Link>
+            </DialogContent>
+        );
+    } else {
+        // Something very wrong happened. Impossible with prop type
+        content = (
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Error Viewing User</DialogTitle>
+                    <DialogDescription>
+                        There was an issue verifying your account
+                    </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-row justify-center items-center mb-5">
+                        <img src="/agent/error.gif" alt="Error" />
+                    </div>
+                    <DialogFooter>
+                        <Link href="/api/auth/signin"><Button type="button" variant="default">Log In</Button></Link>
+                        <Button type="button" variant="secondary">Close</Button>
+                    </DialogFooter>
+                </DialogContent>
+            );
     }
-
-    // if(isAuthor){
-    //     // viewer is the author. Show tools
-    //     content = (
-    //         <DialogContent className="sm:max-w-[425px]">
-    //             <DialogHeader>
-    //                 <div className="flex flex-col items-center space-y-4">
-    //                     <AvatarIcon name={userName} image={userImage} size="large" />
-    //                     <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
-    //                 </div>
-    //             </DialogHeader>
-    //             <div className="flex flex-col space-y-4 mt-5">
-    //                 <div>
-    //                     <p className="text-center font-bold mb-2">Overwrite RSVP Status</p>
-    //                     <ToggleGroup type="single" defaultValue={response}>
-    //                         <ToggleGroupItem value="YES" aria-label="YES" onClick={() => overwriteRSVP("YES")}>
-    //                             <Check className="h-8 w-8" />
-    //                         </ToggleGroupItem>
-    //                         <ToggleGroupItem value="NO" aria-label="NO" onClick={() => overwriteRSVP("NO")}>
-    //                             <X className="h-8 w-8" />
-    //                         </ToggleGroupItem>
-    //                         <ToggleGroupItem value="MAYBE" aria-label="MAYBE" onClick={() => overwriteRSVP("MAYBE")}>
-    //                             <CircleHelp className="h-8 w-8" />
-    //                         </ToggleGroupItem>
-    //                         <ToggleGroupItem value="NO_RESPONSE" aria-label="NO_RESPONSE" onClick={() => overwriteRSVP("NO_RESPONSE")}>
-    //                             <Clock className="h-8 w-8" />
-    //                         </ToggleGroupItem>
-    //                     </ToggleGroup>
-    //                 </div>
-    //                 <div>
-    //                     <p className="text-sm">+1s (Max {maxGuests})</p>
-    //                     <Input
-    //                         type="number"
-    //                         min="0"
-    //                         max={maxGuests}
-    //                         placeholder="0"
-    //                         onChange={(e) => {
-    //                             const g:number = e.target.valueAsNumber || 0;
-    //                             setGuestCount(g)
-    //                             overwriteRSVP(response, g)
-    //                         }}
-    //                         value={guestCount}
-    //                     />
-    //                 </div>
-    //             </div>
-    //             <div className="grid gap-4 pt-4">
-    //                 {isFollowing ? (
-    //                     <div className="flex flex-col space-y-3">
-    //                         <Button type="button" variant="secondary" disabled>Following</Button>
-    //                         {/*<Button type="submit">Save changes</Button>*/}
-    //                     </div>
-    //                 ) : (
-    //                     <div className="flex flex-col space-y-4">
-    //                         <div className="grid">
-    //                             <Button type="button" variant="secondary" onClick={() => sendFR(userEmail)}>Follow</Button>
-    //                             <p className="text-center text-muted-foreground">{FRMessage}</p>
-    //                         </div>
-    //                         {/*<Button type="submit">Save changes</Button>*/}
-    //                     </div>
-    //                 )}
-    //             </div>
-    //         </DialogContent>
-    //     );
-    // }else if(userId !== ""){
-    //     // viewer has a non invited account
-    //     content = (
-    //         <DialogContent className="sm:max-w-[425px]">
-    //             <DialogHeader>
-    //                 <div className="flex flex-col items-center space-y-4">
-    //                     <AvatarIcon name={userName} image={userImage} size="large" />
-    //                     <DialogTitle className="text-2xl font-semibold">{userName}</DialogTitle>
-    //                     <p className="text-center">{userEmail}</p>
-    //                 </div>
-    //             </DialogHeader>
-    //             <div className="grid pt-4">
-    //                 {isFollowing? (
-    //                     <Button type="button" variant="secondary" disabled>Following</Button>
-    //                 ) : (
-    //                     <>
-    //                         <Button type="button" variant="default" onClick={() => sendFR(userEmail)}>Follow</Button>
-    //                         <p className="text-center text-muted-foreground">{FRMessage}</p>
-    //                     </>
-    //                 )}
-    //             </div>
-    //         </DialogContent>
-    //     );
-    // }else{
-    //     // viewer is a non-logged in guest
-    //     content = (
-    //         <DialogContent className="sm:max-w-[425px]">
-    //             <DialogHeader>
-    //                 <DialogTitle>Login Required</DialogTitle>
-    //                 <DialogDescription>
-    //                     Please log in with an account to view guest details and follow.
-    //                 </DialogDescription>
-    //             </DialogHeader>
-    //             <div className="flex flex-row justify-center items-center mb-5">
-    //                 {/* eslint-disable-next-line @next/next/no-img-element */}
-    //                 <img src="/agent/error.gif" alt="Error" />
-    //             </div>
-    //             <DialogFooter>
-    //                 <Link href="/api/auth/signin"><Button type="button" variant="default">Log In</Button></Link>
-    //                 <Button type="button" variant="secondary">Close</Button>
-    //             </DialogFooter>
-    //         </DialogContent>
-    //     );
-    // }
 
     return (
     <Dialog>
         <DialogTrigger asChild>
             <div className="flex justify-between items-center p-2 rounded-lg hover:bg-accent cursor-pointer">
                 <div className="flex space-x-4 items-center">
-                    <AvatarIcon name={userName} image={userImage}/>
+                    <AvatarIcon name={nameSafe} image={imageSafe}/>
                     <div>
-                        <p className="text-sm font-medium leading-none">{userName}</p>
-                        <p className="text-sm text-muted-foreground">{userEmail}</p>
+                        <p className="text-sm font-medium leading-none">{nameSafe}</p>
+                        <p className="text-sm text-muted-foreground">{emailSafe}</p>
                     </div>
                 </div>
-                <p className="text-muted-foreground text-xl">{guests > 0? "+" + guests : ""}</p>
+                <p className="text-muted-foreground text-xl">{RSVP.guests > 0? "+" + RSVP.guests : ""}</p>
             </div>
         </DialogTrigger>
         {content}

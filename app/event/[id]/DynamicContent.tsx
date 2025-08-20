@@ -24,6 +24,7 @@ import {userInfoResponse} from "@/app/api/user/info/route";
 import {Input} from "@/components/ui/input";
 import { useCookies } from 'react-cookie';
 import {GuestPopup} from "@/components/tutorials/guests/guests";
+import GuestList from "@/app/event/[id]/GuestList";
 
 export interface Props {
     eventId: string,
@@ -439,202 +440,25 @@ export default function DynamicContent({eventId, userId}: Props) {
                                             <TabsTrigger value="no_response">No Reply</TabsTrigger>
                                         </TabsList>
                                         <TabsContent value="yes">
-                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "YES").map((rsvp, index) => {
-                                                let userIdSafe: string;
-                                                let userNameSafe: string;
-                                                let userEmailSafe: string;
-                                                let userImageSafe: string;
-
-                                                if (rsvp.user) {
-                                                    // Case: RSVP tied to an existing user
-                                                    userIdSafe = rsvp.user.id;
-                                                    userNameSafe = rsvp.user.name;
-                                                    userEmailSafe = rsvp.user.email;
-                                                    userImageSafe = rsvp.user.image;
-                                                } else if (rsvp.firstName && rsvp.lastName) {
-                                                    // Case: RSVP with manual first/last name
-                                                    userIdSafe = "";
-                                                    userNameSafe = `${rsvp.firstName} ${rsvp.lastName}`;
-                                                    userEmailSafe = "Write-In Guest";
-                                                    userImageSafe = "";
-                                                } else {
-                                                    // Error / unexpected state
-                                                    userIdSafe = rsvp.id;
-                                                    userNameSafe = "Error: Invalid RSVP data";
-                                                    userEmailSafe = "Error";
-                                                    userImageSafe = "";
-                                                }
-
-                                                return (
-                                                    <GuestListItem
-                                                        key={index}
-                                                        response={rsvp.response}
-                                                        userEmail={userEmailSafe}
-                                                        userName={userNameSafe}
-                                                        eventId={eventInfo.id}
-                                                        userImage={userImageSafe}
-                                                        isAuthor={userInfo !== null && userInfo.id === eventInfo.author.id}
-                                                        userId={userIdSafe}
-                                                        isFollowing={
-                                                            !!userInfo && userInfo.following.some(user => user.id === userIdSafe)
-                                                        }
-                                                        action={refresh}
-                                                        guests={rsvp.guests}
-                                                        maxGuests={eventInfo.maxGuests}
-                                                    />
-                                                );
-                                            })}
-
+                                            <GuestList RSVPs={eventInfo.RSVP} response="YES" authorId={eventInfo.author.id} viewerId={userId} following={userInfo?.following} action={refresh} maxGuests={eventInfo.maxGuests} eventId={eventInfo.id} />
                                             {eventInfo.RSVP.filter((r) => r.response === "YES").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">None confirmed</p>
                                             ) : (<></>)}
                                         </TabsContent>
                                         <TabsContent value="no">
-                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "NO").map((rsvp, index) => {
-                                                let userIdSafe: string;
-                                                let userNameSafe: string;
-                                                let userEmailSafe: string;
-                                                let userImageSafe: string;
-
-                                                if (rsvp.user) {
-                                                    // Case: RSVP tied to an existing user
-                                                    userIdSafe = rsvp.user.id;
-                                                    userNameSafe = rsvp.user.name;
-                                                    userEmailSafe = rsvp.user.email;
-                                                    userImageSafe = rsvp.user.image;
-                                                } else if (rsvp.firstName && rsvp.lastName) {
-                                                    // Case: RSVP with manual first/last name
-                                                    userIdSafe = "";
-                                                    userNameSafe = `${rsvp.firstName} ${rsvp.lastName}`;
-                                                    userEmailSafe = "Write-In Guest";
-                                                    userImageSafe = "";
-                                                } else {
-                                                    // Error / unexpected state
-                                                    userIdSafe = rsvp.id;
-                                                    userNameSafe = "Error: Invalid RSVP data";
-                                                    userEmailSafe = "Error";
-                                                    userImageSafe = "";
-                                                }
-
-                                                return (
-                                                    <GuestListItem
-                                                        key={index}
-                                                        response={rsvp.response}
-                                                        userEmail={userEmailSafe}
-                                                        userName={userNameSafe}
-                                                        eventId={eventInfo.id}
-                                                        userImage={userImageSafe}
-                                                        isAuthor={userInfo !== null && userInfo.id === eventInfo.author.id}
-                                                        userId={userIdSafe}
-                                                        isFollowing={
-                                                            !!userInfo && userInfo.following.some(user => user.id === userIdSafe)
-                                                        }
-                                                        action={refresh}
-                                                        guests={rsvp.guests}
-                                                        maxGuests={eventInfo.maxGuests}
-                                                    />
-                                                );
-                                            })}
+                                            <GuestList RSVPs={eventInfo.RSVP} response="NO" authorId={eventInfo.author.id} viewerId={userId} following={userInfo?.following} action={refresh} maxGuests={eventInfo.maxGuests} eventId={eventInfo.id} />
                                             {eventInfo.RSVP.filter((r) => r.response === "NO").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">None</p>
                                             ) : (<></>)}
                                         </TabsContent>
                                         <TabsContent value="maybe">
-                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "MAYBE").map((rsvp, index) => {
-                                                let userIdSafe: string;
-                                                let userNameSafe: string;
-                                                let userEmailSafe: string;
-                                                let userImageSafe: string;
-
-                                                if (rsvp.user) {
-                                                    // Case: RSVP tied to an existing user
-                                                    userIdSafe = rsvp.user.id;
-                                                    userNameSafe = rsvp.user.name;
-                                                    userEmailSafe = rsvp.user.email;
-                                                    userImageSafe = rsvp.user.image;
-                                                } else if (rsvp.firstName && rsvp.lastName) {
-                                                    // Case: RSVP with manual first/last name
-                                                    userIdSafe = "";
-                                                    userNameSafe = `${rsvp.firstName} ${rsvp.lastName}`;
-                                                    userEmailSafe = "Write-In Guest";
-                                                    userImageSafe = "";
-                                                } else {
-                                                    // Error / unexpected state
-                                                    userIdSafe = rsvp.id;
-                                                    userNameSafe = "Error: Invalid RSVP data";
-                                                    userEmailSafe = "Error";
-                                                    userImageSafe = "";
-                                                }
-
-                                                return (
-                                                    <GuestListItem
-                                                        key={index}
-                                                        response={rsvp.response}
-                                                        userEmail={userEmailSafe}
-                                                        userName={userNameSafe}
-                                                        eventId={eventInfo.id}
-                                                        userImage={userImageSafe}
-                                                        isAuthor={userInfo !== null && userInfo.id === eventInfo.author.id}
-                                                        userId={userIdSafe}
-                                                        isFollowing={
-                                                            !!userInfo && userInfo.following.some(user => user.id === userIdSafe)
-                                                        }
-                                                        action={refresh}
-                                                        guests={rsvp.guests}
-                                                        maxGuests={eventInfo.maxGuests}
-                                                    />
-                                                );
-                                            })}
+                                            <GuestList RSVPs={eventInfo.RSVP} response="MAYBE" authorId={eventInfo.author.id} viewerId={userId} following={userInfo?.following} action={refresh} maxGuests={eventInfo.maxGuests} eventId={eventInfo.id} />
                                             {eventInfo.RSVP.filter((r) => r.response === "MAYBE").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">None</p>
                                             ) : (<></>)}
                                         </TabsContent>
                                         <TabsContent value="no_response">
-                                            {eventInfo.RSVP.filter((rsvp) => rsvp.response === "NO_RESPONSE").map((rsvp, index) => {
-                                                let userIdSafe: string;
-                                                let userNameSafe: string;
-                                                let userEmailSafe: string;
-                                                let userImageSafe: string;
-
-                                                if (rsvp.user) {
-                                                    // Case: RSVP tied to an existing user
-                                                    userIdSafe = rsvp.user.id;
-                                                    userNameSafe = rsvp.user.name;
-                                                    userEmailSafe = rsvp.user.email;
-                                                    userImageSafe = rsvp.user.image;
-                                                } else if (rsvp.firstName && rsvp.lastName) {
-                                                    // Case: RSVP with manual first/last name
-                                                    userIdSafe = "";
-                                                    userNameSafe = `${rsvp.firstName} ${rsvp.lastName}`;
-                                                    userEmailSafe = "Write-In Guest";
-                                                    userImageSafe = "";
-                                                } else {
-                                                    // Error / unexpected state
-                                                    userIdSafe = rsvp.id;
-                                                    userNameSafe = "Error: Invalid RSVP data";
-                                                    userEmailSafe = "Error";
-                                                    userImageSafe = "";
-                                                }
-
-                                                return (
-                                                    <GuestListItem
-                                                        key={index}
-                                                        response={rsvp.response}
-                                                        userEmail={userEmailSafe}
-                                                        userName={userNameSafe}
-                                                        eventId={eventInfo.id}
-                                                        userImage={userImageSafe}
-                                                        isAuthor={userInfo !== null && userInfo.id === eventInfo.author.id}
-                                                        userId={userIdSafe}
-                                                        isFollowing={
-                                                            !!userInfo && userInfo.following.some(user => user.id === userIdSafe)
-                                                        }
-                                                        action={refresh}
-                                                        guests={rsvp.guests}
-                                                        maxGuests={eventInfo.maxGuests}
-                                                    />
-                                                );
-                                            })}
+                                            <GuestList RSVPs={eventInfo.RSVP} response="NO_RESPONSE" authorId={eventInfo.author.id} viewerId={userId} following={userInfo?.following} action={refresh} maxGuests={eventInfo.maxGuests} eventId={eventInfo.id} />
                                             {eventInfo.RSVP.filter((r) => r.response === "NO_RESPONSE").length === 0 ? (
                                                 <p className="text-center mt-9 mb-6 font-bold">Everyone has
                                                     responded</p>
