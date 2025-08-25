@@ -58,10 +58,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             }
 
             // If write-in specified more than 0 guests (they need to RSVP separately)
-            // TODO: should I have this rule?
-            if(0 < body.guests){
-                return NextResponse.json({ error: "Write - In guests need to RSVP separately" }, { status: 403 });
-            }
+            // if(0 < body.guests){
+            //     return NextResponse.json({ error: "Write - In guests need to RSVP separately" }, { status: 403 });
+            // }
 
             // Search for an existing RSVP of the same name and event
             const rsvp = await prisma.rsvp.findFirst({

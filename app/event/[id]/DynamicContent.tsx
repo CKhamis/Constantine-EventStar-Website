@@ -19,7 +19,6 @@ import {Badge} from "@/components/ui/badge";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import AvatarIcon from "@/components/AvatarIcon";
 import Markdown from 'react-markdown'
-import GuestListItem from "@/app/event/[id]/GuestListItem";
 import {userInfoResponse} from "@/app/api/user/info/route";
 import {Input} from "@/components/ui/input";
 import { useCookies } from 'react-cookie';
