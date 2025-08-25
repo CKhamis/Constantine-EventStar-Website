@@ -38,10 +38,11 @@ export interface Props {
     eventId: string,
     maxGuests: number,
     viewerRole: "A" | "V" | "W",
-    authorId: string
+    authorId: string,
+    viewerId: string | null,
 }
 
-export default function GuestListItem({RSVP, viewerRole, isFollowing, action, eventId, maxGuests, authorId}: Props){
+export default function GuestListItem({RSVP, viewerRole, isFollowing, action, eventId, maxGuests, authorId, viewerId}: Props){
     const [FRMessage, setFRMessage] = useState<string>("");
     const [guestCount, setGuestCount] = useState(RSVP.guests);
 
@@ -250,30 +251,53 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
         // Viewer is normal guest
 
         if(RSVP.user){
-            // Guest with account is viewing another guest with account (can be organizer)
-            content = (
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <div className="flex flex-col items-center space-y-4">
-                            <AvatarIcon name={nameSafe} image={imageSafe} size="large" />
-                            <DialogTitle className="text-2xl font-semibold">{nameSafe}</DialogTitle>
-                            <p className="text-center">{emailSafe}</p>
+            if(RSVP.user.id === viewerId){
+                // Guest is viewing themselves
+
+                content = (
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <div className="flex flex-col items-center space-y-4">
+                                <AvatarIcon name={nameSafe} image={imageSafe} size="large" />
+                                <DialogTitle className="text-2xl font-semibold">{nameSafe}</DialogTitle>
+                                <p className="text-center">{emailSafe}</p>
+                            </div>
+                        </DialogHeader>
+                        <Link href="/profile" className="w-full">
+                            <Button type="button" variant="secondary" className="w-full">
+                                Profile
+                            </Button>
+                        </Link>
+                    </DialogContent>
+                );
+
+            }else{
+                // Guest with account is viewing another guest with account (can be organizer)
+                content = (
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <div className="flex flex-col items-center space-y-4">
+                                <AvatarIcon name={nameSafe} image={imageSafe} size="large" />
+                                <DialogTitle className="text-2xl font-semibold">{nameSafe}</DialogTitle>
+                                <p className="text-center">{emailSafe}</p>
+                            </div>
+                        </DialogHeader>
+                        <div className="grid pt-4">
+                            {isFollowing ? (
+                                <Button type="button" variant="secondary" disabled>Following</Button>
+                            ) : (
+                                <>
+                                    {emailSafe && (
+                                        <Button type="button" variant="default" onClick={() => sendFR(emailSafe)}>Follow</Button>
+                                    )}
+                                    <p className="text-center text-muted-foreground">{FRMessage}</p>
+                                </>
+                            )}
                         </div>
-                    </DialogHeader>
-                    <div className="grid pt-4">
-                        {isFollowing ? (
-                            <Button type="button" variant="secondary" disabled>Following</Button>
-                        ) : (
-                            <>
-                                {emailSafe && (
-                                    <Button type="button" variant="default" onClick={() => sendFR(emailSafe)}>Follow</Button>
-                                )}
-                                <p className="text-center text-muted-foreground">{FRMessage}</p>
-                            </>
-                        )}
-                    </div>
-                </DialogContent>
-            );
+                    </DialogContent>
+                );
+            }
+
 
         }else if(RSVP.firstName && RSVP.lastName){
             // EventStar user viewing a Write-in guest

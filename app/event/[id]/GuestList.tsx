@@ -43,10 +43,17 @@ export default function GuestList({RSVPs, response, authorId, viewerId, followin
         viewerRole = "W";
     }
 
+
+    console.log("viewer ID: " + viewerId)
+    console.log(following)
+    if(following){
+        console.log(following.some(user => user.id === viewerId))
+    }
+
     return (
         <>
             {RSVPs.filter((rsvp) => rsvp.response === response).map((rsvp) =>
-                <GuestListItem key={rsvp.id} maxGuests={maxGuests} RSVP={rsvp} action={action} authorId={authorId} viewerRole={viewerRole} eventId={eventId} isFollowing={!!viewerId && !!following && following.some(user => user.id === viewerId)} />
+                <GuestListItem key={rsvp.id} maxGuests={maxGuests} RSVP={rsvp} action={action} authorId={authorId} viewerRole={viewerRole} eventId={eventId} isFollowing={!!rsvp.user && !!following && following.some(user => user.id === rsvp.user?.id)} viewerId={viewerId} />
             )}
         </>
     );
