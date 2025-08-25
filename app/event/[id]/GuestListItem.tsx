@@ -219,14 +219,47 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
                             <p className="text-center">{emailSafe}</p>
                         </div>
                     </DialogHeader>
-                    <div className="grid pt-4">
+                    <div className="grid pt-4 space-y-4">
+                        <div className="flex flex-col space-y-4 mt-5">
+                            <div>
+                                <p className="text-center font-bold mb-2">Overwrite RSVP Status</p>
+                                <ToggleGroup type="single" defaultValue={RSVP.response}>
+                                    <ToggleGroupItem value="YES" onClick={() => overwriteRSVP("YES")}>
+                                        <Check className="h-8 w-8"/>
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="NO" onClick={() => overwriteRSVP("NO")}>
+                                        <X className="h-8 w-8"/>
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="MAYBE" onClick={() => overwriteRSVP("MAYBE")}>
+                                        <CircleHelp className="h-8 w-8"/>
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem value="NO_RESPONSE" onClick={() => overwriteRSVP("NO_RESPONSE")}>
+                                        <Clock className="h-8 w-8"/>
+                                    </ToggleGroupItem>
+                                </ToggleGroup>
+                            </div>
+                            <div>
+                                <p className="text-sm">+1s (Max {maxGuests})</p>
+                                <Input
+                                    type="number"
+                                    min="0"
+                                    max={maxGuests}
+                                    value={guestCount}
+                                    onChange={(e) => {
+                                        const g = e.target.valueAsNumber || 0;
+                                        setGuestCount(g);
+                                        overwriteRSVP(RSVP.response, g);
+                                    }}
+                                />
+                            </div>
+                        </div>
                         {/*TODO: implement deleting RSVPS*/}
                         <Button type="button" variant="secondary">Delete write-in</Button>
                     </div>
                 </DialogContent>
             );
 
-        }else{
+        } else {
             // Something wrong happened. Malformed RSVP
             content = (
                 <DialogContent className="sm:max-w-[425px]">
@@ -237,7 +270,7 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
                         </DialogDescription>
                     </DialogHeader>
                     <div className="flex flex-row justify-center items-center mb-5">
-                        <img src="/agent/error.gif" alt="Error" />
+                        <img src="/agent/error.gif" alt="Error"/>
                     </div>
                     <DialogFooter>
                         {/*TODO: implement deleting RSVPS*/}
@@ -247,18 +280,18 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
                 </DialogContent>
             );
         }
-    }else if(viewerRole == "V"){
+    } else if (viewerRole == "V") {
         // Viewer is normal guest
 
-        if(RSVP.user){
-            if(RSVP.user.id === viewerId){
+        if (RSVP.user) {
+            if (RSVP.user.id === viewerId) {
                 // Guest is viewing themselves
 
                 content = (
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
                             <div className="flex flex-col items-center space-y-4">
-                                <AvatarIcon name={nameSafe} image={imageSafe} size="large" />
+                                <AvatarIcon name={nameSafe} image={imageSafe} size="large"/>
                                 <DialogTitle className="text-2xl font-semibold">{nameSafe}</DialogTitle>
                                 <p className="text-center">{emailSafe}</p>
                             </div>
@@ -271,13 +304,13 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
                     </DialogContent>
                 );
 
-            }else{
+            } else {
                 // Guest with account is viewing another guest with account (can be organizer)
                 content = (
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
                             <div className="flex flex-col items-center space-y-4">
-                                <AvatarIcon name={nameSafe} image={imageSafe} size="large" />
+                                <AvatarIcon name={nameSafe} image={imageSafe} size="large"/>
                                 <DialogTitle className="text-2xl font-semibold">{nameSafe}</DialogTitle>
                                 <p className="text-center">{emailSafe}</p>
                             </div>

@@ -226,7 +226,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                     <div className="border-b-2 w-100 p-5">
                         <div className="max-w-xl mx-auto">
                             <div className="flex flex-row justify-between items-center">
-                                <p className="text-2xl font-bold" id="rsvp">RSVP Status {eventInfo?.inviteVisibility === "FULL" && userId ? "" : "(Write-In)"}</p>
+                                <p className="text-2xl font-bold" id="rsvp">RSVP Status {!userId? "(Write-In)" : ""}</p>
                                 {eventInfo && userId && (
                                     (() => {
                                         const rsvp = eventInfo.RSVP.find((r) => r.user && r.user.id === userId);
@@ -345,8 +345,8 @@ export default function DynamicContent({eventId, userId}: Props) {
                                     );
                                 }
 
-                                // CASE 2: logged-in user, event is FULL
-                                if (userId && eventInfo?.inviteVisibility === "FULL") {
+                                // CASE 2: logged-in user, event is FULL OR is an invited guest
+                                if (userId && (eventInfo?.inviteVisibility === "FULL" || eventInfo?.RSVP.some(r => r.user && r.user.id === userId))) {
                                     return (
                                         <Form {...form}>
                                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">

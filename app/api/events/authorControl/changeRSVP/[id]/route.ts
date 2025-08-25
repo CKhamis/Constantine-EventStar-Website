@@ -1,7 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
-import {authorRsvpSchema} from "@/components/ValidationSchemas";
+import {authorChangeRsvpSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
+import {options} from "axios";
 
 const prisma = new PrismaClient();
 
@@ -19,7 +20,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     // Verify body matches author rsvp edit
     const body = await request.json();
-    const validation = authorRsvpSchema.safeParse(body);
+    const validation = authorChangeRsvpSchema.safeParse(body);
 
     if(!validation.success){
         return NextResponse.json(validation.error.format(), {status: 400});
@@ -46,11 +47,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             return NextResponse.json({ error: "Please log in with author account" }, { status: 403 });
         }
 
-        // Check if user is invited
+        // Check if RSVP exists for event
         const optionalRSVP = await prisma.rsvp.findFirst({
             where: {
-                eventId:eventId,
-                userId: body.id //TODO: (Must-do) change this from a userID requirement to RSVP id
+                id: body.id
             }
         });
 
@@ -60,6 +60,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         }
 
         // Edit the rsvp value
+        body.firstName = !body.firstName || body.firstName.trim() === ""? body.firstName : optionalRSVP.firstName;
+        body.lastName = !body.lastName || body.lastName.trim() === ""? body.lastName : optionalRSVP.lastName;
+
         await prisma.rsvp.update({
             where: {
                 id: optionalRSVP.id
@@ -67,6 +70,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             data: {
                 guests: body.guests,
                 response: body.response,
+                firstName: body.firstName,
+                lastName: body.lastName,
             }
         })
 

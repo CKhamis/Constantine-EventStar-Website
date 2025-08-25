@@ -62,6 +62,14 @@ export const authorRsvpSchema = z.object({
     id: z.string().cuid()
 })
 
+export const authorChangeRsvpSchema = z.object({
+    response: RsvpResponseAll,
+    id: z.string().uuid(), // UUD of RSVP itself, not user
+    guests: z.coerce.number().int().min(0, "Must be a positive number"),
+    firstName: z.string().max(20, "First name too long").min(1, "First name too short").optional().or(z.literal("")),
+    lastName: z.string().max(20, "Last name too long").min(1, "Last name too short").optional().or(z.literal("")),
+})
+
 export const cuidSchema = z.object({
     id: z.string().cuid()
 })
