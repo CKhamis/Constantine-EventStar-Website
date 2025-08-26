@@ -88,7 +88,18 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
         }catch(e){
             console.log(e)
         }finally {
-            console.log(guestOverride)
+            action();
+        }
+    }
+
+    async function deleteRSVP(RSVPid: string) {
+        try{
+            await axios.post('/api/events/authorControl/removeRSVP/' + eventId, {id: RSVPid})
+                .then((r: {data: string}) => {toast("RSVP Deleted", {description: r.data})})
+                .catch((r: {response: {data: string}}) => {toast("Error", {description: r.response.data})});
+        }catch(e){
+            console.log(e)
+        }finally {
             action();
         }
     }
@@ -191,7 +202,7 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
                                 />
                             </div>
                         </div>
-                        <div className="grid gap-4 pt-4">
+                        <div className="grid gap-4">
                             {emailSafe && (
                                 isFollowing ? (
                                     <Button type="button" variant="secondary" disabled>Following</Button>
@@ -205,6 +216,7 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
                                 )
                             )}
                         </div>
+                        <Button type="button" variant="destructive" onClick={() => {deleteRSVP(RSVP.id)}}>Delete RSVP</Button>
                     </DialogContent>
                 );
             }
@@ -253,8 +265,7 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
                                 />
                             </div>
                         </div>
-                        {/*TODO: implement deleting RSVPS*/}
-                        <Button type="button" variant="secondary">Delete write-in</Button>
+                        <Button type="button" variant="destructive" onClick={() => {deleteRSVP(RSVP.id)}}>Delete write-in</Button>
                     </div>
                 </DialogContent>
             );
@@ -273,8 +284,7 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
                         <img src="/agent/error.gif" alt="Error"/>
                     </div>
                     <DialogFooter>
-                        {/*TODO: implement deleting RSVPS*/}
-                        <Button type="button" variant="default">Delete RSVP</Button>
+                        <Button type="button" variant="destructive" onClick={() => {deleteRSVP(RSVP.id)}}>Delete write-in</Button>
                         <Button type="button" variant="secondary">Close</Button>
                     </DialogFooter>
                 </DialogContent>

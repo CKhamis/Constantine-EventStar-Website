@@ -54,8 +54,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         });
 
         // reject if rsvp not found
-        if (!optionalRSVP) {
+        if(!optionalRSVP) {
             return NextResponse.json({ error: "RSVP not found" }, { status: 404 });
+        }
+
+        // reject if the author is removing themself
+        if(optionalRSVP.userId !== null && optionalRSVP.userId === optionalEvent.author.id){
+            return NextResponse.json({ error: "Author must be in RSVP list" }, { status: 403 });
         }
 
         // Delete RSVP
