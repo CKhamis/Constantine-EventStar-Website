@@ -412,12 +412,12 @@ export default function DynamicContent({ eventId, userId }: Props) {
                         </div>
                     </div>
                     <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll">
-                        <div className="container flex-col flex gap-3 py-3 max-w-3xl">
+                        <div className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
                             <div className="flex flex-row justify-start items-center gap-3 h-[50]">
-                                <p className="text-3xl font-bold">Invitations</p>
+                                <p className="text-2xl font-bold">Invitations</p>
                             </div>
                         </div>
-                        <div className="max-w-3xl container pb-6">
+                        <div className="max-w-3xl container pb-6 px-5">
                             <Tabs defaultValue="excluded" className="w-full">
                                 <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="excluded">Add Invitees</TabsTrigger>
