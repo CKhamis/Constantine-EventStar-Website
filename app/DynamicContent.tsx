@@ -114,6 +114,7 @@ export default function DynamicContent({userId} : Props) {
         }
     }
 
+    // TODO (before release): add in RSVP guests count
     async function respondFR(response:boolean, senderId:string){
         await axios.post("/api/user/connections/respond", {response: response, senderId: senderId})
             .then(() => toast("Request" + (response? "Accepted" : "Rejected"), {description: "Request deleted"}))

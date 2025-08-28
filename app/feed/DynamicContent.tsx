@@ -80,6 +80,7 @@ export default function DynamicContent() {
         setLoading(false);
     }
 
+    // TODO (before release): add in RSVP guests count
     async function respondFR(response:boolean, senderId:string){
         await axios.post("/api/user/connections/respond", {response: response, senderId: senderId})
             .then(() => {
