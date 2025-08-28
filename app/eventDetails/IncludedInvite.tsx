@@ -18,6 +18,7 @@ export interface Props {
 export default function IncludedInvite({id, guests = 0, firstName, lastName, user, removeInvite}: Props){
 	const [guestCount, setGuestCount] = useState(guests);
 
+	//TODO: (Before release) Implement guest number change
 	let nameSafe: string;
 	let emailSafe: string;
 	let imageSafe: string;
@@ -34,7 +35,6 @@ export default function IncludedInvite({id, guests = 0, firstName, lastName, use
 		imageSafe = "";
 	}else{
 		// Error
-		console.error("Unable to render RSVP:" + RSVP);
 		nameSafe = "Invalid RSVP";
 		emailSafe = "Error";
 		imageSafe = "";
@@ -43,10 +43,10 @@ export default function IncludedInvite({id, guests = 0, firstName, lastName, use
 	return (
 		<div className="flex justify-between items-center p-2 rounded-lg hover:bg-accent cursor-pointer">
 			<div className="flex space-x-4 items-center">
-				<AvatarIcon name={user.name} image={user.image}/>
+				<AvatarIcon name={nameSafe} image={imageSafe}/>
 				<div>
-					<p className="text-sm font-medium leading-none">{user.name}</p>
-					<p className="text-sm text-muted-foreground">{user.email}</p>
+					<p className="text-sm font-medium leading-none">{nameSafe}</p>
+					<p className="text-sm text-muted-foreground">{emailSafe}</p>
 				</div>
 			</div>
 			<div onClick={removeInvite}>rat</div>

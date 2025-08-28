@@ -6,7 +6,6 @@ import {saveEventSchema} from "@/components/ValidationSchemas";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import * as z from "zod";
-import AlertList, {alertContent} from "@/components/AlertList";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {GradientPicker} from "@/components/ui/GradientPicker";
@@ -20,13 +19,17 @@ import {TimestampPicker} from "@/components/ui/timestamp-picker";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {EventInviteVisibility, EventType} from "@prisma/client";
 import axios from "axios";
-import UserSelect from "@/components/UserSelect";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
 import * as commands from "@uiw/react-md-editor"
 import {useRouter} from "next/navigation";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {toast} from "sonner";
+import {EVResponse} from "@/app/api/events/view/[id]/route";
+import ExcludedInvite from "@/app/eventDetails/ExcludedInvite";
+import {refresh} from "effect/Resource";
+import IncludedInvite from "@/app/eventDetails/IncludedInvite";
 
 export interface Props {
     eventId: string | null,
@@ -38,15 +41,34 @@ const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false })
 export default function DynamicContent({ eventId, userId }: Props) {
     const [loading, setLoading] = useState(false)
     const [editing, setEditing] = useState(false)
-    const [initialRSVP, setInitialRSVP] = useState<string[]>([])
-    const [alertMessages, setAlertMessages] = useState<alertContent[]>([])
     const router = useRouter();
+    const [eventInfo, setEventInfo] = useState<EVResponse | null>(null)
+
+    const [followers, setFollowers] = useState<{ id: string; name: string; email: string; image: string; phoneNumber: string }[]>([]) // Included & Excluded
 
     useEffect(() => {
+        refresh();
+    }, []);
+
+    function refresh(){
         if (eventId) {
             fetchEvent(eventId)
+            getFollowers()
         }
-    }, [])
+    }
+
+    async function getFollowers() {
+        try {
+            setLoading(true)
+            const response = await axios.get("/api/user/info")
+            setFollowers(response.data.followedBy)
+            setLoading(false)
+        } catch (err) {
+            toast("Catastrophic Error", {description: "Unable to fetch followers"});
+            console.error("Error fetching users:", err)
+            setLoading(false)
+        }
+    }
 
     const form = useForm<z.infer<typeof saveEventSchema>>({
         resolver: zodResolver(saveEventSchema),
@@ -69,33 +91,34 @@ export default function DynamicContent({ eventId, userId }: Props) {
     async function fetchEvent(eventId: string) {
         try {
             setLoading(true)
-            const response = await axios.get("/api/events/view/" + eventId)
+            await axios.get("/api/events/view/" + eventId)
+                .then((response) => {
+                    if(!userId || (userId && response.data.author.id !== userId)){
+                        router.replace("/event/" + eventId);
+                    }
+                    setEventInfo(response.data);
 
-            if(!userId || (userId && response.data.author.id !== userId)){
-                router.replace("/event/" + eventId);
-            }
+                    form.setValue("id", response.data.id)
+                    form.setValue("title", response.data.title)
+                    form.setValue("backgroundStyle", response.data.backgroundStyle)
+                    form.setValue("address", response.data.address)
+                    form.setValue("eventStart", new Date(response.data.eventStart))
+                    form.setValue("eventEnd", new Date(response.data.eventEnd))
+                    form.setValue("rsvpDuedate", new Date(response.data.rsvpDuedate))
+                    form.setValue("description", response.data.description)
+                    form.setValue("inviteVisibility", response.data.inviteVisibility)
+                    form.setValue("eventType", response.data.eventType)
+                    form.setValue("maxGuests", response.data.maxGuests)
+                    form.setValue(
+                        "RSVP",
+                        response.data.RSVP.map((r: { user: { id: string } }) => r.user.id),
+                    )
 
-            form.setValue("id", response.data.id)
-            form.setValue("title", response.data.title)
-            form.setValue("backgroundStyle", response.data.backgroundStyle)
-            form.setValue("address", response.data.address)
-            form.setValue("eventStart", new Date(response.data.eventStart))
-            form.setValue("eventEnd", new Date(response.data.eventEnd))
-            form.setValue("rsvpDuedate", new Date(response.data.rsvpDuedate))
-            form.setValue("description", response.data.description)
-            form.setValue("inviteVisibility", response.data.inviteVisibility)
-            form.setValue("eventType", response.data.eventType)
-            form.setValue("maxGuests", response.data.maxGuests)
-            form.setValue(
-                "RSVP",
-                response.data.RSVP.map((r: { user: { id: string } }) => r.user.id),
-            )
-            setInitialRSVP(response.data.RSVP.map((r: { user: { id: string } }) => r.user.id))
-
-            setEditing(true)
+                    setEditing(true)
+                })
         } catch (e) {
             console.log(e)
-            setAlertMessages([...alertMessages, { title: "Catastrophic Error", message: "Unable to find event", icon: 2 }])
+            toast("Catastrophic Error", {description: "Unable to find event"});
         } finally {
             setLoading(false)
         }
@@ -114,14 +137,26 @@ export default function DynamicContent({ eventId, userId }: Props) {
         try {
             setLoading(true)
             const response = await axios.post("/api/events/save", values)
-            setAlertMessages([...alertMessages, { title: "Event Saved", message: "Event saved to your account", icon: 1 }])
+            toast("Event Saved", {description: "Event saved to your account"});
             form.setValue("id", response.data.id)
             setEditing(true)
         } catch (e) {
             console.log(e)
-            setAlertMessages([...alertMessages, { title: "Catastrophic Error", message: "Unable to save event", icon: 2 }])
+            toast("Catastrophic Error", {description: "Unable to save event"});
         } finally {
             setLoading(false)
+        }
+    }
+
+    async function deleteRSVP(RSVPid: string) {
+        try{
+            await axios.post('/api/events/authorControl/removeRSVP/' + eventId, {id: RSVPid})
+                .then((r: {data: string}) => {toast("RSVP Deleted", {description: r.data})})
+                .catch((r: {response: {data: string}}) => {toast("Error", {description: r.response.data})});
+        }catch(e){
+            console.log(e)
+        }finally {
+            refresh();
         }
     }
 
@@ -424,10 +459,17 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                     <TabsTrigger value="included">Included</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="excluded">
-                                    1
+                                    {followers
+                                        .filter(f => !eventInfo?.RSVP.some(r => r.user?.id === f.id))
+                                        .map(f => (
+                                            <ExcludedInvite key={f.id} id={f.id} name={f.name} email={f.email} image={f.image} addInvite={refresh} />
+                                        ))
+                                    }
                                 </TabsContent>
                                 <TabsContent value="included">
-                                    2
+                                    {eventInfo?.RSVP.map((r) =>
+                                        <IncludedInvite key={r.id} id={r.id} guests={r.guests} firstName={r.firstName} lastName={r.lastName} user={r.user} removeInvite={() => deleteRSVP(r.id)} />
+                                    )}
                                 </TabsContent>
                             </Tabs>
                         </div>
