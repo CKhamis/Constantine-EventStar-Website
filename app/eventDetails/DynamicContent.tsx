@@ -152,6 +152,26 @@ export default function DynamicContent({ eventId, userId }: Props) {
         try{
             await axios.post('/api/events/authorControl/removeRSVP/' + eventId, {id: RSVPid})
                 .then((r: {data: string}) => {toast("RSVP Deleted", {description: r.data})})
+                .catch((r: { response: { data: { error?: string; message?: string } | string } }) => {
+                    const errorMessage =
+                        typeof r.response.data === "string"
+                            ? r.response.data
+                            : r.response.data.error || r.response.data.message || "Unknown error";
+
+                    toast("Error", { description: errorMessage });
+                });
+
+        }catch(e){
+            console.log(e)
+        }finally {
+            refresh();
+        }
+    }
+
+    async function overwriteRSVP(id: string, response:string, guestOverride: number) {
+        try{
+            await axios.post('/api/events/authorControl/changeRSVP/' + eventId, {response: response, id: id, guests: guestOverride})
+                .then((r: {data: string}) => {toast("RSVP Overwritten", {description: r.data})})
                 .catch((r: {response: {data: string}}) => {toast("Error", {description: r.response.data})});
         }catch(e){
             console.log(e)
@@ -161,292 +181,296 @@ export default function DynamicContent({ eventId, userId }: Props) {
     }
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-                {loading && <LoadingIcon />}
-                <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
-                    <div className="lg:col-span-2 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
-                        <div className="top-left-gradient">
-                            <div className="container flex-col flex gap-3 py-3 max-w-3xl">
-                                <div className="flex flex-row justify-start items-center gap-3 ">
-                                    <Image src="/icons/NewEvent.svg" alt="New Event" width={50} height={50}/>
-                                    <p className="text-3xl font-bold">{editing ? "Edit Event" : "Create New Event"}</p>
-                                </div>
+        <>
+            {loading && <LoadingIcon />}
+            <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
+                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
+                    <div className="top-left-gradient">
+                        <div className="container flex-col flex gap-3 py-3 max-w-3xl">
+                            <div className="flex flex-row justify-start items-center gap-3 ">
+                                <Image src="/icons/NewEvent.svg" alt="New Event" width={50} height={50}/>
+                                <p className="text-3xl font-bold">{editing ? "Edit Event" : "Create New Event"}</p>
                             </div>
-                        </div>
-                        <div className="container flex-col flex gap-3 py-3 max-w-3xl mt-4">
-                            <FormField
-                                control={form.control}
-                                name="title"
-                                render={({field}) => (
-                                    <FormItem>
-                                        <FormLabel>Title</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Event title" {...field} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 mt-6">
-                                <FormField
-                                    control={form.control}
-                                    name="address"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Address</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="123 Terence Street" {...field} />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="maxGuests"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Max +1s per guest</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    min="0"
-                                                    placeholder="0"
-                                                    {...field}
-                                                    onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                                                    value={field.value || 0}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 mt-6">
-                                <FormField
-                                    control={form.control}
-                                    name="rsvpDuedate"
-                                    render={({field}) => (
-                                        <FormItem className="flex flex-col items-start">
-                                            <FormLabel>RSVP Due Date</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button
-                                                        variant={"outline"}
-                                                        className={cn(
-                                                            "justify-start text-left font-normal w-full",
-                                                            !field.value && "text-muted-foreground",
-                                                        )}
-                                                    >
-                                                        <CalendarIcon className="mr-2 h-4 w-4"/>
-                                                        {field.value ? format(field.value, "PPP hh:mm a") :
-                                                            <span>Pick a date</span>}
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0">
-                                                    <Calendar
-                                                        mode="single"
-                                                        selected={field.value}
-                                                        onSelect={field.onChange}
-                                                        disabled={(date) => date < new Date()}
-                                                        initialFocus
-                                                    />
-                                                    <div className="p-3 border-t border-border">
-                                                        <TimestampPicker setDate={field.onChange} date={field.value}/>
-                                                    </div>
-                                                </PopoverContent>
-                                            </Popover>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="eventStart"
-                                    render={({field}) => (
-                                        <FormItem className="flex flex-col items-start">
-                                            <FormLabel>Event Start</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button
-                                                        variant={"outline"}
-                                                        className={cn(
-                                                            "justify-start text-left font-normal",
-                                                            !field.value && "text-muted-foreground",
-                                                        )}
-                                                    >
-                                                        <CalendarIcon className="mr-2 h-4 w-4"/>
-                                                        {field.value ? format(field.value, "PPP hh:mm a") :
-                                                            <span>Pick a date</span>}
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0">
-                                                    <Calendar
-                                                        mode="single"
-                                                        selected={field.value}
-                                                        onSelect={field.onChange}
-                                                        disabled={(date) => date < new Date()}
-                                                        initialFocus
-                                                    />
-                                                    <div className="p-3 border-t border-border">
-                                                        <TimestampPicker setDate={field.onChange} date={field.value}/>
-                                                    </div>
-                                                </PopoverContent>
-                                            </Popover>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="eventEnd"
-                                    render={({field}) => (
-                                        <FormItem className="flex flex-col items-start">
-                                            <FormLabel className="mt-5 md:mt-0">Event End</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <Button
-                                                        variant={"outline"}
-                                                        className={cn(
-                                                            "justify-start text-left font-normal",
-                                                            !field.value && "text-muted-foreground",
-                                                        )}
-                                                    >
-                                                        <CalendarIcon className="mr-2 h-4 w-4"/>
-                                                        {field.value ? format(field.value, "PPP hh:mm a") :
-                                                            <span>Pick a date</span>}
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0">
-                                                    <Calendar
-                                                        mode="single"
-                                                        selected={field.value}
-                                                        onSelect={field.onChange}
-                                                        disabled={(date) => date < new Date()}
-                                                        initialFocus
-                                                    />
-                                                    <div className="p-3 border-t border-border">
-                                                        <TimestampPicker setDate={field.onChange} date={field.value}/>
-                                                    </div>
-                                                </PopoverContent>
-                                            </Popover>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 mt-6">
-                                <FormField
-                                    control={form.control}
-                                    name="inviteVisibility"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Invite Visibility</FormLabel>
-                                            <FormControl>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select invite visibility"/>
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {inviteVisibilityOptions.map((option) => (
-                                                            <SelectItem key={option.value} value={option.value}>
-                                                                {option.label}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="eventType"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Event Type</FormLabel>
-                                            <FormControl>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select event type"/>
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {eventTypeOptions.map((option) => (
-                                                            <SelectItem key={option.value} value={option.value}>
-                                                                {option.label}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="backgroundStyle"
-                                    render={({field}) => (
-                                        <FormItem style={{marginTop: "-8px"}}>
-                                            <FormLabel>Background Style</FormLabel>
-                                            <br/>
-                                            <FormControl>
-                                                <GradientPicker {...field} />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({field}) => (
-                                    <FormItem className="mt-6">
-                                        <FormLabel>Description</FormLabel>
-                                        <FormControl>
-                                            <div>
-                                                <MDEditor
-                                                    commands={[
-                                                        commands.group([
-                                                                commands.title1,
-                                                                commands.title2,
-                                                                commands.title3,
-                                                                commands.title4,
-                                                            ],
-                                                            {
-                                                                name: "Header",
-                                                                groupName: "Header",
-                                                                buttonProps: {"aria-label": "Insert title"}
-                                                            }),
-                                                        commands.bold,
-                                                        commands.italic,
-                                                        commands.hr,
-                                                    ]}
-                                                    value={field.value}
-                                                    onChange={(value) => field.onChange(value || "")}
-                                                    preview="edit"
-                                                    height={300}
-                                                />
-                                            </div>
-                                        </FormControl>
-                                        <FormMessage/>
-                                    </FormItem>
-                                )}
-                            />
-                            <Button
-                                type="submit"
-                                disabled={loading}
-                                className="mt-6 mb-6"
-                                onClick={() => {
-                                    console.log(form.formState)
-                                    console.log(form.formState.errors)
-                                }}
-                            >
-                                {loading && <Loader2 className="animate-spin"/>}
-                                Save
-                            </Button>
                         </div>
                     </div>
-                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll">
+                    <div className="container flex-col flex gap-3 py-3 max-w-3xl mt-4">
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)}>
+                                <FormField
+                                    control={form.control}
+                                    name="title"
+                                    render={({field}) => (
+                                        <FormItem>
+                                            <FormLabel>Title</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Event title" {...field} />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 mt-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="address"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Address</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="123 Terence Street" {...field} />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="maxGuests"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Max +1s per guest</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        min="0"
+                                                        placeholder="0"
+                                                        {...field}
+                                                        onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                                                        value={field.value || 0}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 mt-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="rsvpDuedate"
+                                        render={({field}) => (
+                                            <FormItem className="flex flex-col items-start">
+                                                <FormLabel>RSVP Due Date</FormLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            variant={"outline"}
+                                                            className={cn(
+                                                                "justify-start text-left font-normal w-full",
+                                                                !field.value && "text-muted-foreground",
+                                                            )}
+                                                        >
+                                                            <CalendarIcon className="mr-2 h-4 w-4"/>
+                                                            {field.value ? format(field.value, "PPP hh:mm a") :
+                                                                <span>Pick a date</span>}
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={field.value}
+                                                            onSelect={field.onChange}
+                                                            disabled={(date) => date < new Date()}
+                                                            initialFocus
+                                                        />
+                                                        <div className="p-3 border-t border-border">
+                                                            <TimestampPicker setDate={field.onChange} date={field.value}/>
+                                                        </div>
+                                                    </PopoverContent>
+                                                </Popover>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="eventStart"
+                                        render={({field}) => (
+                                            <FormItem className="flex flex-col items-start">
+                                                <FormLabel>Event Start</FormLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            variant={"outline"}
+                                                            className={cn(
+                                                                "justify-start text-left font-normal",
+                                                                !field.value && "text-muted-foreground",
+                                                            )}
+                                                        >
+                                                            <CalendarIcon className="mr-2 h-4 w-4"/>
+                                                            {field.value ? format(field.value, "PPP hh:mm a") :
+                                                                <span>Pick a date</span>}
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={field.value}
+                                                            onSelect={field.onChange}
+                                                            disabled={(date) => date < new Date()}
+                                                            initialFocus
+                                                        />
+                                                        <div className="p-3 border-t border-border">
+                                                            <TimestampPicker setDate={field.onChange} date={field.value}/>
+                                                        </div>
+                                                    </PopoverContent>
+                                                </Popover>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="eventEnd"
+                                        render={({field}) => (
+                                            <FormItem className="flex flex-col items-start">
+                                                <FormLabel className="mt-5 md:mt-0">Event End</FormLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            variant={"outline"}
+                                                            className={cn(
+                                                                "justify-start text-left font-normal",
+                                                                !field.value && "text-muted-foreground",
+                                                            )}
+                                                        >
+                                                            <CalendarIcon className="mr-2 h-4 w-4"/>
+                                                            {field.value ? format(field.value, "PPP hh:mm a") :
+                                                                <span>Pick a date</span>}
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={field.value}
+                                                            onSelect={field.onChange}
+                                                            disabled={(date) => date < new Date()}
+                                                            initialFocus
+                                                        />
+                                                        <div className="p-3 border-t border-border">
+                                                            <TimestampPicker setDate={field.onChange} date={field.value}/>
+                                                        </div>
+                                                    </PopoverContent>
+                                                </Popover>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 mt-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="inviteVisibility"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Invite Visibility</FormLabel>
+                                                <FormControl>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select invite visibility"/>
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {inviteVisibilityOptions.map((option) => (
+                                                                <SelectItem key={option.value} value={option.value}>
+                                                                    {option.label}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="eventType"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Event Type</FormLabel>
+                                                <FormControl>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select event type"/>
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {eventTypeOptions.map((option) => (
+                                                                <SelectItem key={option.value} value={option.value}>
+                                                                    {option.label}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="backgroundStyle"
+                                        render={({field}) => (
+                                            <FormItem style={{marginTop: "-8px"}}>
+                                                <FormLabel>Background Style</FormLabel>
+                                                <br/>
+                                                <FormControl>
+                                                    <GradientPicker {...field} />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <FormField
+                                    control={form.control}
+                                    name="description"
+                                    render={({field}) => (
+                                        <FormItem className="mt-6">
+                                            <FormLabel>Description</FormLabel>
+                                            <FormControl>
+                                                <div>
+                                                    <MDEditor
+                                                        commands={[
+                                                            commands.group([
+                                                                    commands.title1,
+                                                                    commands.title2,
+                                                                    commands.title3,
+                                                                    commands.title4,
+                                                                ],
+                                                                {
+                                                                    name: "Header",
+                                                                    groupName: "Header",
+                                                                    buttonProps: {"aria-label": "Insert title"}
+                                                                }),
+                                                            commands.bold,
+                                                            commands.italic,
+                                                            commands.hr,
+                                                        ]}
+                                                        value={field.value}
+                                                        onChange={(value) => field.onChange(value || "")}
+                                                        preview="edit"
+                                                        height={300}
+                                                    />
+                                                </div>
+                                            </FormControl>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+                                <Button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="mt-6 mb-6"
+                                    onClick={() => {
+                                        console.log(form.formState)
+                                        console.log(form.formState.errors)
+                                    }}
+                                >
+                                    {loading && <Loader2 className="animate-spin"/>}
+                                    Save
+                                </Button>
+                            </form>
+                        </Form>
+                    </div>
+                </div>
+                <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll flex flex-col justify-between">
+                    <div>
                         <div className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
                             <div className="flex flex-row justify-start items-center gap-3 h-[50]">
                                 <p className="text-2xl font-bold">Invitations</p>
@@ -461,22 +485,31 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                 <TabsContent value="excluded">
                                     {followers
                                         .filter(f => !eventInfo?.RSVP.some(r => r.user?.id === f.id))
-                                        .map(f => (
-                                            <ExcludedInvite key={f.id} id={f.id} name={f.name} email={f.email} image={f.image} addInvite={refresh} />
+                                        .map((f, index) => (
+                                            <ExcludedInvite key={index} id={f.id} name={f.name} email={f.email} image={f.image} addInvite={refresh}/>
                                         ))
                                     }
                                 </TabsContent>
                                 <TabsContent value="included">
                                     {eventInfo?.RSVP.map((r) =>
-                                        <IncludedInvite key={r.id} id={r.id} guests={r.guests} firstName={r.firstName} lastName={r.lastName} user={r.user} removeInvite={() => deleteRSVP(r.id)} />
+                                        <IncludedInvite key={r.id} id={r.id} guests={r.guests} firstName={r.firstName} lastName={r.lastName} user={r.user} removeInvite={() => deleteRSVP(r.id)} response={r.response} updateInvite={overwriteRSVP}/>
                                     )}
                                 </TabsContent>
                             </Tabs>
                         </div>
-
                     </div>
+                    <div className="border-t-2">
+                        <div className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
+                            <div className="flex flex-row justify-start items-center gap-3 h-[50]">
+                                <p className="text-2xl font-bold">Manual Write-Ins</p>
+                            </div>
+
+
+                        </div>
+                    </div>
+
                 </div>
-            </form>
-        </Form>
+            </div>
+        </>
     )
 }
