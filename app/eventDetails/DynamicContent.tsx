@@ -2,7 +2,7 @@
 import Image from "next/image";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import {useEffect, useState} from "react";
-import {saveEventSchema} from "@/components/ValidationSchemas";
+import {authorAddRsvpSchema, rsvpSchema, saveEventSchema} from "@/components/ValidationSchemas";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -12,7 +12,7 @@ import {GradientPicker} from "@/components/ui/GradientPicker";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
-import {CalendarIcon, Loader2} from "lucide-react";
+import {CalendarIcon, Check, Loader2, X} from "lucide-react";
 import {format} from "date-fns";
 import {Calendar} from "@/components/ui/calendar";
 import {TimestampPicker} from "@/components/ui/timestamp-picker";
@@ -30,6 +30,7 @@ import {EVResponse} from "@/app/api/events/view/[id]/route";
 import ExcludedInvite from "@/app/eventDetails/ExcludedInvite";
 import {refresh} from "effect/Resource";
 import IncludedInvite from "@/app/eventDetails/IncludedInvite";
+import Link from "next/link";
 
 export interface Props {
     eventId: string | null,
@@ -43,6 +44,8 @@ export default function DynamicContent({ eventId, userId }: Props) {
     const [editing, setEditing] = useState(false)
     const router = useRouter();
     const [eventInfo, setEventInfo] = useState<EVResponse | null>(null)
+    const [writeInStatus, setWriteInStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
 
     const [followers, setFollowers] = useState<{ id: string; name: string; email: string; image: string; phoneNumber: string }[]>([]) // Included & Excluded
 
@@ -85,6 +88,16 @@ export default function DynamicContent({ eventId, userId }: Props) {
             maxGuests: 0,
             eventType: "GENERAL_EVENT",
             RSVP: [],
+        },
+    })
+
+    const writeInForm = useForm<z.infer<typeof rsvpSchema>>({
+        resolver: zodResolver(rsvpSchema),
+        defaultValues: {
+            response: undefined,
+            guests: 0,
+            firstName: "",
+            lastName: "",
         },
     })
 
@@ -176,6 +189,19 @@ export default function DynamicContent({ eventId, userId }: Props) {
         }catch(e){
             console.log(e)
         }finally {
+            refresh();
+        }
+    }
+
+    async function createWriteInRSVP(data: z.infer<typeof rsvpSchema>) {
+        setWriteInStatus('loading')
+        try {
+            await axios.post('/api/events/authorControl/addRSVP/' + eventId, {response: data.response, guests: data.guests, firstName: data.firstName, lastName: data.lastName})
+            setWriteInStatus('success')
+        } catch (e) {
+            console.log(e);
+            setWriteInStatus('error')
+        } finally {
             refresh();
         }
     }
@@ -504,7 +530,89 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                 <p className="text-2xl font-bold">Manual Write-Ins</p>
                             </div>
 
+                            <Form {...writeInForm}>
+                                <form onSubmit={writeInForm.handleSubmit(createWriteInRSVP)} className="space-y-6">
+                                    <FormField
+                                        control={writeInForm.control}
+                                        name="firstName"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>First Name</FormLabel>
+                                                <FormControl>
+                                                    <Input type="text" placeholder="Enter first name" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
 
+                                    <FormField
+                                        control={writeInForm.control}
+                                        name="lastName"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Last Name</FormLabel>
+                                                <FormControl>
+                                                    <Input type="text" placeholder="Enter last name" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={writeInForm.control}
+                                        name="response"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Attendance</FormLabel>
+                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select RSVP status" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="YES">Yes</SelectItem>
+                                                        <SelectItem value="NO">No</SelectItem>
+                                                        <SelectItem value="MAYBE">Maybe</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={writeInForm.control}
+                                        name="guests"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>+1s</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        min="0"
+                                                        placeholder="0"
+                                                        {...field}
+                                                        onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                                                        value={field.value || 0}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <div className="flex flex-row gap-4 items-center justify-start">
+                                        <Button type="submit" disabled={writeInStatus === "loading"}>
+                                            {writeInStatus === "loading" ? "Submitting..." : "Save"}
+                                        </Button>
+                                        {writeInStatus === "success" && <Check className="h-4 w-4 text-green-500" />}
+                                        {writeInStatus === "error" && <X className="h-4 w-4 text-red-500" />}
+                                    </div>
+                                </form>
+                            </Form>
                         </div>
                     </div>
 
