@@ -12,7 +12,7 @@ import {GradientPicker} from "@/components/ui/GradientPicker";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
-import {CalendarIcon, Check, Loader2, X} from "lucide-react";
+import {CalendarIcon, Check, ChevronsUpDown, Loader2, X} from "lucide-react";
 import {format} from "date-fns";
 import {Calendar} from "@/components/ui/calendar";
 import {TimestampPicker} from "@/components/ui/timestamp-picker";
@@ -31,6 +31,7 @@ import ExcludedInvite from "@/app/eventDetails/ExcludedInvite";
 import {refresh} from "effect/Resource";
 import IncludedInvite from "@/app/eventDetails/IncludedInvite";
 import Link from "next/link";
+import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
 
 export interface Props {
     eventId: string | null,
@@ -533,95 +534,103 @@ export default function DynamicContent({ eventId, userId }: Props) {
                         </div>
                     </div>
                     <div className="border-t-2">
-                        <div className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
-                            <div className="flex flex-row justify-start items-center gap-3 h-[50]">
+                        <Collapsible className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
+                            <div className="flex flex-row justify-between items-center gap-3 h-[50]">
                                 <p className="text-2xl font-bold">Manual Write-Ins</p>
+                                <CollapsibleTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="size-8">
+                                        <ChevronsUpDown />
+                                        <span className="sr-only">Toggle</span>
+                                    </Button>
+                                </CollapsibleTrigger>
                             </div>
 
-                            <Form {...writeInForm}>
-                                <form onSubmit={writeInForm.handleSubmit(createWriteInRSVP)} className="space-y-6">
-                                    <FormField
-                                        control={writeInForm.control}
-                                        name="firstName"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>First Name</FormLabel>
-                                                <FormControl>
-                                                    <Input type="text" placeholder="Enter first name" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={writeInForm.control}
-                                        name="lastName"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Last Name</FormLabel>
-                                                <FormControl>
-                                                    <Input type="text" placeholder="Enter last name" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={writeInForm.control}
-                                        name="response"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Attendance</FormLabel>
-                                                <Select onValueChange={field.onChange} value={field.value}>
+                            <CollapsibleContent>
+                                <Form {...writeInForm}>
+                                    <form onSubmit={writeInForm.handleSubmit(createWriteInRSVP)} className="space-y-6">
+                                        <FormField
+                                            control={writeInForm.control}
+                                            name="firstName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>First Name</FormLabel>
                                                     <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select RSVP status" />
-                                                        </SelectTrigger>
+                                                        <Input type="text" placeholder="Enter first name" {...field} />
                                                     </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="YES">Yes</SelectItem>
-                                                        <SelectItem value="NO">No</SelectItem>
-                                                        <SelectItem value="MAYBE">Maybe</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
 
-                                    <FormField
-                                        control={writeInForm.control}
-                                        name="guests"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>+1s</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        placeholder="0"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                                                        value={field.value || 0}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                        <FormField
+                                            control={writeInForm.control}
+                                            name="lastName"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Last Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input type="text" placeholder="Enter last name" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
 
-                                    <div className="flex flex-row gap-4 items-center justify-start">
-                                        <Button type="submit" disabled={writeInStatus === "loading"}>
-                                            {writeInStatus === "loading" ? "Submitting..." : "Save"}
-                                        </Button>
-                                        {writeInStatus === "success" && <Check className="h-4 w-4 text-green-500" />}
-                                        {writeInStatus === "error" && <X className="h-4 w-4 text-red-500" />}
-                                    </div>
-                                </form>
-                            </Form>
-                        </div>
+                                        <FormField
+                                            control={writeInForm.control}
+                                            name="response"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Attendance</FormLabel>
+                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                                        <FormControl>
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Select RSVP status" />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            <SelectItem value="YES">Yes</SelectItem>
+                                                            <SelectItem value="NO">No</SelectItem>
+                                                            <SelectItem value="MAYBE">Maybe</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={writeInForm.control}
+                                            name="guests"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>+1s</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            placeholder="0"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                                                            value={field.value || 0}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <div className="flex flex-row gap-4 items-center justify-start">
+                                            <Button type="submit" disabled={writeInStatus === "loading"}>
+                                                {writeInStatus === "loading" ? "Submitting..." : "Save"}
+                                            </Button>
+                                            {writeInStatus === "success" && <Check className="h-4 w-4 text-green-500" />}
+                                            {writeInStatus === "error" && <X className="h-4 w-4 text-red-500" />}
+                                        </div>
+                                    </form>
+                                </Form>
+                            </CollapsibleContent>
+                        </Collapsible>
                     </div>
 
                 </div>
