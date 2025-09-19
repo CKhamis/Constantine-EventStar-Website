@@ -122,10 +122,6 @@ export default function DynamicContent({ eventId, userId }: Props) {
                     form.setValue("inviteVisibility", response.data.inviteVisibility)
                     form.setValue("eventType", response.data.eventType)
                     form.setValue("maxGuests", response.data.maxGuests)
-                    form.setValue(
-                        "RSVP",
-                        response.data.RSVP.map((r: { user: { id: string } }) => r.user.id),
-                    )
 
                     setEditing(true)
                 })
@@ -201,6 +197,18 @@ export default function DynamicContent({ eventId, userId }: Props) {
         } catch (e) {
             console.log(e);
             setWriteInStatus('error')
+        } finally {
+            refresh();
+        }
+    }
+
+    async function addRSVP(userId: string) {
+        try {
+            await axios.post(`/api/events/authorControl/addRSVP/${eventId}`, {userId: userId, response: "NO_RESPONSE", guests: 0});
+            toast("RSVP Added", {description: "Default values specified."});
+        } catch (e) {
+            console.log(e);
+            toast("Adding RSVP Failed", {description: "There was an error with adding RSVP. Check the console for more info."});
         } finally {
             refresh();
         }
@@ -512,7 +520,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                     {followers
                                         .filter(f => !eventInfo?.RSVP.some(r => r.user?.id === f.id))
                                         .map((f, index) => (
-                                            <ExcludedInvite key={index} id={f.id} name={f.name} email={f.email} image={f.image} addInvite={refresh}/>
+                                            <ExcludedInvite key={index} name={f.name} email={f.email} image={f.image} addInvite={() => addRSVP(f.id)}/>
                                         ))
                                     }
                                 </TabsContent>

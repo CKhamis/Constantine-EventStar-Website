@@ -45,24 +45,22 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         if(optionalEvent.author.id !== session.user.id){
             return NextResponse.json({ error: "Please log in with author account" }, { status: 403 });
         }
-
-        if(body.id){
+        if(body.userId){
             // Id was specified, meaning request is to add an existing EventStar user
-
             const optionalUser = await prisma.user.findFirst({
                 where: {
-                    id: body.id
+                    id: body.userId
                 }
             });
 
             // Check if the user's id belongs to a user
             if(!optionalUser){
-                return NextResponse.json({ error: "Event found, but specified user id: " +body.id + " has no matching results."}, { status: 401 });
+                return NextResponse.json({ error: "Event found, but specified user id: " +body.userId + " has no matching results."}, { status: 401 });
             }
 
             const optionalUserRSVP = await prisma.rsvp.findFirst({
                 where: {
-                    userId: body.id,
+                    userId: body.userId,
                     eventId: eventId,
                 }
             });
@@ -75,7 +73,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             // Event exists, user is the author of the event, and the RSVP does not already exist
             await prisma.rsvp.create({
                 data: {
-                    userId: body.id,
+                    userId: body.userId,
                     eventId: eventId,
                     guests: body.guests,
                     response: body.response
