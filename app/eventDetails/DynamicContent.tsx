@@ -504,136 +504,159 @@ export default function DynamicContent({ eventId, userId }: Props) {
                         </Form>
                     </div>
                 </div>
-                <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll flex flex-col justify-between">
-                    <div>
-                        <div className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
-                            <div className="flex flex-row justify-start items-center gap-3 h-[50]">
-                                <p className="text-2xl font-bold">Invitations</p>
+                {editing ?
+                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll flex flex-col justify-between">
+                        <div>
+                            <div className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
+                                <div className="flex flex-row justify-start items-center gap-3 h-[50]">
+                                    <p className="text-2xl font-bold">Invitations</p>
+                                </div>
+                            </div>
+                            <div className="max-w-3xl container pb-6 px-5">
+                                <Tabs defaultValue="excluded" className="w-full">
+                                    <TabsList className="grid w-full grid-cols-2">
+                                        <TabsTrigger value="excluded">Add Invitees</TabsTrigger>
+                                        <TabsTrigger value="included">Included</TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="excluded">
+                                        {followers
+                                            .filter(f => !eventInfo?.RSVP.some(r => r.user?.id === f.id))
+                                            .map((f, index) => (
+                                                <ExcludedInvite key={index} name={f.name} email={f.email} image={f.image} addInvite={() => addRSVP(f.id)}/>
+                                            ))
+                                        }
+                                    </TabsContent>
+                                    <TabsContent value="included">
+                                        {eventInfo?.RSVP.map((r) =>
+                                            <IncludedInvite key={r.id} id={r.id} guests={r.guests} firstName={r.firstName} lastName={r.lastName} user={r.user} removeInvite={() => deleteRSVP(r.id)} response={r.response} updateInvite={overwriteRSVP}/>
+                                        )}
+                                    </TabsContent>
+                                </Tabs>
                             </div>
                         </div>
-                        <div className="max-w-3xl container pb-6 px-5">
-                            <Tabs defaultValue="excluded" className="w-full">
-                                <TabsList className="grid w-full grid-cols-2">
-                                    <TabsTrigger value="excluded">Add Invitees</TabsTrigger>
-                                    <TabsTrigger value="included">Included</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="excluded">
-                                    {followers
-                                        .filter(f => !eventInfo?.RSVP.some(r => r.user?.id === f.id))
-                                        .map((f, index) => (
-                                            <ExcludedInvite key={index} name={f.name} email={f.email} image={f.image} addInvite={() => addRSVP(f.id)}/>
-                                        ))
-                                    }
-                                </TabsContent>
-                                <TabsContent value="included">
-                                    {eventInfo?.RSVP.map((r) =>
-                                        <IncludedInvite key={r.id} id={r.id} guests={r.guests} firstName={r.firstName} lastName={r.lastName} user={r.user} removeInvite={() => deleteRSVP(r.id)} response={r.response} updateInvite={overwriteRSVP}/>
-                                    )}
-                                </TabsContent>
-                            </Tabs>
-                        </div>
-                    </div>
-                    <div className="border-t-2">
-                        <Collapsible className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
-                            <div className="flex flex-row justify-between items-center gap-3 h-[50]">
-                                <p className="text-2xl font-bold">Manual Write-Ins</p>
-                                <CollapsibleTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="size-8">
-                                        <ChevronsUpDown />
-                                        <span className="sr-only">Toggle</span>
-                                    </Button>
-                                </CollapsibleTrigger>
-                            </div>
+                        <div className="border-t-2">
+                            <Collapsible className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
+                                <div className="flex flex-row justify-between items-center gap-3 h-[50]">
+                                    <p className="text-2xl font-bold">Manual Write-Ins</p>
+                                    <CollapsibleTrigger asChild>
+                                        <Button variant="ghost" size="icon" className="size-8">
+                                            <ChevronsUpDown/>
+                                            <span className="sr-only">Toggle</span>
+                                        </Button>
+                                    </CollapsibleTrigger>
+                                </div>
 
-                            <CollapsibleContent>
-                                <Form {...writeInForm}>
-                                    <form onSubmit={writeInForm.handleSubmit(createWriteInRSVP)} className="space-y-6">
-                                        <FormField
-                                            control={writeInForm.control}
-                                            name="firstName"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>First Name</FormLabel>
-                                                    <FormControl>
-                                                        <Input type="text" placeholder="Enter first name" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={writeInForm.control}
-                                            name="lastName"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Last Name</FormLabel>
-                                                    <FormControl>
-                                                        <Input type="text" placeholder="Enter last name" {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={writeInForm.control}
-                                            name="response"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Attendance</FormLabel>
-                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                <CollapsibleContent>
+                                    <Form {...writeInForm}>
+                                        <form onSubmit={writeInForm.handleSubmit(createWriteInRSVP)} className="space-y-6">
+                                            <FormField
+                                                control={writeInForm.control}
+                                                name="firstName"
+                                                render={({field}) => (
+                                                    <FormItem>
+                                                        <FormLabel>First Name</FormLabel>
                                                         <FormControl>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select RSVP status" />
-                                                            </SelectTrigger>
+                                                            <Input type="text" placeholder="Enter first name" {...field} />
                                                         </FormControl>
-                                                        <SelectContent>
-                                                            <SelectItem value="YES">Yes</SelectItem>
-                                                            <SelectItem value="NO">No</SelectItem>
-                                                            <SelectItem value="MAYBE">Maybe</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
+                                                        <FormMessage/>
+                                                    </FormItem>
+                                                )}
+                                            />
 
-                                        <FormField
-                                            control={writeInForm.control}
-                                            name="guests"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>+1s</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            placeholder="0"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                                                            value={field.value || 0}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
+                                            <FormField
+                                                control={writeInForm.control}
+                                                name="lastName"
+                                                render={({field}) => (
+                                                    <FormItem>
+                                                        <FormLabel>Last Name</FormLabel>
+                                                        <FormControl>
+                                                            <Input type="text" placeholder="Enter last name" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage/>
+                                                    </FormItem>
+                                                )}
+                                            />
 
-                                        <div className="flex flex-row gap-4 items-center justify-start">
-                                            <Button type="submit" disabled={writeInStatus === "loading"}>
-                                                {writeInStatus === "loading" ? "Submitting..." : "Save"}
-                                            </Button>
-                                            {writeInStatus === "success" && <Check className="h-4 w-4 text-green-500" />}
-                                            {writeInStatus === "error" && <X className="h-4 w-4 text-red-500" />}
-                                        </div>
-                                    </form>
-                                </Form>
-                            </CollapsibleContent>
-                        </Collapsible>
+                                            <FormField
+                                                control={writeInForm.control}
+                                                name="response"
+                                                render={({field}) => (
+                                                    <FormItem>
+                                                        <FormLabel>Attendance</FormLabel>
+                                                        <Select onValueChange={field.onChange} value={field.value}>
+                                                            <FormControl>
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Select RSVP status"/>
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                <SelectItem value="YES">Yes</SelectItem>
+                                                                <SelectItem value="NO">No</SelectItem>
+                                                                <SelectItem value="MAYBE">Maybe</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <FormMessage/>
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <FormField
+                                                control={writeInForm.control}
+                                                name="guests"
+                                                render={({field}) => (
+                                                    <FormItem>
+                                                        <FormLabel>+1s</FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                type="number"
+                                                                min="0"
+                                                                placeholder="0"
+                                                                {...field}
+                                                                onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                                                                value={field.value || 0}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage/>
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <div className="flex flex-row gap-4 items-center justify-start">
+                                                <Button type="submit" disabled={writeInStatus === "loading"}>
+                                                    {writeInStatus === "loading" ? "Submitting..." : "Save"}
+                                                </Button>
+                                                {writeInStatus === "success" &&
+                                                    <Check className="h-4 w-4 text-green-500"/>}
+                                                {writeInStatus === "error" && <X className="h-4 w-4 text-red-500"/>}
+                                            </div>
+                                        </form>
+                                    </Form>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        </div>
                     </div>
+                    :
 
-                </div>
+                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll flex flex-col justify-start">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/agent/loading.gif" className="w-1/2 my-7 mx-auto" alt="EventStar typing"/>
+
+                        <div className="container flex-col flex gap-3 pt-3 max-w-3xl px-5">
+                            <div className="flex flex-row justify-start items-center gap-3 h-[50]">
+                                <p className="text-2xl font-bold">Add Event Details</p>
+                            </div>
+                        </div>
+
+                        <div className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
+                            <p>First step is to create an event. Fill in the event name, start & end times, description, and other details you want to let your guests know.</p>
+                            <p>While you can type a simple sentence for the description, you can also insert Markdown text to format and beautify your event information. You can even add images, links, and bullet points!</p>
+                            <p>Then, choose the invite visibility. None makes an event only visible to yourself, invited only makes events only visible to the EventStar users you choose, and full makes it open to anybody including Write-In guests.</p>
+                            <p>Write-In guests are able to fill in their name, attendance, and +1s they are bringing with them.</p>
+                            <p>When you are finished creating your event, you can move onto adding guests to your event!</p>
+                        </div>
+                    </div>
+                }
+
             </div>
         </>
     )
