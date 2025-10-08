@@ -10,9 +10,13 @@ export default async function page(){
         redirect("/api/auth/signin");
     }
 
+    if(!session || !session.user){
+        redirect("/api/auth/signin");
+    }
+
     return(
         <MainNav>
-            <DynamicContent />
+            <DynamicContent userId={session.user.id} />
         </MainNav>
     )
 }

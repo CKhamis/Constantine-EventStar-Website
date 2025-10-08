@@ -120,7 +120,40 @@ export async function POST(request: NextRequest){
 
             console.log(rsvpResponse);
 
-            return NextResponse.json(newEvent, {status: 201});
+            const event = await prisma.event.findFirst({
+                where: {
+                    id: newEvent.id
+                },
+                include: {
+                    author: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            image: true
+                        }
+                    },
+                    RSVP: {
+                        select: {
+                            id: true,
+                            response: true,
+                            guests: true,
+                            firstName: true,
+                            lastName: true,
+                            user: {
+                                select: {
+                                    name: true,
+                                    email: true,
+                                    image: true,
+                                    id: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            return NextResponse.json(event, {status: 201});
         }
 
     } catch (e) {
