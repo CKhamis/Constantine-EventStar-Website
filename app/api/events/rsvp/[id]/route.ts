@@ -47,7 +47,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         // If RSVP is a write-in
         if(!session || !session.user){
             // If event doesn't allow write-ins
-            // TODO: test this
             if(event.inviteVisibility !== "FULL"){
                 return NextResponse.json({ error: "Event inaccessible" }, { status: 403 });
             }

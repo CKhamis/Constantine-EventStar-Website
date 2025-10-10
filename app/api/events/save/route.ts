@@ -1,43 +1,39 @@
-import {PrismaClient} from '@prisma/client';
-import {NextRequest, NextResponse} from "next/server";
-import {saveEventSchema} from "@/components/ValidationSchemas";
-import {auth} from "@/auth";
+import { PrismaClient } from "@prisma/client"
+import { type NextRequest, NextResponse } from "next/server"
+import { saveEventSchema } from "@/components/ValidationSchemas"
+import { auth } from "@/auth"
 
+const prisma = new PrismaClient()
 
-const prisma = new PrismaClient();
+export async function POST(request: NextRequest) {
+    const session = await auth()
 
-export async function POST(request: NextRequest){
-    const session =  await auth();
-
-    if(!session || !session.user || !session.user.id){
-        return NextResponse.json("Approved login required", {status: 401});
+    if (!session || !session.user || !session.user.id) {
+        return NextResponse.json("Approved login required", { status: 401 })
     }
 
-    const body = await request.json();
-    body.eventStart = new Date(body.eventStart);
-    body.eventEnd = new Date(body.eventEnd);
+    const body = await request.json()
+    body.eventStart = new Date(body.eventStart)
+    body.eventEnd = new Date(body.eventEnd)
     if (body.rsvpDuedate) {
-        body.rsvpDuedate = new Date(body.rsvpDuedate);
+        body.rsvpDuedate = new Date(body.rsvpDuedate)
     }
 
-    const validation = saveEventSchema.safeParse(body);
+    const validation = saveEventSchema.safeParse(body)
 
-    if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+    if (!validation.success) {
+        return NextResponse.json(validation.error.format(), { status: 400 })
     }
-
-    // Make sure to invite the author
-    body.RSVP.push(session.user.id);
 
     try {
         // Check if updating
-        if(body.id){
+        if (body.id) {
             const existingEvent = await prisma.event.findUniqueOrThrow({
                 where: { id: body.id },
-            });
+            })
 
             if (!existingEvent || existingEvent.authorId !== session.user.id) {
-                return NextResponse.json({ message: "Event not found" }, { status: 404 });
+                return NextResponse.json({ message: "Event not found" }, { status: 404 })
             }
 
             // Update Event details
@@ -55,41 +51,37 @@ export async function POST(request: NextRequest){
                     backgroundStyle: body.backgroundStyle,
                     maxGuests: body.maxGuests,
                 },
-            });
-
-            // Add or remove existing invites
-            const currentRsvps = await prisma.rsvp.findMany({
-                where: { eventId: body.id },
-                select: { userId: true },
-            });
-
-            const currentUserIds = currentRsvps.map(rsvp => rsvp.userId);
-
-            // Determine RSVPs to delete and add
-            const toDelete = currentUserIds.filter((id:string) => !body.RSVP.includes(id));
-            const toAdd = body.RSVP.filter((id:string) => !currentUserIds.includes(id));
-
-            // Delete RSVPs
-            if (toDelete.length > 0) {
-                await prisma.rsvp.deleteMany({
-                    where: {
-                        eventId: body.id,
-                        userId: { in: toDelete },
+                include: {
+                    author: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            image: true,
+                        },
                     },
-                });
-            }
+                    RSVP: {
+                        select: {
+                            id: true,
+                            response: true,
+                            guests: true,
+                            firstName: true,
+                            lastName: true,
+                            user: {
+                                select: {
+                                    name: true,
+                                    email: true,
+                                    image: true,
+                                    id: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            })
 
-            // Add new RSVPs
-            if (toAdd.length > 0) {
-                const newRsvps = toAdd.map((userId:string) => ({
-                    userId,
-                    eventId: body.id,
-                }));
-                await prisma.rsvp.createMany({ data: newRsvps });
-            }
-
-            return NextResponse.json(updatedEvent, {status: 202});
-        }else{
+            return NextResponse.json(updatedEvent, { status: 202 })
+        } else {
             const newEvent = await prisma.event.create({
                 data: {
                     title: body.title,
@@ -104,25 +96,21 @@ export async function POST(request: NextRequest){
                     authorId: session.user.id,
                     createdAt: new Date(),
                     updatedAt: new Date(),
-                    maxGuests: body.maxGuests
-                }
-            });
+                    maxGuests: body.maxGuests,
+                },
+            })
 
-            // Create RSVPs
-            const rsvpData = body.RSVP.map((user:string) => {
-                return { userId: user, eventId: newEvent.id };
-            });
-
-            // console.log(rsvpData);
-            const rsvpResponse = await prisma.rsvp.createMany({
-                data: rsvpData
-            });
-
-            console.log(rsvpResponse);
+            // Add the trivial RSVP
+            await prisma.rsvp.create({
+                data: {
+                    userId: session.user.id,
+                    eventId: newEvent.id,
+                },
+            })
 
             const event = await prisma.event.findFirst({
                 where: {
-                    id: newEvent.id
+                    id: newEvent.id,
                 },
                 include: {
                     author: {
@@ -130,8 +118,8 @@ export async function POST(request: NextRequest){
                             id: true,
                             name: true,
                             email: true,
-                            image: true
-                        }
+                            image: true,
+                        },
                     },
                     RSVP: {
                         select: {
@@ -145,19 +133,18 @@ export async function POST(request: NextRequest){
                                     name: true,
                                     email: true,
                                     image: true,
-                                    id: true
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+                                    id: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            })
 
-            return NextResponse.json(event, {status: 201});
+            return NextResponse.json(event, { status: 201 })
         }
-
     } catch (e) {
-        console.error(e);
-        return NextResponse.json({ message: "An error occurred" }, { status: 500 });
+        console.error(e)
+        return NextResponse.json({ message: "An error occurred" }, { status: 500 })
     }
 }

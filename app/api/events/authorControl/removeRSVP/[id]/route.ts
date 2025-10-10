@@ -70,7 +70,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             }
         })
 
-        return NextResponse.json("You have removed an RSVP with" + optionalRSVP.guests + " +1s.", { status: 200 });
+        return NextResponse.json("You have removed an RSVP with " + optionalRSVP.guests + " +1s.", { status: 200 });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error: "An error occurred while fetching the event" }, { status: 500 });

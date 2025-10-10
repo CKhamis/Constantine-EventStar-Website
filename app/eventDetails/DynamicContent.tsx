@@ -90,7 +90,6 @@ export default function DynamicContent({ eventId, userId }: Props) {
             inviteVisibility: "NONE",
             maxGuests: 0,
             eventType: "GENERAL_EVENT",
-            RSVP: [],
         },
     })
 

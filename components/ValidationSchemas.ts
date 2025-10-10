@@ -36,9 +36,6 @@ export const saveEventSchema = z.object({
     inviteVisibility: InviteVisibility,
     eventType: EventType,
     maxGuests: z.coerce.number().int().min(0, "Must be a positive number"),
-    RSVP: z.array(
-        z.string().cuid(),
-    ).optional(),
 })
 
 export const followRequestReplySchema = z.object({
@@ -52,7 +49,7 @@ export const uuidSchema = z.object({
 
 export const rsvpSchema = z.object({
     response: RsvpResponse,
-    guests: z.coerce.number().int().min(0, "Must be a positive number"),
+    guests: z.coerce.number().int().min(0, "Must be a positive number").optional().or(z.literal(0)),
     firstName: z.string().max(20, "First name too long").min(1, "First name too short").optional().or(z.literal("")),
     lastName: z.string().max(20, "Last name too long").min(1, "Last name too short").optional().or(z.literal("")),
 })
