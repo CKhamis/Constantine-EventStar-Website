@@ -31,6 +31,7 @@ import ExcludedInvite from "@/app/eventDetails/ExcludedInvite"
 import { refresh } from "effect/Resource"
 import IncludedInvite from "@/app/eventDetails/IncludedInvite"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import Link from "next/link";
 
 export interface Props {
     eventId: string | null
@@ -236,11 +237,12 @@ export default function DynamicContent({ eventId, userId }: Props) {
             <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
                 <div className="lg:col-span-2 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
                     <div className="top-left-gradient">
-                        <div className="container flex-col flex gap-3 py-3 max-w-3xl">
+                        <div className="container flex-row items-center justify-between flex gap-3 py-3 max-w-3xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
                                 <Image src="/icons/NewEvent.svg" alt="New Event" width={50} height={50} />
                                 <p className="text-3xl font-bold">{editing ? "Edit Event" : "Create New Event"}</p>
                             </div>
+                            <Link href={"/event/" + currentEventId}><Button variant="secondary" size="lg">View Event</Button></Link>
                         </div>
                     </div>
                     <div className="container flex-col flex gap-3 py-3 max-w-3xl mt-4">

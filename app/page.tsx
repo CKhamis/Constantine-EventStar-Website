@@ -44,7 +44,7 @@ export default async function home(){
                             </CarouselItem>
                         </CarouselContent>
                     </Carousel>
-                    <p className="text-muted-foreground text-xs">Version 4.5.0</p>
+                    <p className="text-muted-foreground text-xs">Version 5.0.0</p>
                     <br className="my-10"/>
                     <Card className="p-5 top-left-gradient">
                         <div className="flex flex-col md:flex-row justify-start items-center mb:items-start gap-10">
