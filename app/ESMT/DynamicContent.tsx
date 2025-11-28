@@ -9,6 +9,7 @@ import {Search} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import UserDetailsForm from "@/app/ESMT/UserDetailsForm";
 import {esmtUser} from "@/app/api/ESMT/user/all/route";
+import UserMerge from "@/app/ESMT/UserMerge";
 
 interface Props {
     id: string;
@@ -54,10 +55,10 @@ export default function DynamicContent({id}: Props) {
                 </div>
             </div>
             <div>
-                <Tabs defaultValue="account" className="w-fit">
+                <Tabs defaultValue="account" className="w-full">
                     <TabsList>
                         <TabsTrigger value="account">User Accounts</TabsTrigger>
-                        <TabsTrigger value="password">Password</TabsTrigger>
+                        <TabsTrigger value="merge">Merge Users</TabsTrigger>
                     </TabsList>
                     <TabsContent value="account">
                         <div className="relative max-w-sm mb-4">
@@ -76,7 +77,9 @@ export default function DynamicContent({id}: Props) {
                             ))}
                         </div>
                     </TabsContent>
-                    <TabsContent value="password">Change your password here.</TabsContent>
+                    <TabsContent value="merge">
+	                    <UserMerge users={userList} />
+                    </TabsContent>
                 </Tabs>
             </div>
         </div>
