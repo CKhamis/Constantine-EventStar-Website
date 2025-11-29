@@ -12,7 +12,7 @@ import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/compon
 import { Input } from "@/components/ui/input";
 import {useForm} from "react-hook-form";
 import z from "zod/index";
-import {editBasicUserInfoSchema} from "@/components/ValidationSchemas";
+import {editBasicUserInfoSchema, esmtMergeFormSchema} from "@/components/ValidationSchemas";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Button} from "@/components/ui/button";
 
@@ -31,6 +31,14 @@ export default function UserMerge({users}:Props){
             if (!res.ok) throw new Error("Failed to fetch user details");
             const data: ESMTUserDetails = await res.json();
             setHost(data);
+
+	        form.setValue("name", data.name ?? "");
+	        form.setValue("email", data.email ?? "");
+	        form.setValue("discordId", data.discordId ?? "");
+	        form.setValue("phoneNumber", data.phoneNumber ?? "");
+	        form.setValue("hostId", data.id ?? "");
+
+
         } catch (err) {
             console.error(err);
             setHost(null);
@@ -43,23 +51,29 @@ export default function UserMerge({users}:Props){
 			if (!res.ok) throw new Error("Failed to fetch user details");
 			const data: ESMTUserDetails = await res.json();
 			setSecondary(data);
+
+			form.setValue("secondaryId", data.id);
+
 		} catch (err) {
 			console.error(err);
 			setSecondary(null);
 		}
 	};
 
-	const form = useForm<z.infer<typeof editBasicUserInfoSchema>>({
-		resolver: zodResolver(editBasicUserInfoSchema),
+	const form = useForm<z.infer<typeof esmtMergeFormSchema>>({
+		resolver: zodResolver(esmtMergeFormSchema),
 		defaultValues: {
 			name: "",
 			email: "",
 			phone: "",
 			discord: "",
+
+			hostId: "",
+			secondaryId: "",
 		},
 	});
 
-	const onSubmit = (values: z.infer<typeof editBasicUserInfoSchema>) => {
+	const onSubmit = (values: z.infer<typeof esmtMergeFormSchema>) => {
 		console.log("Submitted merge info:", values);
 	};
 
@@ -127,14 +141,25 @@ export default function UserMerge({users}:Props){
 
 			<p className="text-2xl font-bold mt-5">2. Select Secondary Account</p>
 			<div className="md:grid-cols-3 grid w-100 mt-2 gap-5">
-				<Select onValueChange={(e) => changeSecondary(e)}>
-					<SelectTrigger>
-						<SelectValue placeholder="Choose User" />
-					</SelectTrigger>
-					<SelectContent>
-						{users.map(user => (<SelectItem value={user.id} key={user.id}>{user.name}</SelectItem>))}
-					</SelectContent>
-				</Select>
+				<div>
+					<Select onValueChange={(e) => changeSecondary(e)}>
+						<SelectTrigger>
+							<SelectValue placeholder="Choose User" />
+						</SelectTrigger>
+						<SelectContent>
+							{users.map(user => (<SelectItem value={user.id} key={user.id}>{user.name}</SelectItem>))}
+						</SelectContent>
+					</Select>
+					{host?.id === secondary?.id && host?
+						<p className="flex items-center gap-2 text-red-700 mt-3 align-center">
+							<AlertOctagon />
+							Both accounts need to be different
+						</p>
+						:
+						<></>
+					}
+
+				</div>
 				<Card className="p-5 flex flex-col gap-5">
 					<div className="flex flex-row justify-start align-center items-center gap-4">
 						<AvatarIcon name={secondary?.name} key={secondary?.id} size="small" image={secondary?.image} />
@@ -182,6 +207,8 @@ export default function UserMerge({users}:Props){
 			<Card className="p-5 mt-3">
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
+						<input type="hidden" {...form.register("hostId")} />
+						<input type="hidden" {...form.register("secondaryId")} />
 
 						<FormField
 							control={form.control}
@@ -239,9 +266,12 @@ export default function UserMerge({users}:Props){
 							)}
 						/>
 
-						<Button type="submit" className="w-fit">
-							Merge Accounts
-						</Button>
+						<div>
+							<Button type="submit" variant="destructive" className="w-fit">
+								Merge Accounts
+							</Button>
+							<p className="text-muted-foreground text-sm">This operation cannot be undone</p>
+						</div>
 					</form>
 				</Form>
 			</Card>

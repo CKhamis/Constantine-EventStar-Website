@@ -17,6 +17,9 @@ export const esmtMergeFormSchema = z.object({
 	email: z.string().email("Invalid email"),
 	phone: z.string().optional(),
 	discord: z.string().optional(),
+
+	hostId: z.string().cuid(),
+	secondaryId: z.string().cuid(),
 });
 
 export const editBasicUserInfoSchema = z.object({
