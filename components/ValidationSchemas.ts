@@ -12,7 +12,12 @@ const InviteVisibility = z.enum(["FULL", "INVITED_ONLY", "NONE",]);
 const RsvpResponse = z.enum(["YES", "NO", "MAYBE"]);
 const RsvpResponseAll = z.enum(["YES", "NO", "MAYBE", "NO_RESPONSE"]);
 
-
+export const esmtMergeFormSchema = z.object({
+	name: z.string().min(1, "Name is required"),
+	email: z.string().email("Invalid email"),
+	phone: z.string().optional(),
+	discord: z.string().optional(),
+});
 
 export const editBasicUserInfoSchema = z.object({
     discordId: z.string().optional(),

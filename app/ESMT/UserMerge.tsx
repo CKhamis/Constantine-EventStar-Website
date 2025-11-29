@@ -4,6 +4,17 @@ import {useState} from "react";
 import {Card} from "@/components/ui/card";
 import AvatarIcon from "@/components/AvatarIcon";
 import {ESMTUserDetails} from "@/app/api/ESMT/user/detail/[id]/route";
+import {Table, TableBody, TableCell, TableRow} from "@/components/ui/table";
+import {format} from "date-fns";
+import {AlertOctagon} from "lucide-react";
+import { Form } from "@/components/ui/form";
+import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {useForm} from "react-hook-form";
+import z from "zod/index";
+import {editBasicUserInfoSchema} from "@/components/ValidationSchemas";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Button} from "@/components/ui/button";
 
 interface Props{
 	users: esmtUser[]
@@ -11,9 +22,10 @@ interface Props{
 
 export default function UserMerge({users}:Props){
 	const [host, setHost] = useState<ESMTUserDetails | null>(null);
+	const [secondary, setSecondary] = useState<ESMTUserDetails | null>(null);
 
 
-    const handleSelect = async (id: string) => {
+    const changeHost = async (id: string) => {
         try {
             const res = await fetch(`/api/ESMT/user/detail/${id}`);
             if (!res.ok) throw new Error("Failed to fetch user details");
@@ -25,11 +37,44 @@ export default function UserMerge({users}:Props){
         }
     };
 
+	const changeSecondary = async (id: string) => {
+		try {
+			const res = await fetch(`/api/ESMT/user/detail/${id}`);
+			if (!res.ok) throw new Error("Failed to fetch user details");
+			const data: ESMTUserDetails = await res.json();
+			setSecondary(data);
+		} catch (err) {
+			console.error(err);
+			setSecondary(null);
+		}
+	};
+
+	const form = useForm<z.infer<typeof editBasicUserInfoSchema>>({
+		resolver: zodResolver(editBasicUserInfoSchema),
+		defaultValues: {
+			name: "",
+			email: "",
+			phone: "",
+			discord: "",
+		},
+	});
+
+	const onSubmit = (values: z.infer<typeof editBasicUserInfoSchema>) => {
+		console.log("Submitted merge info:", values);
+	};
+
 	return (
 		<div className="grid-cols-1">
-			<p className="text-2xl font-bold">1. Select Host Account</p>
+			<Card className="p-5">
+				<p className="text-2xl font-bold flex items-center gap-2">
+					<AlertOctagon />
+					Caution
+				</p>
+				<p>This setting merges two separate EventStar accounts and turns it into one. This will combine all sign-in options, event invitations, RSVPs, followers, following, and other data points. This process cannot be reversed. Please make sure to back up database before.</p>
+			</Card>
+			<p className="text-2xl font-bold mt-5">1. Select Host Account</p>
 			<div className="md:grid-cols-3 grid w-100 mt-2 gap-5">
-				<Select onValueChange={(e) => handleSelect(e)}>
+				<Select onValueChange={(e) => changeHost(e)}>
 					<SelectTrigger>
 						<SelectValue placeholder="Choose User" />
 					</SelectTrigger>
@@ -42,42 +87,164 @@ export default function UserMerge({users}:Props){
                         <AvatarIcon name={host?.name} key={host?.id} size="small" image={host?.image} />
                         <p className="text-xl font-bold">{host? host.name : "None Selected"}</p>
                     </div>
-                    <div className="flex flex-row justify-evenly align-center items-center gap-5">
-                        <div className="flex flex-col justify-center align-center items-center">
+                    <div className="flex flex-row justify-evenly align-center items-center gap-5 overflow-x-auto pb-5">
+	                    <div className="flex flex-col justify-center align-center items-center">
                             <p className="text-bold text-2xl">{host? host.followedBy.length : "?"}</p>
-                            <p className="">Followers</p>
+                            <p className="text-sm">Followers</p>
                         </div>
                         <div className="flex flex-col justify-center align-center items-center">
                             <p className="text-bold text-2xl">{host? host.event.length : "?"}</p>
-                            <p className="">Events</p>
+                            <p className="text-sm">Events</p>
                         </div>
                         <div className="flex flex-col justify-center align-center items-center">
                             <p className="text-bold text-2xl">{host? host.following.length : "?"}</p>
-                            <p className="">Following</p>
+                            <p className="text-sm">Following</p>
                         </div>
                         <div className="flex flex-col justify-center align-center items-center">
                             <p className="text-bold text-2xl">{host? host.accounts.length : "?"}</p>
-                            <p className="">Accounts</p>
+                            <p className="text-sm">Accounts</p>
                         </div>
                         <div className="flex flex-col justify-center align-center items-center">
                             <p className="text-bold text-2xl">{host? host.rsvp.length : "?"}</p>
-                            <p className="">RSVP</p>
+                            <p className="text-sm">RSVP</p>
                         </div>
                     </div>
                 </Card>
-				<Card className="p-5 flex gap-5 items-stretch align-center">
-                    <div className="flex items-center overflow-x-scroll gap-4">
-                        <div className="flex flex-col justify-center align-center items-center">
-                            <p className="text-bold text-2xl">{host? host.accounts.length : "?"}</p>
-                            <p className="">Accounts</p>
-                        </div>
-                        <div className="flex flex-col justify-center align-center items-center">
-                            <p className="text-bold text-2xl">{host? host.accounts.length : "?"}</p>
-                            <p className="">Accounts</p>
-                        </div>
-                    </div>
+				<Card className="p-5 flex flex-col gap-5 align-center">
+					<p className="text-xl font-bold">Sign In Options</p>
+                    <Table className="overflow-y-auto">
+	                    <TableBody>
+		                    {host?.accounts.map(account => (
+			                    <TableRow key={account.id}>
+				                    <TableCell>{account.provider}</TableCell>
+				                    <TableCell>{format(new Date(account.createdAt), "M/dd/yyyy hh:mm a")}</TableCell>
+			                    </TableRow>
+		                    ))}
+	                    </TableBody>
+                    </Table>
                 </Card>
 			</div>
+
+			<p className="text-2xl font-bold mt-5">2. Select Secondary Account</p>
+			<div className="md:grid-cols-3 grid w-100 mt-2 gap-5">
+				<Select onValueChange={(e) => changeSecondary(e)}>
+					<SelectTrigger>
+						<SelectValue placeholder="Choose User" />
+					</SelectTrigger>
+					<SelectContent>
+						{users.map(user => (<SelectItem value={user.id} key={user.id}>{user.name}</SelectItem>))}
+					</SelectContent>
+				</Select>
+				<Card className="p-5 flex flex-col gap-5">
+					<div className="flex flex-row justify-start align-center items-center gap-4">
+						<AvatarIcon name={secondary?.name} key={secondary?.id} size="small" image={secondary?.image} />
+						<p className="text-xl font-bold">{secondary? secondary.name : "None Selected"}</p>
+					</div>
+					<div className="flex flex-row justify-evenly align-center items-center gap-5 overflow-x-auto pb-5">
+						<div className="flex flex-col justify-center align-center items-center">
+							<p className="text-bold text-2xl">{secondary? secondary.followedBy.length : "?"}</p>
+							<p className="text-sm">Followers</p>
+						</div>
+						<div className="flex flex-col justify-center align-center items-center">
+							<p className="text-bold text-2xl">{secondary? secondary.event.length : "?"}</p>
+							<p className="text-sm">Events</p>
+						</div>
+						<div className="flex flex-col justify-center align-center items-center">
+							<p className="text-bold text-2xl">{secondary? secondary.following.length : "?"}</p>
+							<p className="text-sm">Following</p>
+						</div>
+						<div className="flex flex-col justify-center align-center items-center">
+							<p className="text-bold text-2xl">{secondary? secondary.accounts.length : "?"}</p>
+							<p className="text-sm">Accounts</p>
+						</div>
+						<div className="flex flex-col justify-center align-center items-center">
+							<p className="text-bold text-2xl">{secondary? secondary.rsvp.length : "?"}</p>
+							<p className="text-sm">RSVP</p>
+						</div>
+					</div>
+				</Card>
+				<Card className="p-5 flex flex-col gap-5 align-center">
+					<p className="text-xl font-bold">Sign In Options</p>
+					<Table className="overflow-y-auto">
+						<TableBody>
+							{secondary?.accounts.map(account => (
+								<TableRow key={account.id}>
+									<TableCell>{account.provider}</TableCell>
+									<TableCell>{format(new Date(account.createdAt), "M/dd/yyyy hh:mm a")}</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</Card>
+			</div>
+
+			<p className="text-2xl font-bold mt-5">3. Combine User Information</p>
+			<Card className="p-5 mt-3">
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
+
+						<FormField
+							control={form.control}
+							name="name"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Name</FormLabel>
+									<FormControl>
+										<Input placeholder="Enter name" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="email"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Email</FormLabel>
+									<FormControl>
+										<Input type="email" placeholder="Enter email" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="phone"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Phone Number</FormLabel>
+									<FormControl>
+										<Input placeholder="Optional" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="discord"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Discord ID</FormLabel>
+									<FormControl>
+										<Input placeholder="Optional" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<Button type="submit" className="w-fit">
+							Merge Accounts
+						</Button>
+					</form>
+				</Form>
+			</Card>
 
 		</div>
 	);
