@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 .markdown > h1{
   @apply font-bold text-3xl mt-3;
 }
