@@ -11,16 +11,20 @@ import { Form } from "@/components/ui/form";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {useForm} from "react-hook-form";
-import z from "zod/index";
-import {editBasicUserInfoSchema, esmtMergeFormSchema} from "@/components/ValidationSchemas";
+import {esmtMergeFormSchema} from "@/components/ValidationSchemas";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Button} from "@/components/ui/button";
+import z from "zod";
+import {toast} from "sonner";
+import axios from "axios";
 
 interface Props{
-	users: esmtUser[]
+	users: esmtUser[],
+	setLoading: (isLoading: boolean) => void,
+	refresh: () => void,
 }
 
-export default function UserMerge({users}:Props){
+export default function UserMerge({users, setLoading, refresh}:Props){
 	const [host, setHost] = useState<ESMTUserDetails | null>(null);
 	const [secondary, setSecondary] = useState<ESMTUserDetails | null>(null);
 
@@ -35,7 +39,7 @@ export default function UserMerge({users}:Props){
 	        form.setValue("name", data.name ?? "");
 	        form.setValue("email", data.email ?? "");
 	        form.setValue("discordId", data.discordId ?? "");
-	        form.setValue("phoneNumber", data.phoneNumber ?? "");
+	        form.setValue("phone", data.phoneNumber ?? "");
 	        form.setValue("hostId", data.id ?? "");
 
 
@@ -66,16 +70,35 @@ export default function UserMerge({users}:Props){
 			name: "",
 			email: "",
 			phone: "",
-			discord: "",
+			discordId: "",
 
 			hostId: "",
 			secondaryId: "",
 		},
 	});
 
-	const onSubmit = (values: z.infer<typeof esmtMergeFormSchema>) => {
-		console.log("Submitted merge info:", values);
+	const onSubmit = async (values: z.infer<typeof esmtMergeFormSchema>) => {
+		setLoading(true);
+
+		try {
+			const response = await axios.post("/api/ESMT/user/merge", values);
+
+			console.log("Merge successful:", response.data);
+
+			toast.success("Users successfully merged!");
+			refresh();
+		} catch (err: any) {
+			console.error(err);
+
+			const message =
+				err.response?.data?.message || "There was a problem merging users.";
+
+			toast.error(message);
+		} finally {
+			setLoading(false);
+		}
 	};
+
 
 	return (
 		<div className="grid-cols-1">
@@ -254,7 +277,7 @@ export default function UserMerge({users}:Props){
 
 						<FormField
 							control={form.control}
-							name="discord"
+							name="discordId"
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>Discord ID</FormLabel>

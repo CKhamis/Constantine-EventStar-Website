@@ -78,7 +78,7 @@ export default function DynamicContent({id}: Props) {
                         </div>
                     </TabsContent>
                     <TabsContent value="merge">
-	                    <UserMerge users={userList} />
+	                    <UserMerge users={userList} setLoading={setLoading} refresh={refresh} />
                     </TabsContent>
                 </Tabs>
             </div>
