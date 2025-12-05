@@ -16,7 +16,7 @@ export function GuestPopup({setOpen}: Props) {
 							<p className="text-muted-foreground">New feature of EventStar 4.5+</p>
 						</CardHeader>
 						<CardContent className="flex flex-col items-center justify-center">
-							<Image width={500} height={600} src="/agent/Plusone.gif" alt="Guest Feature Image"/>
+							<Image width={500} height={600} src="/agent/Plusone.gif" alt="Guest Feature Image" unoptimized={true} />
 							<p className="mt-8">Invited guests can now add their own +1s to your EventStar events. Organizers decide how many guests each invitee can bring.</p>
 						</CardContent>
 						<CardFooter>

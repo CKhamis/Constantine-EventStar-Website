@@ -9,7 +9,7 @@ export function LoadingIcon() {
 
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center">
-                    <Image src="/agent/loading.gif" alt="loading" width={400} height={400}/>
+                    <Image src="/agent/loading.gif" alt="loading" width={400} height={400} unoptimized={true} />
                     <p className="text-4xl font-bold text-center">Now Loading</p>
                 </CardContent>
                 <CardFooter>
