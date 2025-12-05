@@ -24,6 +24,7 @@ import {Input} from "@/components/ui/input";
 import { useCookies } from 'react-cookie';
 import {GuestPopup} from "@/components/tutorials/guests/guests";
 import GuestList from "@/app/event/[id]/GuestList";
+import {Sus} from "@/app/event/[id]/Sus";
 
 export interface Props {
     eventId: string,
@@ -42,6 +43,7 @@ type rsvp = {
 
 export default function DynamicContent({eventId, userId}: Props) {
     const [loading, setLoading] = useState(true);
+    const [writeWarning, setWriteWarning] = useState(true);
     const [RSVP, setRSVP] = useState<rsvp | null>();
     const [eventInfo, setEventInfo] = useState<EVResponse | null>();
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -117,6 +119,7 @@ export default function DynamicContent({eventId, userId}: Props) {
     return (
         <>
             {loading && <LoadingIcon/>}
+	        <Sus open={writeWarning} onOpenChanged={setWriteWarning} eventId={eventId} />
             {cookies.guestsTutorial !== false && (
                 <GuestPopup setOpen={closeGuestTutorial} />
             )}
@@ -333,7 +336,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                     <Button type="submit" disabled={submitStatus === "loading" || isExpired}>
                                                         {submitStatus === "loading" ? "Submitting..." : "Save"}
                                                     </Button>
-                                                    <Link href="/api/auth/signin">
+                                                    <Link href={"/api/auth/signin?callbackUrl=/event/" + eventId}>
                                                         <Button variant="secondary">I have an account</Button>
                                                     </Link>
                                                     {submitStatus === "success" && <Check className="h-4 w-4 text-green-500" />}
@@ -418,7 +421,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                 return (
                                     <div className="flex flex-col gap-5 mt-5">
                                         <p>Please log in with an invited EventStar account to RSVP to this event!</p>
-                                        <Link href="/api/auth/signin">
+                                        <Link href={"/api/auth/signin?callbackUrl=/event/" + eventId}>
                                             <Button size="sm">Log in</Button>
                                         </Link>
                                     </div>

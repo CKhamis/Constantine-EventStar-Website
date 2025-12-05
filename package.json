@@ -61,12 +61,12 @@
     "react-hook-form": "^7.67.0",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.9",
+    "react-simple-typewriter": "^5.0.1",
     "recharts": "^2.15.4",
     "resend": "^4.1.1",
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "typewriter-effect": "^2.22.0",
     "vaul": "^1.1.2",
     "zod": "^3.25.76"
   },

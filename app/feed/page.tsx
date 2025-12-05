@@ -7,7 +7,7 @@ export default async function Page(){
     const session = await auth();
 
     if(!session || !session.user){
-        redirect("/api/auth/signin");
+        redirect("/api/auth/signin?callbackUrl=/feed");
     }
 
     return (
