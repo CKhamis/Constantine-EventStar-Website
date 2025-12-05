@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
 					    name: body.name,
 					    email: body.email,
 					    discordId: body.discordId,
-					    phoneNumber: body.phoneNumber,
+					    phoneNumber: body.phone,
 				    }
 			    });
 

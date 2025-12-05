@@ -85,8 +85,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 
 			console.log("Merge successful:", response.data);
 
-			toast.success("Users successfully merged!");
-			refresh();
+			toast.success("Users successfully merged! Please refresh this page.");
 		} catch (err: any) {
 			console.error(err);
 
@@ -95,6 +94,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 
 			toast.error(message);
 		} finally {
+			refresh();
 			setLoading(false);
 		}
 	};
