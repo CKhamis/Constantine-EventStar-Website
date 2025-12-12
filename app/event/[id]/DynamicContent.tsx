@@ -43,7 +43,7 @@ type rsvp = {
 
 export default function DynamicContent({eventId, userId}: Props) {
     const [loading, setLoading] = useState(true);
-    const [writeWarning, setWriteWarning] = useState(true);
+    const [writeWarning, setWriteWarning] = useState(false);
     const [RSVP, setRSVP] = useState<rsvp | null>();
     const [eventInfo, setEventInfo] = useState<EVResponse | null>();
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');

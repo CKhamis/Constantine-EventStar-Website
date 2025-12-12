@@ -23,11 +23,11 @@ export function Sus({eventId, open, onOpenChanged}: Props) {
 		<Dialog open={open} onOpenChange={onOpenChanged} defaultOpen={false}>
 			<DialogContent className="max-w-md">
 				<DialogTitle>Hmmmm...</DialogTitle>
-				<DialogHeader>
-					<Image src="/agent/Sus.png" alt="loading" width={400} height={400}/>
+				<DialogHeader className="flex-row justify-center align-center">
+					<Image src="/agent/Sus.gif" alt="loading" width={300} height={300}/>
 				</DialogHeader>
 				<DialogDescription className="flex flex-col items-center justify-center text-2xl text-center">
-					<AgentDialog words={["Uhhhh hi there.🤓👆", "So basically, I just saw what you typed there and uuuuuuh 🚪", "It kinda looks like you already have an account.", "You should sign in with your account...or else.", "I won't send you to the homescreen afterwards.", "Or will I? 😈"]} />
+					<AgentDialog words={["Uhhhh hi there.🤓👆", "So basically, I just saw what you typed there and uuuuuuh 🚪", "It kinda looks like you already have an account.", "You should sign in with your account...or else."]} />
 				</DialogDescription>
 
 				<DialogFooter className="w-full flex items-center justify-center gap-4">
