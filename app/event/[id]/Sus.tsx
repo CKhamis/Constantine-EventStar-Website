@@ -16,9 +16,10 @@ export interface Props {
 	eventId: string;
 	open: boolean;
 	onOpenChanged: (open: boolean) => void;
+	submitAnyway: () => void;
 }
 
-export function Sus({eventId, open, onOpenChanged}: Props) {
+export function Sus({eventId, open, onOpenChanged, submitAnyway}: Props) {
 	return (
 		<Dialog open={open} onOpenChange={onOpenChanged} defaultOpen={false}>
 			<DialogContent className="max-w-md">
@@ -32,7 +33,7 @@ export function Sus({eventId, open, onOpenChanged}: Props) {
 
 				<DialogFooter className="w-full flex items-center justify-center gap-4">
 					<Link href={"/api/auth/signin?callbackUrl=/event/" + eventId}><Button>Ok FINE, I'll sign in</Button></Link>
-					<Button variant="secondary">I don't have one</Button>
+					<Button variant="secondary"onClick={submitAnyway}>I don't have one</Button>
 					<DialogClose asChild>
 						<Button variant="outline">Cancel</Button>
 					</DialogClose>

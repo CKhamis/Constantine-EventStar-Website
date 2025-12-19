@@ -25,6 +25,8 @@ import { useCookies } from 'react-cookie';
 import {GuestPopup} from "@/components/tutorials/guests/guests";
 import GuestList from "@/app/event/[id]/GuestList";
 import {Sus} from "@/app/event/[id]/Sus";
+import { stringSimilarity } from "string-similarity-js";
+
 
 export interface Props {
     eventId: string,
@@ -43,14 +45,40 @@ type rsvp = {
 
 export default function DynamicContent({eventId, userId}: Props) {
     const [loading, setLoading] = useState(true);
-    const [writeWarning, setWriteWarning] = useState(false);
     const [RSVP, setRSVP] = useState<rsvp | null>();
     const [eventInfo, setEventInfo] = useState<EVResponse | null>();
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [userInfo, setUserInfo] = useState<userInfoResponse | null>(null);
     const [cookies, setCookie, removeCookie] = useCookies(['guestsTutorial']);
 
-    function closeGuestTutorial(){
+	const [pendingSubmit, setPendingSubmit] = useState<z.infer<typeof rsvpSchema> | null>(null);
+	const [writeWarning, setWriteWarning] = useState(false);
+
+	function WICheck(data: z.infer<typeof rsvpSchema>) {
+		// Only intercept write-in guests that
+		if (!userId && eventInfo?.inviteVisibility === "FULL") {
+			const enteredName = `${data.firstName} ${data.lastName}`.toLowerCase();
+
+			const suspiciousMatch = eventInfo.RSVP.some((r) => {
+				// Only check invited accounts. Similar write-ins don't matter.
+				const existingName = `${r.user?.name ?? ""}`.toLowerCase();
+				// console.log(`${enteredName.toLowerCase()} ${existingName.toLowerCase()} ${stringSimilarity(enteredName.toLowerCase(), existingName.toLowerCase())}`);
+				return stringSimilarity(enteredName.toLowerCase(), existingName.toLowerCase()) > 0.85;
+			});
+
+			if (suspiciousMatch) {
+				setPendingSubmit(data);
+				setWriteWarning(true);
+				return;
+			}
+		}
+
+		// No match → submit immediately
+		submitForm(data);
+	}
+
+
+	function closeGuestTutorial(){
         setCookie("guestsTutorial", false);
     }
 
@@ -89,7 +117,7 @@ export default function DynamicContent({eventId, userId}: Props) {
         setLoading(false);
     }
 
-    async function onSubmit(data: z.infer<typeof rsvpSchema>) {
+    async function submitForm(data: z.infer<typeof rsvpSchema>) {
         setSubmitStatus('loading')
         try {
             await axios.post(`/api/events/rsvp/${eventId}`, {response: data.response, guests: data.guests, firstName: data.firstName, lastName: data.lastName})
@@ -119,7 +147,14 @@ export default function DynamicContent({eventId, userId}: Props) {
     return (
         <>
             {loading && <LoadingIcon/>}
-	        <Sus open={writeWarning} onOpenChanged={setWriteWarning} eventId={eventId} />
+	        <Sus open={writeWarning} onOpenChanged={setWriteWarning} eventId={eventId} submitAnyway={() => {
+		        if (pendingSubmit){
+			        submitForm(pendingSubmit);
+			        setPendingSubmit(null);
+					setWriteWarning(false);
+		        }
+
+	        }} />
             {cookies.guestsTutorial !== false && (
                 <GuestPopup setOpen={closeGuestTutorial} />
             )}
@@ -250,7 +285,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                 if (!userId && eventInfo?.inviteVisibility === "FULL") {
                                     return (
                                         <Form {...form}>
-                                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                                            <form onSubmit={form.handleSubmit(WICheck)} className="space-y-6">
                                                 <FormField
                                                     control={form.control}
                                                     name="firstName"
@@ -351,7 +386,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                 if (userId && (eventInfo?.inviteVisibility === "FULL" || eventInfo?.RSVP.some(r => r.user && r.user.id === userId))) {
                                     return (
                                         <Form {...form}>
-                                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
+                                            <form onSubmit={form.handleSubmit(submitForm)} className="space-y-6 mt-6">
                                                 {/* RSVP dropdown */}
                                                 <FormField
                                                     control={form.control}
