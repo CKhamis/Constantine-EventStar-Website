@@ -52,7 +52,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             }
 
             // If write-in information was correctly attached
-            if(body.firstName.length <= 1 || body.lastName.length <= 1){
+            if(body.firstName.length <= 1 || body.lastName.length < 1){
                 return NextResponse.json({ error: "First and last names are not specified in write-in RSVP." }, { status: 401 });
             }
 

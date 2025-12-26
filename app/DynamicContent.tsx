@@ -163,7 +163,7 @@ export default function DynamicContent({userId} : Props) {
                                 </CarouselItem>
                             </CarouselContent>
                         </Carousel>
-                        <p className="text-muted-foreground text-xs mb-5">Version 5.0.0</p>
+                        <p className="text-muted-foreground text-xs mb-5">Version 6.0.0</p>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                             <Card className="rounded-none">
