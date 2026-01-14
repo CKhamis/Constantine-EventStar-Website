@@ -1,17 +1,14 @@
-'use client'
-
+import {useState} from "react";
+import Intro from "@/app/profile/discordSetup/slides/Intro";
+import Image from "next/image";
+import {UserPlus} from "lucide-react";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {Progress} from "@/components/ui/progress";
 import {Button} from "@/components/ui/button";
-import {UserPlus} from "lucide-react";
-import Intro from "@/app/tutorial/slides/Intro";
-import About from "@/app/tutorial/slides/About";
-import Instructions from "@/app/tutorial/slides/Instructions";
-import {useState} from "react";
-import Image from "next/image";
-import EmailForm from "@/app/tutorial/slides/EmailForm";
-import FollowPrompt from "@/app/tutorial/slides/FollowPrompt";
-import Final from "@/app/tutorial/slides/Final";
+
+interface Props {
+    id: string;
+}
 
 type Slide = {
     backAllowed: boolean,
@@ -19,20 +16,15 @@ type Slide = {
     content: React.ReactNode,
 }
 
-export default function DynamicContent() {
+export default function DynamicContent({id}: Props) {
+    const [loading, setLoading] = useState(true);
     const slideDeck:Slide[] = [
-        {backAllowed: true, forwardAllowed: true, content: <Intro />, },
-        {backAllowed: true, forwardAllowed: true, content: <About />, },
-        {backAllowed: true, forwardAllowed: true, content: <Instructions />, },
-        {backAllowed: true, forwardAllowed: false, content: <EmailForm enableNextAction={enableNextCallback} />, },
-        {backAllowed: false, forwardAllowed: true, content: <FollowPrompt />, },
-        {backAllowed: false, forwardAllowed: true, content: <Final />, },
+        {backAllowed: false, forwardAllowed: false, content:<Intro />},
     ];
 
     const [slideIndex, setSlideIndex] = useState(0);
     const [enableNext, setEnableNext] = useState<boolean>(true);
     const [enablePrev, setEnablePrev] = useState<boolean>(false);
-
 
     function nextPressed(){
         setSlideIndex((prevIndex) => {
@@ -79,7 +71,7 @@ export default function DynamicContent() {
                 <div className="top-left-gradient p-4 flex flex-row justify-between items-center">
                     <div className="flex flex-row gap-3">
                         <Image src="/icons/Logo.svg" alt="logo" height={40} width={40} />
-                        <p className="font-bold text-3xl">EventStar Setup</p>
+                        <p className="font-bold text-3xl">Discord Connection Setup</p>
                     </div>
                     <UserPlus style={{width: '40px', height: '40px'}}/>
                 </div>
