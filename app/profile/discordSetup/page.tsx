@@ -11,8 +11,6 @@ export default async function page(){
     }
 
     return(
-        <MainNav>
-            <DynamicContent id={session.user.id} />
-        </MainNav>
+        <DynamicContent id={session.user.id} />
     )
 }

@@ -1,10 +1,12 @@
+'use client'
 import {useState} from "react";
 import Intro from "@/app/profile/discordSetup/slides/Intro";
 import Image from "next/image";
-import {UserPlus} from "lucide-react";
+import {Server, UserPlus} from "lucide-react";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {Progress} from "@/components/ui/progress";
 import {Button} from "@/components/ui/button";
+import Information from "@/app/profile/discordSetup/slides/Information";
 
 interface Props {
     id: string;
@@ -19,7 +21,8 @@ type Slide = {
 export default function DynamicContent({id}: Props) {
     const [loading, setLoading] = useState(true);
     const slideDeck:Slide[] = [
-        {backAllowed: false, forwardAllowed: false, content:<Intro />},
+        {backAllowed: false, forwardAllowed: true, content:<Intro />},
+        {backAllowed: true, forwardAllowed: false, content:<Information />},
     ];
 
     const [slideIndex, setSlideIndex] = useState(0);
@@ -73,7 +76,7 @@ export default function DynamicContent({id}: Props) {
                         <Image src="/icons/Logo.svg" alt="logo" height={40} width={40} />
                         <p className="font-bold text-3xl">Discord Connection Setup</p>
                     </div>
-                    <UserPlus style={{width: '40px', height: '40px'}}/>
+                    <Server style={{width: '40px', height: '40px'}}/>
                 </div>
                 <div className="flex-grow overflow-y-auto">
                     <ScrollArea className="p-4">
