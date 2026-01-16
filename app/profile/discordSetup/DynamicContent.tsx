@@ -2,7 +2,7 @@
 import {useState} from "react";
 import Intro from "@/app/profile/discordSetup/slides/Intro";
 import Image from "next/image";
-import {Server, UserPlus} from "lucide-react";
+import {MessageSquareShare, Server, UserPlus} from "lucide-react";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {Progress} from "@/components/ui/progress";
 import {Button} from "@/components/ui/button";
@@ -76,7 +76,7 @@ export default function DynamicContent({id}: Props) {
                         <Image src="/icons/Logo.svg" alt="logo" height={40} width={40} />
                         <p className="font-bold text-3xl">Discord Connection Setup</p>
                     </div>
-                    <Server style={{width: '40px', height: '40px'}}/>
+                    <MessageSquareShare style={{width: '40px', height: '40px'}}/>
                 </div>
                 <div className="flex-grow overflow-y-auto">
                     <ScrollArea className="p-4">
