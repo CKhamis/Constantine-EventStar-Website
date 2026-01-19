@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Information(){
     return (
         <div className="p-5 flex flex-col gap-4">
-            <p className="text-4xl font-bold">Discord Event Notifications</p>
+            <p className="text-4xl font-bold">Discord Evdent Notifications</p>
             <p className="">EventStar can keep you updated automatically by sending event notifications straight to your Discord DMs.</p>
             <ul className="list-disc ml-5">
                 <li className="mt-3">When an event is created</li>

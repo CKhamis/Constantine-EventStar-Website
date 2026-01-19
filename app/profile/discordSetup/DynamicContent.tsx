@@ -7,6 +7,7 @@ import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {Progress} from "@/components/ui/progress";
 import {Button} from "@/components/ui/button";
 import Information from "@/app/profile/discordSetup/slides/Information";
+import Step1 from "@/app/profile/discordSetup/slides/Step1";
 
 interface Props {
     id: string;
@@ -22,7 +23,8 @@ export default function DynamicContent({id}: Props) {
     const [loading, setLoading] = useState(true);
     const slideDeck:Slide[] = [
         {backAllowed: false, forwardAllowed: true, content:<Intro />},
-        {backAllowed: true, forwardAllowed: false, content:<Information />},
+        {backAllowed: true, forwardAllowed: true, content:<Information />},
+        {backAllowed: false, forwardAllowed: false, content:<Step1 />},
     ];
 
     const [slideIndex, setSlideIndex] = useState(0);
