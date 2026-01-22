@@ -32,6 +32,10 @@ export const emailSchema = z.object({
     email: z.string().email().max(255),
 })
 
+export const discordSchema = z.object({
+    username: z.string().min(4).max(255),
+})
+
 export const saveEventSchema = z.object({
     id: z.string().uuid().or(z.literal('')),
     title: z.string().min(1).max(255),
