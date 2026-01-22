@@ -1,5 +1,5 @@
 import z from "zod/index";
-import {discordSchema} from "@/components/ValidationSchemas";
+import {discordUsernameSchema} from "@/components/ValidationSchemas";
 import axios from "axios";
 import {useState} from "react";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
@@ -17,14 +17,14 @@ export type Props = {
 export default function Information({enableNextAction}: Props) {
     const [loading, setLoading] = useState(false);
 
-    const form = useForm<z.infer<typeof discordSchema>>({
-        resolver: zodResolver(discordSchema),
+    const form = useForm<z.infer<typeof discordUsernameSchema>>({
+        resolver: zodResolver(discordUsernameSchema),
         defaultValues: {
             username: "",
         },
     });
 
-    async function onSubmit(values: z.infer<typeof x>) {
+    async function onSubmit(values: z.infer<typeof discordUsernameSchema>) {
         try{
             setLoading(true);
             await axios.post('', values); //todo: set this
@@ -49,7 +49,7 @@ export default function Information({enableNextAction}: Props) {
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                             <FormField
                                 control={form.control}
-                                name="discordId"
+                                name="username"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Discord</FormLabel>

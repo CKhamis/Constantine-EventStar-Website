@@ -34,7 +34,7 @@ model User {
   emailVerified DateTime?
   image         String?
   phoneNumber   String?   @db.VarChar(10)
-  discordId     String?
+  discordId     String? //todo: remove this before next major release
   event         Event[]
   rsvp          Rsvp[]
   role          UserRole  @default(USER)
@@ -48,6 +48,8 @@ model User {
   sessions         Session[]
   recievedRequests FollowRequest[] @relation("recievedFR")
   sentRequests     FollowRequest[] @relation("sentFR")
+
+  discordConnection DiscordConnection?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -95,6 +97,18 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model DiscordConnection {
+  id        String       @id @default(uuid())
+  userId      String?  @unique
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  username  String
+  discordId String
+  isVerified  Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Rsvp {

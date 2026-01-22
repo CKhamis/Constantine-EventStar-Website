@@ -32,7 +32,7 @@ export const emailSchema = z.object({
     email: z.string().email().max(255),
 })
 
-export const discordSchema = z.object({
+export const discordUsernameSchema = z.object({
     username: z.string().min(4).max(255),
 })
 
