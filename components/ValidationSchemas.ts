@@ -16,14 +16,14 @@ export const esmtMergeFormSchema = z.object({
 	name: z.string().min(1, "Name is required"),
 	email: z.string().email("Invalid email"),
 	phone: z.string().optional(),
-	discordId: z.string().optional(),
+	discordId: z.string().optional(), //TODO (discordId overhaul): remove this
 
 	hostId: z.string().cuid(),
 	secondaryId: z.string().cuid(),
 });
 
 export const editBasicUserInfoSchema = z.object({
-    discordId: z.string().optional(),
+    discordId: z.string().optional(), //TODO (discordId overhaul): remove this
     name: z.string().min(5, "First and last names expected"),
     phoneNumber: z.string().max(10, "Format should be: 5058425662").optional(),
 });
@@ -89,12 +89,4 @@ export const authorChangeRsvpSchema = z.object({
 
 export const cuidSchema = z.object({
     id: z.string().cuid()
-})
-
-export const editUserSchema = z.object({
-    name: z.string().max(255),
-    email: z.string().email().max(255),
-    discordId: z.string().optional(),
-    id: z.string().cuid(),
-    phoneNumber: z.string().max(10).min(10).optional(),
 })

@@ -10,7 +10,7 @@ const optionalUserSelect = {
     email: true,
     image: true,
     phoneNumber: true,
-    discordId: true,
+    discordId: true, //TODO (discordId overhaul): remove this
     event: {
         select: {
             id: true,

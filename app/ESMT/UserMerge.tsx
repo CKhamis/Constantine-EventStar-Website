@@ -38,7 +38,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 
 	        form.setValue("name", data.name ?? "");
 	        form.setValue("email", data.email ?? "");
-	        form.setValue("discordId", data.discordId ?? "");
+	        form.setValue("discordId", data.discordId ?? ""); //TODO (discordId overhaul): remove this
 	        form.setValue("phone", data.phoneNumber ?? "");
 	        form.setValue("hostId", data.id ?? "");
 
@@ -70,7 +70,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 			name: "",
 			email: "",
 			phone: "",
-			discordId: "",
+			discordId: "", //TODO (discordId overhaul): remove this
 
 			hostId: "",
 			secondaryId: "",

@@ -34,7 +34,7 @@ model User {
   emailVerified DateTime?
   image         String?
   phoneNumber   String?   @db.VarChar(10)
-  discordId     String? //todo: remove this before next major release
+  discordId     String? //TODO (discordId overhaul): remove this
   event         Event[]
   rsvp          Rsvp[]
   role          UserRole  @default(USER)
