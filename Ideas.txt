@@ -1,3 +1,8 @@
+Discord ideas
+- Implement discord statuses and make visible to users in event view
+- Optionally create new text channels for each individual event that disappears after it ends
+
+
 Store ideas
 - checkout page with cart
 

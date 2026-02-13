@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export type userInfoResponse = {
     createdAt: Date;
-    discordId: string | null,
+    discordId: string | null, // TODO: Remove any way to edit this property
     email: string,
     emailVerified: boolean | null,
     followedBy: {id: string, name: string, email: string, image: string | null, phoneNumber: string}[],
@@ -30,7 +30,7 @@ export async function GET(){
     }
 
     try{
-        const user = await prisma.user.findFirstOrThrow({
+        const user = await prisma.user.findUniqueOrThrow({
             where: {
                 id: session.user.id
             },
@@ -53,10 +53,21 @@ export async function GET(){
                         phoneNumber: true,
                     }
                 },
-                event: true
+                event: true,
+                discordConnection: {
+                    select: {
+                        discordId: true
+                    }
+                }
             },
         });
-        return NextResponse.json(user, {status: 201});
+
+        const { discordConnection, ...rest } = user;
+
+        return NextResponse.json({
+            ...rest,
+            discordId: discordConnection?.discordId ?? null
+        }, { status: 201 });
 
     }catch(e){
         // This should never happen
