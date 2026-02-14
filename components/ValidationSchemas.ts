@@ -16,7 +16,7 @@ export const esmtMergeFormSchema = z.object({
 	name: z.string().min(1, "Name is required"),
 	email: z.string().email("Invalid email"),
 	phone: z.string().optional(),
-	discordId: z.string().optional(), //TODO (discordId overhaul): remove this
+	discordId: z.string().optional(), // Left in to allow administrators to change user's discord information
 
 	hostId: z.string().cuid(),
 	secondaryId: z.string().cuid(),

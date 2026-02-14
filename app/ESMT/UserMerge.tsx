@@ -70,7 +70,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 			name: "",
 			email: "",
 			phone: "",
-			discordId: "", //TODO (discordId overhaul): remove this
+			discordId: "", // Left in for administrators to modify user's discordId
 
 			hostId: "",
 			secondaryId: "",

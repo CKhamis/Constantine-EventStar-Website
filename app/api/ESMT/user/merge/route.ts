@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
 					id: true,
 				    name: true,
 				    email: true,
-				    discordId: true,
 				    phoneNumber: true,
 				    event: true,
 				    rsvp: true,
@@ -49,7 +48,8 @@ export async function POST(request: NextRequest) {
 				    accounts: true,
 				    recievedRequests: true,
 				    sentRequests: true,
-			    }
+                    DiscordConnection: true
+			    },
 		    }),
 		    prisma.user.findUniqueOrThrow({
 			    where: {
@@ -59,7 +59,6 @@ export async function POST(request: NextRequest) {
 				    id: true,
 				    name: true,
 				    email: true,
-				    discordId: true,
 				    phoneNumber: true,
 				    event: true,
 				    rsvp: true,
@@ -68,6 +67,7 @@ export async function POST(request: NextRequest) {
 				    accounts: true,
 				    recievedRequests: true,
 				    sentRequests: true,
+                    discordConnection: true
 			    }
 		    })
 	    ])
@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
 		    // Transaction for an all-or-nothing procedure
 		    await prisma.$transaction(async (tx) => {
 
+                //TODO (discordId): This needs to be updated to inherit the discord information
 			    // 1. Update host's basic fields
 			    await tx.user.update({
 				    where: { id: host.id },

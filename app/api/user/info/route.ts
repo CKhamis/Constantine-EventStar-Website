@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export type userInfoResponse = {
     createdAt: Date;
-    discordId: string | null, // TODO: Remove any way to edit this property
+    discordId: string | null,
     email: string,
     emailVerified: boolean | null,
     followedBy: {id: string, name: string, email: string, image: string | null, phoneNumber: string}[],
