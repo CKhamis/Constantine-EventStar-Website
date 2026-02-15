@@ -1,17 +1,36 @@
-import {PrismaClient, User} from '@prisma/client';
+import {Prisma, PrismaClient} from '@prisma/client';
 import {NextResponse} from "next/server";
 import {auth} from "@/auth";
 
 const prisma = new PrismaClient();
 
-export type esmtUser = User & {
+const ESMTU = {
+    id: true,
+    name: true,
+    email: true,
+    image: true,
+    phoneNumber: true,
+    role: true,
     following: {
-        id: string,
-        name: string,
-        email: string,
-        image: string,
-    }[]
-}
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+        },
+    },
+    discordConnection: {
+        select: {
+            id: true,
+            name: true,
+            discordId: true,
+        },
+    },
+} satisfies Prisma.UserSelect;
+
+export type esmtUser = Prisma.UserGetPayload<{
+    select: typeof ESMTU;
+}>;
 
 export async function GET(){
     const session =  await auth();
@@ -21,16 +40,7 @@ export async function GET(){
     }
 
     const allGuests = await prisma.user.findMany({
-        include:{
-            following:{
-                select: {
-                    id: true,
-                    name: true,
-                    email: true,
-                    image: true
-                }
-            },
-        }
+        select: ESMTU,
     });
 
     return NextResponse.json(allGuests, {status: 201});
