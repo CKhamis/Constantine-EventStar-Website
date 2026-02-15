@@ -23,7 +23,6 @@ export const esmtMergeFormSchema = z.object({
 });
 
 export const editBasicUserInfoSchema = z.object({
-    discordId: z.string().optional(), //TODO (discordId overhaul): remove this
     name: z.string().min(5, "First and last names expected"),
     phoneNumber: z.string().max(10, "Format should be: 5058425662").optional(),
 });
@@ -72,11 +71,6 @@ export const authorAddRsvpSchema = z.object({
     guests: z.coerce.number().int().min(0, "Must be a positive number"),
     firstName: z.string().max(20, "First name too long").min(1, "First name too short").optional().or(z.literal("")),
     lastName: z.string().max(20, "Last name too long").min(1, "Last name too short").optional().or(z.literal("")),
-})
-
-export const authorRsvpSchema = z.object({
-    response: RsvpResponseAll,
-    id: z.string().cuid()
 })
 
 export const authorChangeRsvpSchema = z.object({

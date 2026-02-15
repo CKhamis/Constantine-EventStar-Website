@@ -1,7 +1,6 @@
 'use client'
 
 import z from 'zod'
-import {basicUserInfo} from "@/components/Types";
 import AvatarIcon from "@/components/AvatarIcon";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {editBasicUserInfoSchema} from "@/components/ValidationSchemas";
@@ -24,7 +23,6 @@ export default function EmailForm({enableNextAction}: Props){
         defaultValues: {
             phoneNumber: "",
             name: "",
-            discordId: "",
         },
     });
     const [loading, setLoading] = useState<boolean>(false);
@@ -39,7 +37,6 @@ export default function EmailForm({enableNextAction}: Props){
                 .then((response) => {
                     const userInfo = response.data;
                     form.setValue("name", userInfo.name || "");
-                    form.setValue("discordId", userInfo.discordId || "");
                     form.setValue("phoneNumber", userInfo.phoneNumber || "");
                     setName(userInfo.name);
                     setImageUrl(userInfo.image);
@@ -110,19 +107,6 @@ export default function EmailForm({enableNextAction}: Props){
                                         <FormLabel>Phone number</FormLabel>
                                         <FormControl>
                                             <Input type="tel" placeholder="5058425662" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="discordId"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Discord ID</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="costiboasty" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

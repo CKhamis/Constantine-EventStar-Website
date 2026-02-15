@@ -10,7 +10,6 @@ const optionalUserSelect = {
     email: true,
     image: true,
     phoneNumber: true,
-    discordId: true, //TODO (discordId overhaul): remove this
     event: {
         select: {
             id: true,
@@ -48,6 +47,13 @@ const optionalUserSelect = {
         select: {
             id: true,
             response: true,
+        },
+    },
+    discordConnection: {
+        select: {
+            id: true,
+            name: true,
+            discordId: true,
         },
     },
 } satisfies Prisma.UserSelect;

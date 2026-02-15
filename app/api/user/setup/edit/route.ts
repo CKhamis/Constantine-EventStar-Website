@@ -36,7 +36,6 @@ export async function POST(request: NextRequest){
             where: { id: session.user.id },
             data: {
                 name: body.name,
-                discordId: body.discordId,
                 phoneNumber: body.phoneNumber,
             },
         });
