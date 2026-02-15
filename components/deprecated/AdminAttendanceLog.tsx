@@ -6,13 +6,18 @@ import {Button} from "@/components/ui/button";
 import {Users} from "lucide-react";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import AvatarIcon from "@/components/AvatarIcon";
-import {RsvpWithUser} from "@/components/Types";
 
 export interface Props{
     eventId: string;
     text?: string;
 }
 
+/**
+ * Removed feature from previous major release. Will revive eventually...
+ * @param eventId
+ * @param text
+ * @constructor
+ */
 export default function AdminAttendanceLog({eventId, text}: Props) {
     const [rsvps, setRsvps] = useState<RsvpWithUser[]>([]);
     const [numPresent, setNumPresent] = useState<number>(0);

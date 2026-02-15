@@ -11,13 +11,13 @@ const EventType = z.enum([
 const InviteVisibility = z.enum(["FULL", "INVITED_ONLY", "NONE",]);
 const RsvpResponse = z.enum(["YES", "NO", "MAYBE"]);
 const RsvpResponseAll = z.enum(["YES", "NO", "MAYBE", "NO_RESPONSE"]);
+const discordMergeDecision = z.enum(["HOST", "SECOND", "NEITHER"]);
 
 export const esmtMergeFormSchema = z.object({
 	name: z.string().min(1, "Name is required"),
 	email: z.string().email("Invalid email"),
 	phone: z.string().optional(),
-	discordId: z.string().optional(), // Left in to allow administrators to change user's discord information
-
+	discord: discordMergeDecision,
 	hostId: z.string().cuid(),
 	secondaryId: z.string().cuid(),
 });

@@ -17,6 +17,7 @@ import {Button} from "@/components/ui/button";
 import z from "zod";
 import {toast} from "sonner";
 import axios from "axios";
+import {EventInviteVisibility} from "@prisma/client";
 
 interface Props{
 	users: esmtUser[],
@@ -38,7 +39,6 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 
 	        form.setValue("name", data.name ?? "");
 	        form.setValue("email", data.email ?? "");
-	        form.setValue("discordId", data.discordConnection?.discordId ?? ""); //TODO (discordId overhaul): remove this
 	        form.setValue("phone", data.phoneNumber ?? "");
 	        form.setValue("hostId", data.id ?? "");
 
@@ -70,8 +70,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 			name: "",
 			email: "",
 			phone: "",
-			discordId: "", // Left in for administrators to modify user's discordId
-
+			discord: "HOST",
 			hostId: "",
 			secondaryId: "",
 		},
@@ -277,14 +276,28 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 
 						<FormField
 							control={form.control}
-							name="discordId"
+							name="discord"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Discord ID</FormLabel>
+									<FormLabel>Discord Connection</FormLabel>
 									<FormControl>
-										<Input placeholder="Optional" {...field} />
+										<Select onValueChange={field.onChange} defaultValue={"Host"}>
+											<SelectTrigger>
+												<SelectValue placeholder="Select invite visibility" />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem key="Host" value="HOST">
+													{"Keep host's account" + (host != null? (host.discordConnection? " ("+ host.discordConnection.name + ")" : " (None Connected)") : "")}
+												</SelectItem>
+												<SelectItem key="Second" value="SECOND">
+													{"Keep secondary's account" + (secondary != null? (secondary.discordConnection? " ("+ secondary.discordConnection.name + ")" : " (None Connected)") : "")}
+												</SelectItem>
+												<SelectItem key="Niehter" value="NIETHER">
+													{"Keep neither"}
+												</SelectItem>
+											</SelectContent>
+										</Select>
 									</FormControl>
-									<FormMessage />
 								</FormItem>
 							)}
 						/>

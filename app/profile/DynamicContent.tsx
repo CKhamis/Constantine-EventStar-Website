@@ -42,7 +42,7 @@ export default function DynamicContent({session}: Props) {
         event: []
     });
     const [RSVPs, setRSVPs] = useState<EIResponse[]>([]);
-    const [recievedFollows, setRecievedFollows] = useState<FRResponse[]>([]);
+    const [receivedFollows, setReceivedFollows] = useState<FRResponse[]>([]);
 
     async function refresh(){
         setLoading(true);
@@ -64,7 +64,7 @@ export default function DynamicContent({session}: Props) {
 
         await axios.get("/api/user/connections/incoming")
             .then((response) => {
-                setRecievedFollows(response.data);
+                setReceivedFollows(response.data);
             })
             .catch((error) => {
                 console.log(error);
@@ -259,7 +259,7 @@ export default function DynamicContent({session}: Props) {
                             <FollowDialog />
                         </div>
                         <div className="flex flex-col gap-5 max-w-2xl mx-auto">
-                            {recievedFollows.map((request) => (
+                            {receivedFollows.map((request) => (
                                 <div key={request.sender.id} className="flex flex-row justify-between items-center">
                                     <div className="flex flex-row justify-start items-center gap-3">
                                         <AvatarIcon image={request.sender.image} name={request.sender.name} size="small" />
@@ -272,7 +272,7 @@ export default function DynamicContent({session}: Props) {
                                 </div>
                             ))}
                         </div>
-                        {recievedFollows.length === 0 && (
+                        {receivedFollows.length === 0 && (
                             <div className="w-100 h-100 flex justify-center flex-col items-center">
                                 <Image src="/agent/empty.png" height={200} width={200} alt="" className="mt-10"/>
                                 <p className="font-bold text-3xl mb-5">No Follow Requests</p>

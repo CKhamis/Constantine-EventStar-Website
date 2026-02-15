@@ -34,7 +34,6 @@ model User {
   emailVerified DateTime?
   image         String?
   phoneNumber   String?   @db.VarChar(10)
-  discordId     String? //TODO (discordId overhaul): remove this
   event         Event[]
   rsvp          Rsvp[]
   role          UserRole  @default(USER)
@@ -50,6 +49,7 @@ model User {
   sentRequests     FollowRequest[] @relation("sentFR")
 
   discordConnection DiscordConnection?
+  discordTokens DiscordToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -106,6 +106,16 @@ model DiscordConnection {
 
   name  String
   discordId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DiscordToken {
+  id String @id @default(uuid())
+  userId      String  @unique
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discordId  String
+  verificationNumber Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
