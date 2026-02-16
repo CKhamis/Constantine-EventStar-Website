@@ -21,7 +21,6 @@ export async function GET(){
                 id: session.user.id
             },
             select:{
-                discordId: true,
                 name: true,
                 phoneNumber: true,
                 image:true,
@@ -30,7 +29,7 @@ export async function GET(){
         });
 
         const { discordConnection, ...rest } = user;
-        
+
         return NextResponse.json({
             ...rest,
             discordId: discordConnection?.discordId ?? null

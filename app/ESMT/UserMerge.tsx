@@ -77,6 +77,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 	});
 
 	const onSubmit = async (values: z.infer<typeof esmtMergeFormSchema>) => {
+
 		setLoading(true);
 
 		try {
@@ -281,18 +282,18 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 								<FormItem>
 									<FormLabel>Discord Connection</FormLabel>
 									<FormControl>
-										<Select onValueChange={field.onChange} defaultValue={"Host"}>
+										<Select onValueChange={field.onChange} defaultValue="HOST">
 											<SelectTrigger>
 												<SelectValue placeholder="Select invite visibility" />
 											</SelectTrigger>
 											<SelectContent>
-												<SelectItem key="Host" value="HOST">
+												<SelectItem key="HOST" value="HOST">
 													{"Keep host's account" + (host != null? (host.discordConnection? " ("+ host.discordConnection.name + ")" : " (None Connected)") : "")}
 												</SelectItem>
-												<SelectItem key="Second" value="SECOND">
+												<SelectItem key="SECOND" value="SECOND">
 													{"Keep secondary's account" + (secondary != null? (secondary.discordConnection? " ("+ secondary.discordConnection.name + ")" : " (None Connected)") : "")}
 												</SelectItem>
-												<SelectItem key="Niehter" value="NIETHER">
+												<SelectItem key="NIETHER" value="NIETHER">
 													{"Keep neither"}
 												</SelectItem>
 											</SelectContent>
