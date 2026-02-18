@@ -31,7 +31,7 @@ export const emailSchema = z.object({
     email: z.string().email().max(255),
 })
 
-export const discordUsernameSchema = z.object({
+export const discordUsernameSearch = z.object({
     username: z.string().min(4).max(255),
 })
 

@@ -1,5 +1,5 @@
 import z from "zod/index";
-import {discordUsernameSchema} from "@/components/ValidationSchemas";
+import {discordUsernameSearch} from "@/components/ValidationSchemas";
 import axios from "axios";
 import {useState} from "react";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
@@ -17,17 +17,17 @@ export type Props = {
 export default function Information({enableNextAction}: Props) {
     const [loading, setLoading] = useState(false);
 
-    const form = useForm<z.infer<typeof discordUsernameSchema>>({
-        resolver: zodResolver(discordUsernameSchema),
+    const form = useForm<z.infer<typeof discordUsernameSearch>>({
+        resolver: zodResolver(discordUsernameSearch),
         defaultValues: {
             username: "",
         },
     });
 
-    async function onSubmit(values: z.infer<typeof discordUsernameSchema>) {
+    async function onSubmit(values: z.infer<typeof discordUsernameSearch>) {
         try{
             setLoading(true);
-            await axios.post('', values); //todo: set this
+            await axios.post('/api/user/notifications/providers/discord/searchUser', values);
             enableNextAction();
         }catch(e){
             console.log(e)

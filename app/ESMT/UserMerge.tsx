@@ -17,7 +17,6 @@ import {Button} from "@/components/ui/button";
 import z from "zod";
 import {toast} from "sonner";
 import axios from "axios";
-import {EventInviteVisibility} from "@prisma/client";
 
 interface Props{
 	users: esmtUser[],
