@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
 import {discordUsernameSearch} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
+import axios from 'axios';
 
 /**
  * Uses Noisy to search for Discord usernames or names
@@ -22,12 +22,18 @@ export async function POST(request: Request) {
         return NextResponse.json(validation.error.format(), {status: 400});
     }
 
-
     try {
+        if(process.env.NOISY_URL === undefined || process.env.NOISY_URL === ""){
+            return NextResponse.json("Noisy not set up", { status: 500 });
+        }
 
-        console.log(process.env.NOISY_URL);
+        // Forward response from Noisy
+        const response = await axios.get(
+            `${process.env.NOISY_URL}/discord/search_user/${encodeURIComponent(body.username)}`
+        );
 
-        return NextResponse.json("Removed follower", { status: 200 });
+        return NextResponse.json(response.data, { status: 200 });
+
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error: "An error occurred while fetching the event" }, { status: 500 });

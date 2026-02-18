@@ -32,7 +32,13 @@ export const emailSchema = z.object({
 })
 
 export const discordUsernameSearch = z.object({
-    username: z.string().min(4).max(255),
+    username: z
+        .string()
+        .min(4)
+        .max(255)
+        .regex(/^[A-Za-z0-9._-]+$/, {
+            message: "Username can only contain letters, numbers, ., _, and -",
+        }),
 })
 
 export const saveEventSchema = z.object({
