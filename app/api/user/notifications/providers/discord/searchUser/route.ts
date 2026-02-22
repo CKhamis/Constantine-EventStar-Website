@@ -3,6 +3,18 @@ import {discordUsernameSearch} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import axios from 'axios';
 
+// Return types provided by noisy
+export type DiscordUsernameSearchResponse = {
+    results: DiscordUsernameSearchResult[]
+}
+
+export type DiscordUsernameSearchResult = {
+    name: string,
+    id: number,
+    avatar: string | null,
+    global_name: string | null,
+}
+
 /**
  * Uses Noisy to search for Discord usernames or names
  * @param request

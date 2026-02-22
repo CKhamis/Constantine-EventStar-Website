@@ -41,6 +41,10 @@ export const discordUsernameSearch = z.object({
         }),
 })
 
+export const discordUsernameSendVerification = z.object({
+    id: z.number(),
+})
+
 export const saveEventSchema = z.object({
     id: z.string().uuid().or(z.literal('')),
     title: z.string().min(1).max(255),

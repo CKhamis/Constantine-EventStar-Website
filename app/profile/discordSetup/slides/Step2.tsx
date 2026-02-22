@@ -18,7 +18,7 @@ export type Props = {
     selectedDiscordId: number | null;
 }
 
-export default function Step1({enableNextAction, setSelectedDiscordId, selectedDiscordId}: Props) {
+export default function Step2({enableNextAction, setSelectedDiscordId, selectedDiscordId}: Props) {
     const [loading, setLoading] = useState(false);
     const [discordSearchResults, setDiscordSearchResults] = useState<DiscordUsernameSearchResponse>();
 
