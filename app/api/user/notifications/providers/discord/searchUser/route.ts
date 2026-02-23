@@ -10,7 +10,7 @@ export type DiscordUsernameSearchResponse = {
 
 export type DiscordUsernameSearchResult = {
     name: string,
-    id: number,
+    id: string,
     avatar: string | null,
     global_name: string | null,
 }
@@ -43,6 +43,8 @@ export async function POST(request: Request) {
         const response = await axios.get(
             `${process.env.NOISY_URL}/discord/search_user/${encodeURIComponent(body.username)}`
         );
+
+        console.log(response.data);
 
         return NextResponse.json(response.data, { status: 200 });
 

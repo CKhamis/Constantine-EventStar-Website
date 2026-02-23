@@ -21,7 +21,7 @@ type Slide = {
 
 export default function DynamicContent({id}: Props) {
     const [loading, setLoading] = useState(true);
-    const [selectedDiscordId, setSelectedDiscordId] = useState<number | null>(null);
+    const [selectedDiscordId, setSelectedDiscordId] = useState<string | null>(null);
 
     const slideDeck:Slide[] = [
         {backAllowed: false, forwardAllowed: true, content:<Intro />},

@@ -14,8 +14,8 @@ import z from "zod";
 
 export type Props = {
     enableNextAction: () => void;
-    setSelectedDiscordId: (id: number) => void;
-    selectedDiscordId: number | null;
+    setSelectedDiscordId: (id: string) => void;
+    selectedDiscordId: string | null;
 }
 
 export default function Step1({enableNextAction, setSelectedDiscordId, selectedDiscordId}: Props) {

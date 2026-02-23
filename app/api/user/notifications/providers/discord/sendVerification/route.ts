@@ -48,7 +48,7 @@ export async function POST(request: Request) {
         }
 
         // Save verification token
-        const newToken = await prisma.discordToken.create({
+        await prisma.discordToken.create({
             data: {
                 userId: session.user.id,
                 verificationNumber: verificationNumber,
@@ -64,13 +64,10 @@ export async function POST(request: Request) {
             }
         });
 
-
-
-
         return NextResponse.json(response.data, { status: 200 });
 
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: "An error occurred while fetching the event" }, { status: 500 });
+        return NextResponse.json({ error: "An error occurred while generating a token" }, { status: 500 });
     }
 }
