@@ -8,6 +8,7 @@ import {Progress} from "@/components/ui/progress";
 import {Button} from "@/components/ui/button";
 import Information from "@/app/profile/discordSetup/slides/Information";
 import Step1 from "@/app/profile/discordSetup/slides/Step1";
+import Step2 from "@/app/profile/discordSetup/slides/Step2";
 
 interface Props {
     id: string;
@@ -27,7 +28,7 @@ export default function DynamicContent({id}: Props) {
         {backAllowed: false, forwardAllowed: true, content:<Intro />},
         {backAllowed: true, forwardAllowed: true, content:<Information />},
         {backAllowed: false, forwardAllowed: false, content:<Step1 selectedDiscordId={selectedDiscordId} setSelectedDiscordId={setSelectedDiscordId} enableNextAction={enableNextCallback} />},
-        {backAllowed: false, forwardAllowed: false, content:<Step1 selectedDiscordId={selectedDiscordId} setSelectedDiscordId={setSelectedDiscordId} enableNextAction={enableNextCallback} />},
+        {backAllowed: false, forwardAllowed: false, content:<Step2 selectedDiscordId={selectedDiscordId} />},
     ];
 
     const [slideIndex, setSlideIndex] = useState(0);

@@ -44,8 +44,6 @@ export async function POST(request: Request) {
             `${process.env.NOISY_URL}/discord/search_user/${encodeURIComponent(body.username)}`
         );
 
-        console.log(response.data);
-
         return NextResponse.json(response.data, { status: 200 });
 
     } catch (error) {

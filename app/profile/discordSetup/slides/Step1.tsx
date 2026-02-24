@@ -34,7 +34,6 @@ export default function Step1({enableNextAction, setSelectedDiscordId, selectedD
             setLoading(true);
             const response = await axios.post('/api/user/notifications/providers/discord/searchUser', values);
             setDiscordSearchResults(response.data);
-            console.log(response.data);
         }catch(e){
             console.log(e)
         }finally {

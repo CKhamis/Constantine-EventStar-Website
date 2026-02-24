@@ -42,8 +42,11 @@ export async function POST(request: Request) {
             `${process.env.NOISY_URL}/discord/verify_user_id/${encodeURIComponent(body.id)}/${encodeURIComponent(verificationNumber)}` //todo: make it receive a string instead of an actual number
         );
 
+        console.log(`${process.env.NOISY_URL}/discord/verify_user_id/${encodeURIComponent(body.id)}/${encodeURIComponent(verificationNumber)}`);
+
         // Check if Noisy had any issues
         if(response.status >= 400 && response.status < 500){
+            console.error(response);
             return NextResponse.json("OOPS! There was an error processing your verification number.", { status: 500 });
         }
 

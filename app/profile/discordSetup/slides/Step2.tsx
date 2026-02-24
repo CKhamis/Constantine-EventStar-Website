@@ -1,4 +1,4 @@
-import {discordUsernameSearch} from "@/components/ValidationSchemas";
+import {discordVerification} from "@/components/ValidationSchemas";
 import axios from "axios";
 import {useEffect, useState} from "react";
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
@@ -8,32 +8,43 @@ import {Button} from "@/components/ui/button";
 import {Loader2} from "lucide-react";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {DiscordUsernameSearchResponse} from "@/app/api/user/notifications/providers/discord/searchUser/route";
 import DiscordCard from "@/components/DiscordCard";
 import z from "zod";
+import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
+import {REGEXP_ONLY_DIGITS} from "input-otp";
 
 export type Props = {
-    enableNextAction: () => void;
-    setSelectedDiscordId: (id: string) => void;
-    selectedDiscordId: string | null;
+    selectedDiscordId: string;
 }
 
-export default function Step2({enableNextAction, setSelectedDiscordId, selectedDiscordId}: Props) {
+export default function Step2({selectedDiscordId}: Props) {
     const [loading, setLoading] = useState(false);
-    const [discordSearchResults, setDiscordSearchResults] = useState<DiscordUsernameSearchResponse>();
+    const [otpInput, setOtpInput] = useState<string | undefined>(null);
 
-    const searchForm = useForm<z.infer<typeof discordUsernameSearch>>({
-        resolver: zodResolver(discordUsernameSearch),
-        defaultValues: {
-            username: "",
-        },
-    });
+    // const searchForm = useForm<z.infer<typeof discordVerification>>({
+    //     resolver: zodResolver(discordVerification),
+    //     defaultValues: {
+    //         id: "",
+    //     },
+    // });
 
-    async function onSubmit(values: z.infer<typeof discordUsernameSearch>) {
+    // async function onSubmit(values: z.infer<typeof discordVerification>) {
+    //     try{
+    //         setLoading(true);
+    //         const response = await axios.post('/api/user/notifications/providers/discord/sendVerification', values);
+    //         setDiscordSearchResults(response.data);
+    //         console.log(response.data);
+    //     }catch(e){
+    //         console.log(e)
+    //     }finally {
+    //         setLoading(false);
+    //     }
+    // }
+
+    async function submitVerification(){
         try{
             setLoading(true);
-            const response = await axios.post('/api/user/notifications/providers/discord/searchUser', values);
-            setDiscordSearchResults(response.data);
+            const response = await axios.post('/api/user/notifications/providers/discord/sendVerification', {id: selectedDiscordId});
             console.log(response.data);
         }catch(e){
             console.log(e)
@@ -43,53 +54,26 @@ export default function Step2({enableNextAction, setSelectedDiscordId, selectedD
     }
 
     useEffect(() => {
-        if (selectedDiscordId !== null) {
-            enableNextAction();
-        }
-    }, [selectedDiscordId, enableNextAction]);
+        console.log(typeof selectedDiscordId);
+        // Immediate send
+        submitVerification();
+    }, []);
 
     return (
-        <div className="p-5 flex flex-col md:flex-row gap-5">
-            <div className="w-full md:flex-[5]">
-                <p className="text-4xl font-bold">Enter your Discord Username</p>
-                <p className="">In the search box below, enter your Discord username. Once you press next, a message will be sent to the account to verify the account is yours.</p>
-                <Card className="mt-10">
-                    <CardHeader>
-                        {/*<CardTitle>Enter your Discord Username</CardTitle>*/}
-                    </CardHeader>
-                    <CardContent>
-                        <Form {...searchForm}>
-                            <form onSubmit={searchForm.handleSubmit(onSubmit)} className="space-y-8">
-                                <FormField
-                                    control={searchForm.control}
-                                    name="username"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Discord Username</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="costiboasty" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Button type="submit" disabled={loading || !searchForm.formState.isValid}>
-                                    {loading && <Loader2 className="animate-spin"/>}
-                                    Submit
-                                </Button>
-                            </form>
-                        </Form>
-                    </CardContent>
-                </Card>
-            </div>
-            <div className="mt-5 md:mt-0 w-full md:flex-[3]">
-                <p className="text-3xl font-bold mb-3">{loading? "Searching..." : "Search Results"}</p>
-                {discordSearchResults?.results.map(m => (
-                    <DiscordCard key={m.id} name={m.name} id={m.id} avatar={m.avatar} global_name={m.global_name} onClick={() => setSelectedDiscordId(m.id)} isSelected={m.id === selectedDiscordId} />
-                ))}
-                {discordSearchResults?.results.length === 0 && (<p>None found</p>)}
-                <p></p>
-            </div>
+        <div className="p-5 flex flex-col gap-5">
+            {loading? <p className="text-4xl font-bold">Loading...</p> : (<>
+                <p className="text-4xl font-bold">Verify Your Discord Account</p>
+                <p>You will receive a randomized number in your DMs. Paste that number below:</p>
+                <InputOTP maxLength={4} pattern={REGEXP_ONLY_DIGITS} value={otpInput} onChange={(value: string) => setOtpInput(value)}>
+                    <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                    </InputOTPGroup>
+                </InputOTP>
+                <Button variant="default" type="submit" disabled={otpInput?.length !== 4} onClick={submitVerification}>Terence</Button>
+            </>)}
 
         </div>
     );
