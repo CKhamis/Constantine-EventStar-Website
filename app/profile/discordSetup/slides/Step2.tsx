@@ -54,26 +54,26 @@ export default function Step2({selectedDiscordId}: Props) {
     }
 
     useEffect(() => {
-        console.log(typeof selectedDiscordId);
         // Immediate send
         submitVerification();
     }, []);
 
     return (
-        <div className="p-5 flex flex-col gap-5">
-            {loading? <p className="text-4xl font-bold">Loading...</p> : (<>
-                <p className="text-4xl font-bold">Verify Your Discord Account</p>
-                <p>You will receive a randomized number in your DMs. Paste that number below:</p>
-                <InputOTP maxLength={4} pattern={REGEXP_ONLY_DIGITS} value={otpInput} onChange={(value: string) => setOtpInput(value)}>
-                    <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                    </InputOTPGroup>
-                </InputOTP>
-                <Button variant="default" type="submit" disabled={otpInput?.length !== 4} onClick={submitVerification}>Terence</Button>
-            </>)}
+        <div className="p-5 flex flex-col items-center gap-5">
+            {loading? <p className="text-4xl font-bold">Loading...</p> : (
+                <div className="flex flex-col gap-5 items-center w-50">
+                    <p className="text-4xl font-bold">Verify Your Discord Account</p>
+                    <p>You will receive a randomized number in your DMs. Paste that number below:</p>
+                    <InputOTP maxLength={4} pattern={REGEXP_ONLY_DIGITS} value={otpInput} onChange={(value: string) => setOtpInput(value)}>
+                        <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                            <InputOTPSlot index={3} />
+                        </InputOTPGroup>
+                    </InputOTP>
+                    <Button variant="default" type="submit" disabled={otpInput?.length !== 4} onClick={submitVerification}>Terence</Button>
+            </div>)}
 
         </div>
     );

@@ -50,19 +50,19 @@ export async function POST(request: Request) {
             return NextResponse.json("OOPS! There was an error processing your verification number.", { status: 500 });
         }
 
+        // Delete any other verification token that matches the same credentials
+        await prisma.discordToken.deleteMany({
+            where: {
+                userId: session.user.id,
+                discordId: body.id
+            }
+        });
+
         // Save verification token
         await prisma.discordToken.create({
             data: {
                 userId: session.user.id,
                 verificationNumber: verificationNumber,
-                discordId: body.id
-            }
-        });
-
-        // Delete any other verification token that matches the same credentials
-        await prisma.discordToken.deleteMany({
-            where: {
-                userId: session.user.id,
                 discordId: body.id
             }
         });
