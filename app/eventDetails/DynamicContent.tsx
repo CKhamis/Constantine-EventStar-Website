@@ -28,7 +28,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import type { EVResponse } from "@/app/api/events/view/[id]/route"
 import ExcludedInvite from "@/app/eventDetails/ExcludedInvite"
-import { refresh } from "effect/Resource"
 import IncludedInvite from "@/app/eventDetails/IncludedInvite"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import Link from "next/link";

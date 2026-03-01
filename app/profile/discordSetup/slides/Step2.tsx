@@ -9,7 +9,8 @@ import z from "zod";
 import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
 import {REGEXP_ONLY_DIGITS} from "input-otp";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {CheckCircle2} from "lucide-react";
+import {Check, CheckCircle2, X} from "lucide-react";
+import {toast} from "sonner";
 
 export type Props = {
     selectedDiscordId: string;
@@ -19,6 +20,7 @@ export type Props = {
 export default function Step2({selectedDiscordId, enableNextAction}: Props) {
     const [loading, setLoading] = useState(false);
     const [state, setState] = useState<number>(0);
+    const [notificationResponse, setNotificationResponse] = useState<number>(0);
 
     const form = useForm<z.infer<typeof verificationSchema>>({
         resolver: zodResolver(verificationSchema),
@@ -41,8 +43,12 @@ export default function Step2({selectedDiscordId, enableNextAction}: Props) {
                 "/api/user/notifications/providers/discord/setFrequency",
                 values
             );
-            console.log(response.data);
-            // optionally enable next step / show a toast / advance state
+            toast("Frequency Updated", { description: "Discord notification frequency changed." })
+            if(response.status === 200) {
+                setNotificationResponse(1);
+            }else{
+                setNotificationResponse(2);
+            }
         } catch (e) {
             console.log(e);
         } finally {
@@ -144,7 +150,7 @@ export default function Step2({selectedDiscordId, enableNextAction}: Props) {
                         <div className="flex items-center justify-center h-14 w-14 rounded-full bg-green-500/10">
                             <CheckCircle2 className="h-8 w-8 text-green-500" />
                         </div>
-                        <p className="text-4xl font-bold">Discord Account Verified</p>
+                        <p className="text-4xl font-bold">Discord Account Connected</p>
                     </div>
                     <p>Thank you for verifying your Discord account and connecting it to your EventStar account. You will now have the option to have notifications sent for new events, reminders, and other EvenStar activity.</p>
                     <p>Optionally, you can select the default notification amount for events you apply to. You are also able to change this whenever you RSVP. You can always come back to account settings to modify this setting.</p>
@@ -193,9 +199,13 @@ export default function Step2({selectedDiscordId, enableNextAction}: Props) {
                                 )}
                             />
 
-                            <Button type="submit" disabled={loading}>
-                                Save notification settings
-                            </Button>
+                            <div className="flex flex-row gap-4 items-center justify-start">
+                                <Button type="submit" disabled={loading}>
+                                    Save notification settings
+                                </Button>
+                                {notificationResponse === 1 && <Check className="h-4 w-4 text-green-500" />}
+                                {notificationResponse === 2 && <X className="h-4 w-4 text-red-500" />}
+                            </div>
                         </form>
                     </Form>
                 </div>
