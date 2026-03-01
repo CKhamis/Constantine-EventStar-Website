@@ -33,7 +33,8 @@ export const emailSchema = z.object({
 
 export const verificationSchema = z.object({
     vn: z.string().min(4, "Invalid verification number").max(5, "Invalid verification number"),
-})
+});
+
 export const notificationFrequencySchema = z.object({
     freq: z.coerce.number().min(0).max(3, "Invalid frequency number"),
 });

@@ -8,6 +8,8 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import z from "zod";
 import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
 import {REGEXP_ONLY_DIGITS} from "input-otp";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {CheckCircle2} from "lucide-react";
 
 export type Props = {
     selectedDiscordId: string;
@@ -136,12 +138,16 @@ export default function Step2({selectedDiscordId, enableNextAction}: Props) {
         );
     }else if(state === 1){
         return (
-            <div className="p-5 flex flex-col items-start gap-5">
-                <div className="flex flex-col gap-5 items-start w-50">
-                    <p className="text-4xl font-bold">Discord Account Verified</p>
-                    <p>
-                        Select how often you want to be notified. By default, you will only get essential notifications.
-                    </p>
+            <div className="p-5 flex flex-col items-start gap-5 w-full">
+                <div className="flex flex-col gap-5 items-start w-1/2">
+                    <div className="flex flex-row items-center gap-3">
+                        <div className="flex items-center justify-center h-14 w-14 rounded-full bg-green-500/10">
+                            <CheckCircle2 className="h-8 w-8 text-green-500" />
+                        </div>
+                        <p className="text-4xl font-bold">Discord Account Verified</p>
+                    </div>
+                    <p>Thank you for verifying your Discord account and connecting it to your EventStar account. You will now have the option to have notifications sent for new events, reminders, and other EvenStar activity.</p>
+                    <p>Optionally, you can select the default notification amount for events you apply to. You are also able to change this whenever you RSVP. You can always come back to account settings to modify this setting.</p>
 
                     <Form {...freqForm}>
                         <form
@@ -152,19 +158,35 @@ export default function Step2({selectedDiscordId, enableNextAction}: Props) {
                                 control={freqForm.control}
                                 name="freq"
                                 render={({ field }) => (
-                                    <FormItem className="w-full">
+                                    <FormItem className="w-full max-w-md">
                                         <FormControl>
-                                            <select
-                                                className="w-full border rounded-md px-3 py-2"
-                                                value={String(field.value)}
-                                                onChange={(e) => field.onChange(e.target.value)} // z.coerce.number() will convert it
+                                            <Select
+                                                value={field.value?.toString()}
+                                                onValueChange={(value) => field.onChange(value)}
                                                 disabled={loading}
                                             >
-                                                <option value="0">0 — No notifications</option>
-                                                <option value="1">1 — Essential (event created, 1 hour before start)</option>
-                                                <option value="2">2 — Standard (RSVP + event reminders)</option>
-                                                <option value="3">3 — All notifications (most reminders)</option>
-                                            </select>
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Select notification frequency" />
+                                                </SelectTrigger>
+
+                                                <SelectContent>
+                                                    <SelectItem value="0">
+                                                        0 — No notifications
+                                                    </SelectItem>
+
+                                                    <SelectItem value="1">
+                                                        1 — Essential (event created, 1 hour before start)
+                                                    </SelectItem>
+
+                                                    <SelectItem value="2">
+                                                        2 — Standard (RSVP + event reminders)
+                                                    </SelectItem>
+
+                                                    <SelectItem value="3">
+                                                        3 — All notifications (most reminders)
+                                                    </SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
