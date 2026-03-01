@@ -2,7 +2,7 @@
 import {useState} from "react";
 import Intro from "@/app/profile/discordSetup/slides/Intro";
 import Image from "next/image";
-import {MessageSquareShare, Server, UserPlus} from "lucide-react";
+import {MessageSquareShare} from "lucide-react";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {Progress} from "@/components/ui/progress";
 import {Button} from "@/components/ui/button";
@@ -21,14 +21,13 @@ type Slide = {
 }
 
 export default function DynamicContent({id}: Props) {
-    const [loading, setLoading] = useState(true);
     const [selectedDiscordId, setSelectedDiscordId] = useState<string | null>(null);
 
     const slideDeck:Slide[] = [
         {backAllowed: false, forwardAllowed: true, content:<Intro />},
         {backAllowed: true, forwardAllowed: true, content:<Information />},
         {backAllowed: false, forwardAllowed: false, content:<Step1 selectedDiscordId={selectedDiscordId} setSelectedDiscordId={setSelectedDiscordId} enableNextAction={enableNextCallback} />},
-        {backAllowed: false, forwardAllowed: false, content:<Step2 selectedDiscordId={selectedDiscordId} />},
+        {backAllowed: false, forwardAllowed: false, content:<Step2 selectedDiscordId={selectedDiscordId} enableNextAction={enableNextCallback} />},
     ];
 
     const [slideIndex, setSlideIndex] = useState(0);

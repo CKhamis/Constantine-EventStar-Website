@@ -31,6 +31,13 @@ export const emailSchema = z.object({
     email: z.string().email().max(255),
 })
 
+export const verificationSchema = z.object({
+    vn: z.string().min(4, "Invalid verification number").max(5, "Invalid verification number"),
+})
+export const notificationFrequencySchema = z.object({
+    freq: z.coerce.number().min(0).max(3, "Invalid frequency number"),
+});
+
 export const discordUsernameSearch = z.object({
     username: z
         .string()

@@ -103,8 +103,7 @@ model DiscordConnection {
   id        String       @id @default(uuid())
   userId      String  @unique
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  name  String
+  defaultFreq Int @default(1)
   discordId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
