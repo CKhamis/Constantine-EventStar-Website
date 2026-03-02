@@ -11,12 +11,23 @@ import {LoadingIcon} from "@/components/LoadingIcon";
 import Link from "next/link";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
-import {Check, CircleHelp, X} from "lucide-react";
+import {Check, CheckCircle2, CircleHelp, X} from "lucide-react";
 import {format} from "date-fns";
 import Image from "next/image";
 import Footer from "@/components/Footer";
 import {FRResponse} from "@/app/api/user/connections/incoming/route";
 import FollowDialog from "@/app/profile/FollowDialog";
+import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {useForm} from "react-hook-form";
+import {notificationFrequencySchema} from "@/components/ValidationSchemas";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {toast} from "sonner";
+import {
+    DiscordUsernameSearchResponse,
+    DiscordUsernameSearchResult
+} from "@/app/api/user/notifications/providers/discord/searchUser/route";
+import z from "zod";
 
 export interface Props{
     session: {user: {id: string, name: string, image: string, email: string}}
@@ -24,31 +35,31 @@ export interface Props{
 
 export default function DynamicContent({session}: Props) {
     const [loading, setLoading] = useState(true);
-    const [userInfo, setUserInfo] = useState<userInfoResponse>({
-        createdAt: new Date(),
-        discordId: "",
-        email: "",
-        emailVerified: null,
-        followedBy: [],
-        following: [],
-        id: "",
-        image: "",
-        name: "Event Star",
-        newEventEmails: true,
-        phoneNumber: "",
-        role: "USER",
-        tutorial: false,
-        updatedAt: new Date(),
-        event: []
-    });
+    const [userInfo, setUserInfo] = useState<userInfoResponse | null>(null);
     const [RSVPs, setRSVPs] = useState<EIResponse[]>([]);
     const [receivedFollows, setReceivedFollows] = useState<FRResponse[]>([]);
+    const [notificationResponse, setNotificationResponse] = useState<number>(0);
+    const [discordInfo, setDiscordInfo] = useState<DiscordUsernameSearchResult | null>(null);
 
     async function refresh(){
         setLoading(true);
         await axios.get("/api/user/info")
             .then((response) => {
                 setUserInfo(response.data);
+                return response.data;
+            })
+            .then((data) => {
+                if(data.discordId){
+                    axios.post("/api/user/notifications/providers/discord/getUsers", {list: [data.discordId]})
+                        .then((response) => {
+                            if(response.data.results.length > 0){
+                                setDiscordInfo(response.data.results[0]);
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                }
             })
             .catch((error) => {
                 console.log(error);
@@ -76,7 +87,7 @@ export default function DynamicContent({session}: Props) {
     async function respondFR(response:boolean, senderId:string){
         await axios.post("/api/user/connections/respond", {response: response, senderId: senderId})
             .then(() => {
-                refresh()
+                refresh();
             })
             .catch((error) => {
                 console.log(error);
@@ -113,9 +124,45 @@ export default function DynamicContent({session}: Props) {
         }
     }
 
+    // Discord Connection
+    const freqForm = useForm<z.infer<typeof notificationFrequencySchema>>({
+        resolver: zodResolver(notificationFrequencySchema),
+        defaultValues: { freq: 1 },
+        mode: "onSubmit",
+    });
+
+    async function onSubmitFrequency(values: z.infer<typeof notificationFrequencySchema>) {
+        try {
+            setLoading(true);
+            const response = await axios.post(
+                "/api/user/notifications/providers/discord/setFrequency",
+                values
+            );
+            toast("Frequency Updated", { description: "Discord notification frequency changed." })
+            if(response.status === 200) {
+                setNotificationResponse(1);
+            }else{
+                setNotificationResponse(2);
+            }
+        } catch (e) {
+            console.log(e);
+        } finally {
+            await refresh();
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         refresh()
     }, []);
+
+    if(userInfo == null){
+        return (
+            <>
+                {loading && <LoadingIcon/>}
+            </>
+        );
+    }
 
     return (
         <>
@@ -151,6 +198,7 @@ export default function DynamicContent({session}: Props) {
                         <TabsTrigger value="followers">Followers</TabsTrigger>
                         <TabsTrigger value="following">Following</TabsTrigger>
                         <TabsTrigger value="requests">Requests</TabsTrigger>
+                        <TabsTrigger value="notifications">Notifications</TabsTrigger>
                     </TabsList>
                     <TabsContent value="events" className="mt-5">
                         <div className="w-100 flex flex-row justify-between items-center mb-5">
@@ -177,7 +225,7 @@ export default function DynamicContent({session}: Props) {
                                                 </ToggleGroup>
                                             </div>
                                         </div>
-                                        <p className="text-xs text-muted-foreground">{format(new Date(rsvp.event.eventStart), "M/dd/yyyy hh:mm a")} - {format(new Date(rsvp.event.eventEnd), "M/dd/yyyy hh:mm a")}</p>
+                                        <p className="text-sm text-muted-foreground">{format(new Date(rsvp.event.eventStart), "M/dd/yyyy hh:mm a")} - {format(new Date(rsvp.event.eventEnd), "M/dd/yyyy hh:mm a")}</p>
                                     </CardHeader>
                                     <CardContent>
                                         {rsvp.event.description}
@@ -278,6 +326,108 @@ export default function DynamicContent({session}: Props) {
                                 <p className="font-bold text-3xl mb-5">No Follow Requests</p>
                             </div>
                         )}
+                    </TabsContent>
+                    <TabsContent value="notifications" className="mt-5">
+                        <div className="w-100 flex flex-row justify-between items-center mb-5">
+                            <p className="text-3xl font-bold">Notifications</p>
+                        </div>
+                        <div className="max-w-2xl mx-auto">
+                            <Card className="mb-4 rounded-none">
+                                <CardHeader>
+                                    <div className="flex flex-row items-center justify-between space-y-0 gap-3">
+                                        <div className="flex flex-row justify-start items-center gap-3">
+                                            <Image src="/icons/COW Logo.svg" alt="Discord Logo" height={50} width={50} />
+                                            <div>
+                                                <CardTitle className="text-2xl">Discord</CardTitle>
+                                                {!userInfo.discordConnection && <p className="text-muted-foreground">Get notifications straight to your DM&#39;s</p>}
+                                                {userInfo.discordConnection && <p className="text-muted-foreground">Connected on: {format(new Date(userInfo.discordConnection.createdAt), "M/dd/yyyy hh:mm a")}</p>}
+                                            </div>
+                                        </div>
+                                        {userInfo.discordConnection &&
+                                            <div className="flex items-center justify-center h-14 w-14 rounded-full bg-green-500/10">
+                                                <CheckCircle2 className="h-8 w-8 text-green-500" />
+                                            </div>
+                                        }
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="border-b">
+                                    {!userInfo.discordConnection && <p>Set up your EventStar account to connect with your Discord account so you can get EventStar updates as they come in.</p>}
+                                    {userInfo.discordConnection && discordInfo &&
+                                        <div className="flex flex-row gap-4">
+                                            <div className="flex flex-col gap-3 w-1/2">
+                                                <p className="font-bold">Connected to:</p>
+                                                <div className="flex flex-row items-center gap-4">
+                                                    <AvatarIcon image={discordInfo.avatar} size="small" name={discordInfo.name} />
+                                                    <p className="fw-bold text-lg">{discordInfo.global_name? discordInfo.global_name : discordInfo.name}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col gap-3 w-1/2">
+                                                <p className="font-bold">Default Frequency:</p>
+                                                <p className="text-lg">Level {userInfo.discordConnection.defaultFreq}</p>
+                                            </div>
+                                        </div>
+                                    }
+                                </CardContent>
+                                {userInfo.discordConnection && <CardFooter className="gap-4 flex flex-row justify-between items-start p-6 bg-muted/30">
+                                    <Form {...freqForm}>
+                                        <form
+                                            onSubmit={freqForm.handleSubmit(onSubmitFrequency)}
+                                            className="flex flex-row gap-4 items-start"
+                                        >
+                                            <FormField
+                                                control={freqForm.control}
+                                                name="freq"
+                                                render={({ field }) => (
+                                                    <FormItem className="w-full max-w-md">
+                                                        <FormControl>
+                                                            <Select
+                                                                value={field.value?.toString()}
+                                                                onValueChange={(value) => field.onChange(value)}
+                                                                disabled={loading}
+                                                            >
+                                                                <SelectTrigger className="w-full">
+                                                                    <SelectValue placeholder="Select notification frequency" />
+                                                                </SelectTrigger>
+
+                                                                <SelectContent>
+                                                                    <SelectItem value="0">
+                                                                        0 — No notifications
+                                                                    </SelectItem>
+
+                                                                    <SelectItem value="1">
+                                                                        1 — Essential (event created, 1 hour before start)
+                                                                    </SelectItem>
+
+                                                                    <SelectItem value="2">
+                                                                        2 — Standard (RSVP + event reminders)
+                                                                    </SelectItem>
+
+                                                                    <SelectItem value="3">
+                                                                        3 — All notifications (most reminders)
+                                                                    </SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <div className="flex flex-row gap-4 items-center justify-start">
+                                                <Button type="submit" disabled={loading} variant="secondary">
+                                                    Save notification settings
+                                                </Button>
+                                                {notificationResponse === 1 && <Check className="h-4 w-4 text-green-500" />}
+                                                {notificationResponse === 2 && <X className="h-4 w-4 text-red-500" />}
+                                            </div>
+                                        </form>
+                                    </Form>
+                                </CardFooter>}
+                                {!userInfo.discordConnection && <CardFooter className="gap-4 flex flex-row justify-between items-start p-6 bg-muted/30">
+                                    <Link href="/profile/discordSetup"><Button variant="default">Set up</Button></Link>
+                                </CardFooter>}
+                            </Card>
+                        </div>
                     </TabsContent>
                 </Tabs>
             </div>

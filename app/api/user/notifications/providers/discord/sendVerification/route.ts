@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import {discordUsernameSearch, discordUsernameSendVerification} from "@/components/ValidationSchemas";
+import {discordUsernameSendVerification} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import axios from 'axios';
 import {PrismaClient} from "@prisma/client";
-import {verifyRootLayout} from "next/dist/lib/verify-root-layout";
-
 const prisma = new PrismaClient()
 
 /**

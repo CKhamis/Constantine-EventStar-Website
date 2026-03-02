@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import {DiscordConnection, PrismaClient} from '@prisma/client';
 import {NextResponse} from "next/server";
 import {auth} from "@/auth";
 
@@ -17,9 +17,10 @@ export type userInfoResponse = {
     newEventEmails: boolean,
     phoneNumber: string,
     role: string,
-    tutorial: boolean
-    updatedAt: Date
-    event: Event[]
+    tutorial: boolean,
+    updatedAt: Date,
+    event: Event[],
+    discordConnection: DiscordConnection | null,
 }
 
 export async function GET(){
@@ -54,20 +55,17 @@ export async function GET(){
                     }
                 },
                 event: true,
-                discordConnection: {
-                    select: {
-                        discordId: true
-                    }
-                }
+                discordConnection: true
             },
         });
 
-        const { discordConnection, ...rest } = user;
-
-        return NextResponse.json({
-            ...rest,
-            discordId: discordConnection?.discordId ?? null
-        }, { status: 201 });
+        return NextResponse.json(
+            {
+                ...user,
+                discordId: user.discordConnection?.discordId ?? null,
+            },
+            { status: 200 }
+        );
 
     }catch(e){
         // This should never happen

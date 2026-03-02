@@ -47,7 +47,11 @@ export const discordUsernameSearch = z.object({
         .regex(/^[A-Za-z0-9._-]+$/, {
             message: "Username can only contain letters, numbers, ., _, and -",
         }),
-})
+});
+
+export const discordGetUser = z.object({
+    list: z.array(z.string()),
+});
 
 export const discordUsernameSendVerification = z.object({
     id: z.string().min(5),

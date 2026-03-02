@@ -1,10 +1,10 @@
-import {Card, CardContent} from "@/components/ui/card";
+import {Card} from "@/components/ui/card";
 import AvatarIcon from "@/components/AvatarIcon";
 import {DiscordUsernameSearchResult} from "@/app/api/user/notifications/providers/discord/searchUser/route";
 import {cn} from "@/lib/utils";
 
 export type Props = DiscordUsernameSearchResult & {
-    onClick: (id: number) => void,
+    onClick: (id: string) => void,
     isSelected: boolean,
 }
 
