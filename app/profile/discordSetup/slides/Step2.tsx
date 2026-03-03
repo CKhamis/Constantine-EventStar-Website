@@ -11,6 +11,7 @@ import {REGEXP_ONLY_DIGITS} from "input-otp";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Check, CheckCircle2, X} from "lucide-react";
 import {toast} from "sonner";
+import {NotificationAmounts} from "@/components/NotificationAmounts";
 
 export type Props = {
     selectedDiscordId: string;
@@ -174,24 +175,7 @@ export default function Step2({selectedDiscordId, enableNextAction}: Props) {
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select notification frequency" />
                                                 </SelectTrigger>
-
-                                                <SelectContent>
-                                                    <SelectItem value="0">
-                                                        0 — No notifications
-                                                    </SelectItem>
-
-                                                    <SelectItem value="1">
-                                                        1 — Essential (event created, 1 hour before start)
-                                                    </SelectItem>
-
-                                                    <SelectItem value="2">
-                                                        2 — Standard (RSVP + event reminders)
-                                                    </SelectItem>
-
-                                                    <SelectItem value="3">
-                                                        3 — All notifications (most reminders)
-                                                    </SelectItem>
-                                                </SelectContent>
+                                                <NotificationAmounts />
                                             </Select>
                                         </FormControl>
                                         <FormMessage />

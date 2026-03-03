@@ -28,6 +28,7 @@ import {
     DiscordUsernameSearchResult
 } from "@/app/api/user/notifications/providers/discord/searchUser/route";
 import z from "zod";
+import {NotificationAmounts} from "@/components/NotificationAmounts";
 
 export interface Props{
     session: {user: {id: string, name: string, image: string, email: string}}
@@ -388,24 +389,7 @@ export default function DynamicContent({session}: Props) {
                                                                 <SelectTrigger className="w-full">
                                                                     <SelectValue placeholder="Select notification frequency" />
                                                                 </SelectTrigger>
-
-                                                                <SelectContent>
-                                                                    <SelectItem value="0">
-                                                                        0 — No notifications
-                                                                    </SelectItem>
-
-                                                                    <SelectItem value="1">
-                                                                        1 — Essential (event created, 1 hour before start)
-                                                                    </SelectItem>
-
-                                                                    <SelectItem value="2">
-                                                                        2 — Standard (RSVP + event reminders)
-                                                                    </SelectItem>
-
-                                                                    <SelectItem value="3">
-                                                                        3 — All notifications (most reminders)
-                                                                    </SelectItem>
-                                                                </SelectContent>
+                                                                <NotificationAmounts />
                                                             </Select>
                                                         </FormControl>
                                                         <FormMessage />
