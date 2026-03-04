@@ -26,6 +26,7 @@ import {GuestPopup} from "@/components/tutorials/guests/guests";
 import GuestList from "@/app/event/[id]/GuestList";
 import {Sus} from "@/app/event/[id]/Sus";
 import { stringSimilarity } from "string-similarity-js";
+import {NotificationSelect} from "@/app/event/[id]/notificationSelect";
 
 
 export interface Props {
@@ -119,7 +120,7 @@ export default function DynamicContent({eventId, userId}: Props) {
 
     async function submitForm(data: z.infer<typeof rsvpSchema>) {
         setSubmitStatus('loading')
-        try {
+        try {//todo: either add in the default notification amount here or add in a dropdown or implement this in backend!
             await axios.post(`/api/events/rsvp/${eventId}`, {response: data.response, guests: data.guests, firstName: data.firstName, lastName: data.lastName})
             setSubmitStatus('success')
         } catch (e) {
@@ -197,6 +198,16 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                         Add to Calendar
                                                     </Button>
                                                 </Link>
+
+                                                <NotificationSelect
+                                                    value={userInfo?.discordConnection?.defaultFreq ?? null} //todo: oh yeah, also this should be derrived from noisy.
+                                                    onSelect={(freq) => {
+                                                        console.log("selected", freq);
+                                                        // todo: implement logic for changing notification here
+                                                    }}
+                                                    disabled={!userInfo?.discordConnection}
+                                                />
+
                                             </div>
                                         </div>
                                         <div className="flex flex-row justify-start gap-4">
