@@ -10,6 +10,7 @@ import {Input} from "@/components/ui/input";
 import UserDetailsForm from "@/app/ESMT/UserDetailsForm";
 import {esmtUser} from "@/app/api/ESMT/user/all/route";
 import UserMerge from "@/app/ESMT/UserMerge";
+import DiscordDashboard from "@/app/ESMT/DiscordDashboard";
 
 interface Props {
     id: string;
@@ -18,6 +19,7 @@ interface Props {
 export default function DynamicContent({id}: Props) {
     const [loading, setLoading] = useState(true);
     const [userList, setUserList] = useState<esmtUser[]>([]);
+    const noisyEnabled:boolean = process.env.NOISY_URL !== undefined && process.env.NOISY_URL !== "";
 
     async function refresh(){
         setLoading(true);
@@ -59,6 +61,7 @@ export default function DynamicContent({id}: Props) {
                     <TabsList>
                         <TabsTrigger value="account">User Accounts</TabsTrigger>
                         <TabsTrigger value="merge">Merge Users</TabsTrigger>
+                        {noisyEnabled && <TabsTrigger value="discord">Discord</TabsTrigger>}
                     </TabsList>
                     <TabsContent value="account">
                         <div className="relative max-w-sm mb-4">
@@ -79,6 +82,10 @@ export default function DynamicContent({id}: Props) {
                     </TabsContent>
                     <TabsContent value="merge">
 	                    <UserMerge users={userList} setLoading={setLoading} refresh={refresh} />
+                    </TabsContent>
+                    <TabsContent value="discord">
+                        {noisyEnabled && <DiscordDashboard refresh={refresh} id={id} />}
+                        {!noisyEnabled && <p>Noisy has not been set up with EventStar. You must specify the connection first.</p>}
                     </TabsContent>
                 </Tabs>
             </div>

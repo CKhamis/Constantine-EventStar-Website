@@ -51,6 +51,11 @@ export async function middleware(request: NextRequest) {
     }
 
     try {
+        // Removes WebSpy requirement if WebSpy is not set up
+        if(process.env.WEBSPY_URL.length === 0){
+            return NextResponse.next();
+        }
+
         // Axios is not supported in the Edge runtime for some reason
         const response = await fetch(process.env.WEBSPY_URL, {
             method: "POST",
