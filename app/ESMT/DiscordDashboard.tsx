@@ -1,11 +1,11 @@
-import {esmtUser} from "@/app/api/ESMT/user/all/route";
 
 interface Props {
     refresh: () => void;
-    id: string
+    id: string,
+    url: string,
 }
 
-export default function DiscordDashboard({id, refresh}:Props) {
+export default function DiscordDashboard({id, refresh, url}:Props) {
     return (
         <>
         </>

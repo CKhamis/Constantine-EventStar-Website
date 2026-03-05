@@ -13,13 +13,13 @@ import UserMerge from "@/app/ESMT/UserMerge";
 import DiscordDashboard from "@/app/ESMT/DiscordDashboard";
 
 interface Props {
-    id: string;
+    id: string,
+    noisyEnabled: boolean,
 }
 
-export default function DynamicContent({id}: Props) {
+export default function DynamicContent({id, noisyEnabled}: Props) {
     const [loading, setLoading] = useState(true);
     const [userList, setUserList] = useState<esmtUser[]>([]);
-    const noisyEnabled:boolean = process.env.NOISY_URL !== undefined && process.env.NOISY_URL !== "";
 
     async function refresh(){
         setLoading(true);
@@ -84,7 +84,7 @@ export default function DynamicContent({id}: Props) {
 	                    <UserMerge users={userList} setLoading={setLoading} refresh={refresh} />
                     </TabsContent>
                     <TabsContent value="discord">
-                        {noisyEnabled && <DiscordDashboard refresh={refresh} id={id} />}
+                        {noisyEnabled && <DiscordDashboard refresh={refresh} id={id} url={noisyEnabled} />}
                         {!noisyEnabled && <p>Noisy has not been set up with EventStar. You must specify the connection first.</p>}
                     </TabsContent>
                 </Tabs>

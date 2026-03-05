@@ -22,7 +22,7 @@ const ESMTU = {
     discordConnection: {
         select: {
             id: true,
-            name: true,
+            user: true,
             discordId: true,
         },
     },
