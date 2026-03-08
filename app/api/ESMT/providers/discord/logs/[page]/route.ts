@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import {discordGetUser} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import axios from 'axios';
 
@@ -25,20 +24,14 @@ export type LogLine = {
 /**
  * Uses Noisy to return a list of logs
  * @param request
+ * @param params
  * @constructor
  */
-export async function POST(request: Request) {
+export async function GET(request: Request, { params }: { params: { page: string } }) {
     const session =  await auth();
 
     if(!session || !session.user){
         return NextResponse.json("Please sign in", {status: 401});
-    }
-
-    const body = await request.json();
-    const validation = discordGetUser.safeParse(body);
-
-    if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
     }
 
     try {
@@ -47,12 +40,9 @@ export async function POST(request: Request) {
         }
 
         // Forward response from Noisy
-        const response = await axios.post(
-            `${process.env.NOISY_URL}/discord/get_users`,
-            body
-        );
+        const response = await axios.get<DiscordLogResponse>(`${process.env.NOISY_URL}/get_logs/${params.page}`,);
 
-        console.log(response);
+
 
         return NextResponse.json(response.data, { status: 200 });
 
