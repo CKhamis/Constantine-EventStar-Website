@@ -11,15 +11,19 @@ import UserDetailsForm from "@/app/ESMT/UserDetailsForm";
 import {esmtUser} from "@/app/api/ESMT/user/all/route";
 import UserMerge from "@/app/ESMT/UserMerge";
 import DiscordDashboard from "@/app/ESMT/DiscordDashboard";
+import {DiscordLogResponse} from "@/app/api/ESMT/providers/discord/logs/[page]/route";
 
 interface Props {
     id: string,
-    noisyEnabled: boolean,
+    noisyUrl: string | undefined,
 }
 
-export default function DynamicContent({id, noisyEnabled}: Props) {
+export default function DynamicContent({id, noisyUrl}: Props) {
     const [loading, setLoading] = useState(true);
     const [userList, setUserList] = useState<esmtUser[]>([]);
+    const [logPage, setLogPage] = useState(0);
+    const [noisyLog, setNoisyLog] = useState<DiscordLogResponse | null>(null);
+    const noisyEnabled:boolean = noisyUrl !== undefined;
 
     async function refresh(){
         setLoading(true);
@@ -34,9 +38,26 @@ export default function DynamicContent({id, noisyEnabled}: Props) {
         setLoading(false);
     }
 
+    async function getNoisyLogs(){
+        setLoading(true);
+        await axios.get(`/api/ESMT/providers/discord/logs/${logPage}`)
+            .then((response) => {
+                setNoisyLog(response.data);
+            })
+            .catch((error) => {
+                console.log(error.status);
+            });
+        setLoading(false);
+    }
+
     useEffect(() => {
         refresh()
     }, []);
+
+    useEffect(() => {
+        if (!noisyEnabled) return;
+        getNoisyLogs();
+    }, [logPage, noisyEnabled]);
 
     // Search
     const [searchTerm, setSearchTerm] = useState('')
@@ -61,7 +82,7 @@ export default function DynamicContent({id, noisyEnabled}: Props) {
                     <TabsList>
                         <TabsTrigger value="account">User Accounts</TabsTrigger>
                         <TabsTrigger value="merge">Merge Users</TabsTrigger>
-                        {noisyEnabled && <TabsTrigger value="discord">Discord</TabsTrigger>}
+                        {noisyEnabled && <TabsTrigger value="noisy">Noisy</TabsTrigger>}
                     </TabsList>
                     <TabsContent value="account">
                         <div className="relative max-w-sm mb-4">
@@ -83,8 +104,8 @@ export default function DynamicContent({id, noisyEnabled}: Props) {
                     <TabsContent value="merge">
 	                    <UserMerge users={userList} setLoading={setLoading} refresh={refresh} />
                     </TabsContent>
-                    <TabsContent value="discord">
-                        {noisyEnabled && <DiscordDashboard refresh={refresh} id={id} url={noisyEnabled} />}
+                    <TabsContent value="noisy">
+                        {noisyEnabled && <DiscordDashboard page={logPage} url={noisyUrl} setPage={setLogPage} logs={noisyLog} />}
                         {!noisyEnabled && <p>Noisy has not been set up with EventStar. You must specify the connection first.</p>}
                     </TabsContent>
                 </Tabs>

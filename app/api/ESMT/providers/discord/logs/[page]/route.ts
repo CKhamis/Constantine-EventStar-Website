@@ -3,11 +3,8 @@ import {auth} from "@/auth";
 import axios from 'axios';
 
 export type DiscordLogResponse = {
-    logs: LogLine[],
-}
-
-export type LogLine = {
-    timestamp: string,
+    logs: {
+        timestamp: string,
         level: string,
         fields: {
             message: string,
@@ -19,6 +16,9 @@ export type LogLine = {
             page: string | null,
             event: string | null,
         },
+    }[],
+    page: number,
+    lines: number
 }
 
 /**
