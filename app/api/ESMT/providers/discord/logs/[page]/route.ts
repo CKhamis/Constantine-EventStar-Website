@@ -17,7 +17,7 @@ export type DiscordLogResponse = {
             event: string | null,
         },
     }[],
-    page: number,
+    pages: number,
     lines: number
 }
 
