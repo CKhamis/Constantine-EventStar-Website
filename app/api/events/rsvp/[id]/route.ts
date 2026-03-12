@@ -3,6 +3,13 @@ import { NextResponse } from "next/server";
 import {rsvpSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 
+export type NoisyRSVP = {
+    event_id: string,
+    user_id: string,
+    responded: string | null,
+    notify_amount: number
+}
+
 const prisma = new PrismaClient();
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {

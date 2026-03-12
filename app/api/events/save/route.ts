@@ -3,6 +3,29 @@ import { type NextRequest, NextResponse } from "next/server"
 import { saveEventSchema } from "@/components/ValidationSchemas"
 import { auth } from "@/auth"
 
+export type NoisyEvent = {
+    event_id: string,
+    start_time: Date,
+    end_time: Date,
+    rsvp_due: Date,
+    event_type: string,
+    event_title: string,
+    guest_list: NoisyGuest[],
+    // TODO: at some point, once the program needs to be runtime persistent, this boolean needs to have Arc<AtomicBool> for each type of notification thread that states of the notification went through,
+    //  this is because we want to resend the notification if the program has closed and reopened
+    notify_threads_spawned: boolean,
+}
+
+export type NoisyGuest = {
+    user_id: string,
+    /// 0: no notifications at all
+    /// 1: event created, 1 hour before event start
+    /// 2: event created, 1 hour before RSVP due date, 1 day before event start, 1 hour before event start
+    /// 3: event created, 1 day before RSVP due date, 1 hour before RSVP due date, 2 days before event start, 1 day before event start, 1 hour before event start
+    notify_amount: number,
+    responded: 'Going' | 'NotGoing' | 'MaybeGoing' | 'NoResponse'
+}
+
 const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
