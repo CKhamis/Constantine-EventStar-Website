@@ -109,7 +109,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 				<p>This setting merges two separate EventStar accounts and turns it into one. This will combine all sign-in options, event invitations, RSVPs, followers, following, and other data points. This process cannot be reversed. Please make sure to back up database before.</p>
 			</Card>
 			<p className="text-2xl font-bold mt-5">1. Select Host Account</p>
-			<div className="md:grid-cols-3 grid w-100 mt-2 gap-5">
+			<div className="md:grid-cols-3 grid w-full mt-2 gap-5">
 				<Select onValueChange={(e) => changeHost(e)}>
 					<SelectTrigger>
 						<SelectValue placeholder="Choose User" />
@@ -123,7 +123,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
                         <AvatarIcon name={host?.name} key={host?.id} size="small" image={host?.image} />
                         <p className="text-xl font-bold">{host? host.name : "None Selected"}</p>
                     </div>
-                    <div className="flex flex-row justify-evenly align-center items-center gap-5 overflow-x-auto pb-5">
+                    <div className="flex flex-row justify-evenly align-center items-center gap-5 pb-5">
 	                    <div className="flex flex-col justify-center align-center items-center">
                             <p className="text-bold text-2xl">{host? host.followedBy.length : "?"}</p>
                             <p className="text-sm">Followers</p>
@@ -162,7 +162,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 			</div>
 
 			<p className="text-2xl font-bold mt-5">2. Select Secondary Account</p>
-			<div className="md:grid-cols-3 grid w-100 mt-2 gap-5">
+			<div className="md:grid-cols-3 grid w-full mt-2 gap-5">
 				<div>
 					<Select onValueChange={(e) => changeSecondary(e)}>
 						<SelectTrigger>

@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client"
 import { type NextRequest, NextResponse } from "next/server"
 import { saveEventSchema } from "@/components/ValidationSchemas"
 import { auth } from "@/auth"
+import axios from "axios";
+import {format} from "date-fns";
 
 export type NoisyEvent = {
     event_id: string,
@@ -11,8 +13,6 @@ export type NoisyEvent = {
     event_type: string,
     event_title: string,
     guest_list: NoisyGuest[],
-    // TODO: at some point, once the program needs to be runtime persistent, this boolean needs to have Arc<AtomicBool> for each type of notification thread that states of the notification went through,
-    //  this is because we want to resend the notification if the program has closed and reopened
     notify_threads_spawned: boolean,
 }
 
@@ -162,7 +162,29 @@ export async function POST(request: NextRequest) {
                         },
                     },
                 },
-            })
+            });
+
+            // Send event to Noisy
+            const response = await axios.post(`${process.env.NOISY_URL}/new_event`, {
+                event_id: newEvent.id,
+                start_time: formatTimestampNoTZ(new Date(newEvent.eventStart)),
+                end_time: formatTimestampNoTZ(new Date(newEvent.eventEnd)),
+                rsvp_due: formatTimestampNoTZ(new Date(newEvent.rsvpDuedate)),
+                event_type: newEvent.eventType,
+                event_title: newEvent.title,
+                guest_list: [
+                    {
+                        user_id: session.user.id,
+                        /// 0: no notifications at all
+                        /// 1: event created, 1 hour before event start
+                        /// 2: event created, 1 hour before RSVP due date, 1 day before event start, 1 hour before event start
+                        /// 3: event created, 1 day before RSVP due date, 1 hour before RSVP due date, 2 days before event start, 1 day before event start, 1 hour before event start
+                        notify_amount: 1,
+                        responded: 'Going'
+                    }
+                ],
+                notify_threads_spawned: false,
+            });
 
             return NextResponse.json(event, { status: 201 })
         }
@@ -170,4 +192,17 @@ export async function POST(request: NextRequest) {
         console.error(e)
         return NextResponse.json({ message: "An error occurred" }, { status: 500 })
     }
+}
+
+export function formatTimestampNoTZ(date: Date): string {
+    // Base ISO without timezone
+    const base = format(date, "yyyy-MM-dd'T'HH:mm:ss");
+
+    // Milliseconds (3 digits)
+    const ms = format(date, "SSS");
+
+    // Pad to 9 digits (fake nanoseconds)
+    const nano = ms.padEnd(9, "0");
+
+    return `${base}.${nano}`;
 }
