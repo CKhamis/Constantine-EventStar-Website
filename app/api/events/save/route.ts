@@ -142,6 +142,7 @@ export async function POST(request: NextRequest) {
                             name: true,
                             email: true,
                             image: true,
+                            discordConnection: true
                         },
                     },
                     RSVP: {
@@ -165,6 +166,14 @@ export async function POST(request: NextRequest) {
             });
 
             // Send event to Noisy
+            //todo: make sure this CHECKS if noisy is connected
+
+            if(!event || !event.author.discordConnection){
+                // This should never happen
+                return NextResponse.json("Author has not set up Discord on their account. No notifications will be sent.", { status: 400 })
+            }
+
+            // Send event information to Noisy
             const response = await axios.post(`${process.env.NOISY_URL}/new_event`, {
                 event_id: newEvent.id,
                 start_time: formatTimestampNoTZ(new Date(newEvent.eventStart)),
@@ -174,7 +183,7 @@ export async function POST(request: NextRequest) {
                 event_title: newEvent.title,
                 guest_list: [
                     {
-                        user_id: session.user.id,
+                        user_id: event.author.discordConnection.discordId,
                         /// 0: no notifications at all
                         /// 1: event created, 1 hour before event start
                         /// 2: event created, 1 hour before RSVP due date, 1 day before event start, 1 hour before event start
