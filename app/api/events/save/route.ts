@@ -101,9 +101,76 @@ export async function POST(request: NextRequest) {
                         },
                     },
                 },
-            })
+            });
 
-            return NextResponse.json(updatedEvent, { status: 202 })
+            const event = await prisma.event.findFirst({
+                where: {
+                    id: body.id,
+                },
+                include: {
+                    author: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            image: true,
+                            discordConnection: true
+                        },
+                    },
+                    RSVP: {
+                        select: {
+                            id: true,
+                            response: true,
+                            guests: true,
+                            firstName: true,
+                            lastName: true,
+                            user: {
+                                select: {
+                                    name: true,
+                                    email: true,
+                                    image: true,
+                                    id: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            // Noisy not set up
+            if(process.env.NOISY_URL === "" || process.env.NOISY_URL === null){
+                return NextResponse.json(event, { status: 202 });
+            }
+
+            if(!event || !event.author.discordConnection){
+                // This should never happen
+                return NextResponse.json("Author has not set up Discord on their account. No notifications will be sent.", { status: 400 });
+            }
+
+            // Send to Noisy
+            const response = await axios.post(`${process.env.NOISY_URL}/new_event`, {
+                event_id: body.id,
+                start_time: formatTimestampNoTZ(new Date(updatedEvent.eventStart)),
+                end_time: formatTimestampNoTZ(new Date(updatedEvent.eventEnd)),
+                rsvp_due: formatTimestampNoTZ(new Date(updatedEvent.rsvpDuedate)),
+                event_type: updatedEvent.eventType,
+                event_title: updatedEvent.title,
+                guest_list: [
+                    {
+                        user_id: event.author.discordConnection.discordId,
+                        /// 0: no notifications at all
+                        /// 1: event created, 1 hour before event start
+                        /// 2: event created, 1 hour before RSVP due date, 1 day before event start, 1 hour before event start
+                        /// 3: event created, 1 day before RSVP due date, 1 hour before RSVP due date, 2 days before event start, 1 day before event start, 1 hour before event start
+                        notify_amount: 1,
+                        responded: 'Going'
+                    }
+                ],
+                notify_threads_spawned: false,
+            });
+
+            return NextResponse.json(event, { status: 202 });
+
         } else {
             const newEvent = await prisma.event.create({
                 data: {
@@ -165,12 +232,17 @@ export async function POST(request: NextRequest) {
                 },
             });
 
+            // Noisy not set up
+            if(process.env.NOISY_URL === "" || process.env.NOISY_URL === null){
+                return NextResponse.json(event, { status: 201 });
+            }
+
             // Send event to Noisy
             //todo: make sure this CHECKS if noisy is connected
 
             if(!event || !event.author.discordConnection){
                 // This should never happen
-                return NextResponse.json("Author has not set up Discord on their account. No notifications will be sent.", { status: 400 })
+                return NextResponse.json("Author has not set up Discord on their account. No notifications will be sent.", { status: 400 });
             }
 
             // Send event information to Noisy
@@ -195,7 +267,7 @@ export async function POST(request: NextRequest) {
                 notify_threads_spawned: false,
             });
 
-            return NextResponse.json(event, { status: 201 })
+            return NextResponse.json(event, { status: 201 });
         }
     } catch (e) {
         console.error(e)
