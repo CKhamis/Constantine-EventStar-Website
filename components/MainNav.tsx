@@ -64,7 +64,7 @@ export default async function MainNav({children}: PropsWithChildren){
                         <AccountButton/>
                     </div>
                 </div>
-                <div className="h-100 flex-grow overflow-y-scroll">
+                <div className="h-100 flex-grow">
                 {children}
                 </div>
             </div>

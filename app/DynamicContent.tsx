@@ -131,7 +131,7 @@ export default function DynamicContent({userId} : Props) {
         <>
             {loading && <LoadingIcon/>}
             <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-4">
-                <div className="lg:col-span-3 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
+                <div className="lg:col-span-3 lg:h-100 lg:overflow-y-auto lg:flex flex-col">
                     {/*<div className="top-left-gradient">*/}
                     {/*    <div className="container flex-col flex gap-3 py-3">*/}
                     {/*        <div className="flex flex-row justify-start items-center gap-3">*/}
@@ -355,7 +355,7 @@ export default function DynamicContent({userId} : Props) {
                         <Footer/>
                     </div>
                 </div>
-                <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll hidden lg:block">
+                <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-auto hidden lg:block">
                     <div className="border-b-2 w-100">
                         <div className="max-w-md mx-auto pb-4">
                             <Calendar calendarType="gregory" onChange={changeDate} value={selectedDate} tileClassName={highlightDates} />

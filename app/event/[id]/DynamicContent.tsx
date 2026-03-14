@@ -159,7 +159,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                 <GuestPopup setOpen={closeGuestTutorial} />
             )}
             <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
-                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
+                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-auto lg:flex flex-col">
                     <div className="top-left-gradient">
                         <div className="container flex-col flex gap-3 py-3 max-w-5xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
@@ -259,7 +259,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                         </div>
                     </div>
                 </div>
-                <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll">
+                <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-auto">
                     <div className="border-b-2 w-100 p-5">
                         <div className="max-w-xl mx-auto">
                             <div className="flex flex-row justify-between items-center">

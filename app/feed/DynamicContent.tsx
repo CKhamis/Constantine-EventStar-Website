@@ -160,7 +160,7 @@ export default function DynamicContent() {
                         ))}
                     </div>
                 </div>
-                <div className="hidden lg:flex overflow-y-scroll">
+                <div className="hidden lg:flex overflow-y-auto">
                     <div className="max-w-xl mx-auto">
                         <Card className="mt-5 rounded-none border-none">
                             <CardContent>
