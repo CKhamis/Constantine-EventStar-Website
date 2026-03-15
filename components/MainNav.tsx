@@ -19,8 +19,8 @@ export default async function MainNav({children}: PropsWithChildren){
 
     return(
         <TooltipProvider>
-            <div className="flex flex-col lg:flex-row justify-start gap-0 m-0 p-0 h-screen w-full">
-                <div className="border-r-2 h-100 flex-col justify-between p-2 hidden lg:flex">
+            <div className="flex flex-col lg:flex-row justify-start gap-0 m-0 p-0 h-screen w-full overflow-hidden">
+                <div className="border-r-2 h-full flex-col justify-between p-2 hidden lg:flex">
                     <div className="flex flex-col align-middle content-center gap-6 mt-2">
                         <Tooltip>
                             <TooltipTrigger>
@@ -49,7 +49,7 @@ export default async function MainNav({children}: PropsWithChildren){
                         <AccountButton />
                     </div>
                 </div>
-                <div className="border-b-2 w-100 flex-row justify-between flex lg:hidden sticky px-2 pt-1 backdrop-blur z-[10]">
+                <div className="border-b-2 w-full flex-row justify-between flex lg:hidden sticky px-2 pt-1 backdrop-blur z-[10]">
                     <Link href="/" className="p-2">
                         <Image src="/icons/Logo.svg" alt="rat" width={40} height={40} className="m-0"/>
                     </Link>
@@ -64,7 +64,7 @@ export default async function MainNav({children}: PropsWithChildren){
                         <AccountButton/>
                     </div>
                 </div>
-                <div className="h-100 flex-grow">
+                <div className="h-full flex-grow overflow-y-auto">
                 {children}
                 </div>
             </div>
