@@ -45,45 +45,43 @@ export default function DynamicContent({id}: Props) {
     return (
         <>
             {loading && <LoadingIcon/>}
-            <div className="p-0">
-                <div className="container">
-                    <div className="flex justify-between items-center border-b-2 pb-5 overflow-x-hidden py-5 mb-5">
-                        <div className="flex flex-row justify-start items-center gap-3">
-                            <Image src="/icons/ESMT.svg" alt="ESMT logo" width={50} height={50} />
-                            <div>
-                                <p className="text-3xl font-bold">EventStar Management Terminal</p>
-                                <p>Administrator tools</p>
-                            </div>
+            <div className="container">
+                <div className="flex justify-between items-center border-b-2 pb-5 py-5 mb-5">
+                    <div className="flex flex-row justify-start items-center gap-3">
+                        <Image src="/icons/ESMT.svg" alt="ESMT logo" width={50} height={50} />
+                        <div>
+                            <p className="text-3xl font-bold">EventStar Management Terminal</p>
+                            <p>Administrator tools</p>
                         </div>
                     </div>
-                    <div>
-                        <Tabs defaultValue="account" className="w-full">
-                            <TabsList>
-                                <TabsTrigger value="account">User Accounts</TabsTrigger>
-                                <TabsTrigger value="merge">Merge Users</TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="account">
-                                <div className="relative max-w-sm mb-4">
-                                    <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
-                                    <Input
-                                        type="search"
-                                        placeholder="Search users..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-8"
-                                    />
-                                </div>
-                                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                    {filteredUsers.map((user) => (
-                                        <UserDetailsForm id={id} user={user} key={user.id} refresh={refresh} />
-                                    ))}
-                                </div>
-                            </TabsContent>
-                            <TabsContent value="merge">
-                                <UserMerge users={userList} setLoading={setLoading} refresh={refresh} />
-                            </TabsContent>
-                        </Tabs>
-                    </div>
+                </div>
+                <div>
+                    <Tabs defaultValue="account">
+                        <TabsList>
+                            <TabsTrigger value="account">User Accounts</TabsTrigger>
+                            <TabsTrigger value="merge">Merge Users</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="account">
+                            <div className="relative max-w-sm mb-4">
+                                <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
+                                <Input
+                                    type="search"
+                                    placeholder="Search users..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-8"
+                                />
+                            </div>
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                {filteredUsers.map((user) => (
+                                    <UserDetailsForm id={id} user={user} key={user.id} refresh={refresh} />
+                                ))}
+                            </div>
+                        </TabsContent>
+                        <TabsContent value="merge">
+                            <UserMerge users={userList} setLoading={setLoading} refresh={refresh} />
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </div>
         </>

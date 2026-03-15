@@ -19,7 +19,7 @@ export default async function MainNav({children}: PropsWithChildren){
 
     return(
         <TooltipProvider>
-            <div className="flex flex-col lg:flex-row justify-start gap-0 m-0 p-0 h-screen w-screen">
+            <div className="flex flex-col lg:flex-row justify-start gap-0 m-0 p-0 h-screen w-full">
                 <div className="border-r-2 h-100 flex-col justify-between p-2 hidden lg:flex">
                     <div className="flex flex-col align-middle content-center gap-6 mt-2">
                         <Tooltip>
