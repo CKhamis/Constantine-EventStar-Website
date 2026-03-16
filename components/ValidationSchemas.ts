@@ -87,6 +87,11 @@ export const rsvpSchema = z.object({
     lastName: z.string().max(20, "Last name too long").min(1, "Last name too short").optional().or(z.literal("")),
 })
 
+export const notificationSchema = z.object({
+    notificationAmount: z.number().int().min(0).max(3).optional(),
+});
+
+
 export const authorAddRsvpSchema = z.object({
     id: z.string().cuid().optional(), // user id
     response: RsvpResponseAll,

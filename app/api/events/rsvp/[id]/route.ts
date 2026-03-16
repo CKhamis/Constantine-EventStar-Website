@@ -3,13 +3,6 @@ import { NextResponse } from "next/server";
 import {rsvpSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 
-export type NoisyRSVP = {
-    event_id: string,
-    user_id: string,
-    responded: string | null,
-    notify_amount: number
-}
-
 const prisma = new PrismaClient();
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -159,3 +152,4 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return NextResponse.json({ error: "An error occurred while fetching the event" }, { status: 500 });
     }
 }
+//todo: add in places to init their rsvp in noisy. if the user wants to change their rsvp to something else, then this should not alter their .

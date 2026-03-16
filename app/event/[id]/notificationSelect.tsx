@@ -13,7 +13,7 @@ import {
     BellOff,
     Sparkles,
     CalendarClock,
-    Check,
+    Check, CalendarPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -63,14 +63,8 @@ export function NotificationSelect({value, onSelect, disabled}: Props) {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button
-                    type="button"
-                    variant="secondary"
-                    size="icon"
-                    disabled={disabled}
-                    aria-label="Notification settings"
-                    className="relative"
-                >
+                <Button variant="outline" className="flex items-center justify-center gap-2 w-full" disabled={disabled}>
+                    Notifications
                     <Bell className="h-4 w-4" />
                 </Button>
             </PopoverTrigger>

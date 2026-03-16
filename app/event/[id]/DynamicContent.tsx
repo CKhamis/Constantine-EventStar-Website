@@ -11,7 +11,7 @@ import {Button} from "@/components/ui/button";
 import {CalendarPlus, Car, Check, Clock, House, LetterText, MapPin, Pencil, View, X} from "lucide-react";
 import {useForm} from "react-hook-form";
 import {z} from "zod";
-import {rsvpSchema} from "@/components/ValidationSchemas";
+import {notificationSchema, rsvpSchema} from "@/components/ValidationSchemas";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {format} from "date-fns";
 import Link from "next/link";
@@ -27,6 +27,7 @@ import GuestList from "@/app/event/[id]/GuestList";
 import {Sus} from "@/app/event/[id]/Sus";
 import { stringSimilarity } from "string-similarity-js";
 import {NotificationSelect} from "@/app/event/[id]/notificationSelect";
+import {toast} from "sonner";
 
 
 export interface Props {
@@ -141,6 +142,27 @@ export default function DynamicContent({eventId, userId}: Props) {
         },
     })
 
+    async function updateNotification(amount: number) {
+        try {
+            await axios.post(`/api/events/notify/${eventId}`, {notificationAmount: amount})
+                .then((r: { data: string }) => {
+                    toast("Notifications Updated", { description: r.data })
+                })
+                .catch((r: { response: { data: { error?: string; message?: string } | string } }) => {
+                    const errorMessage =
+                        typeof r.response.data === "string"
+                            ? r.response.data
+                            : r.response.data.error || r.response.data.message || "Unknown error"
+
+                    toast("Error", { description: errorMessage })
+                });
+        } catch (e) {
+            console.log(e);
+        } finally {
+            refresh();
+        }
+    }
+
     useEffect(() => {
         refresh()
     }, []);
@@ -200,12 +222,13 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                 </Link>
 
                                                 <NotificationSelect
-                                                    value={userInfo?.discordConnection?.defaultFreq ?? null} //todo: oh yeah, also this should be derrived from noisy.
+                                                    value={userInfo?.discordConnection?.defaultFreq ?? null}
                                                     onSelect={(freq) => {
-                                                        console.log("selected", freq);
-                                                        // todo: implement logic for changing notification here
+                                                        updateNotification(freq)
                                                     }}
-                                                    disabled={!userInfo?.discordConnection}
+                                                    disabled={
+                                                        !eventInfo.RSVP.find((r) => r.user?.id === userId) || !userInfo?.discordConnection
+                                                    }
                                                 />
 
                                             </div>
