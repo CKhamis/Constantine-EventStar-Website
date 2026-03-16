@@ -144,7 +144,7 @@ export default function DynamicContent({eventId, userId}: Props) {
 
     async function updateNotification(amount: number) {
         try {
-            await axios.post(`/api/events/notify/${eventId}`, {notificationAmount: amount})
+            await axios.post(`/api/events/notify/get/${eventId}`, {notificationAmount: amount})
                 .then((r: { data: string }) => {
                     toast("Notifications Updated", { description: r.data })
                 })
