@@ -261,7 +261,7 @@ export async function POST(request: NextRequest) {
                         /// 2: event created, 1 hour before RSVP due date, 1 day before event start, 1 hour before event start
                         /// 3: event created, 1 day before RSVP due date, 1 hour before RSVP due date, 2 days before event start, 1 day before event start, 1 hour before event start
                         notify_amount: 1,
-                        responded: 'Going'
+                        responded: 'YES'
                     }
                 ],
                 notify_threads_spawned: false,
