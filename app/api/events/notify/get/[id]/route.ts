@@ -4,11 +4,9 @@ import {notificationSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import axios from "axios";
 
-export type NoisyRSVP = {
+export type GetGuestResponseRequest = {
     event_id: string,
     user_id: string,
-    responded: string | null,
-    notify_amount: number
 }
 
 const prisma = new PrismaClient();
@@ -42,29 +40,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             return NextResponse.json("User does not have Discord connected.", { status: 404 });
         }
 
-        // Get user's current response
-        const rsvp = await prisma.rsvp.findFirst({
-            where: {
-                userId: session.user.id,
-                eventId: eventId
-            }
-        });
-
-        if(!rsvp){
-            return NextResponse.json("User does not have an existing RSVP", { status: 404 });
-        }
-
-        const payload:NoisyRSVP = {
+        const payload:GetGuestResponseRequest = {
             user_id: session.user.id,
-            responded: rsvp.response,
-            notify_amount: body.notificationAmount,
             event_id: eventId
         }
 
-        const res =  await axios.post(`${process.env.NOISY_URL}/set_guest_response`, payload);
-        console.log(res);
+        const res =  await axios.post(`${process.env.NOISY_URL}/get_guest_response`, payload);
 
-        return NextResponse.json("Notification amount saved.", { status: 202 });
+        return NextResponse.json(res.data, { status: 202 });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error: "An error occurred while setting the notification" }, { status: 500 });

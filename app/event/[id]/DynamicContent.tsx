@@ -28,6 +28,7 @@ import {Sus} from "@/app/event/[id]/Sus";
 import { stringSimilarity } from "string-similarity-js";
 import {NotificationSelect} from "@/app/event/[id]/notificationSelect";
 import {toast} from "sonner";
+import {NoisyRSVP} from "@/app/api/events/notify/set/[id]/route";
 
 
 export interface Props {
@@ -52,6 +53,7 @@ export default function DynamicContent({eventId, userId}: Props) {
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [userInfo, setUserInfo] = useState<userInfoResponse | null>(null);
     const [cookies, setCookie, removeCookie] = useCookies(['guestsTutorial']);
+    const [notificationAmount, setNotificationAmount] = useState<number | null>(null)
 
 	const [pendingSubmit, setPendingSubmit] = useState<z.infer<typeof rsvpSchema> | null>(null);
 	const [writeWarning, setWriteWarning] = useState(false);
@@ -84,37 +86,46 @@ export default function DynamicContent({eventId, userId}: Props) {
         setCookie("guestsTutorial", false);
     }
 
-    async function refresh(){
+    async function refresh() {
         setLoading(true);
 
-        await axios.get("/api/events/view/" + eventId)
-            .then((response) => {
-                // Event exists, but need to know if user was invited
-                setEventInfo(response.data);
-                document.querySelector("#background")!.style.background = response.data.backgroundStyle;
+        await Promise.all([
+            axios.get("/api/events/view/" + eventId)
+                .then((response) => {
+                    setEventInfo(response.data);
+                    document.querySelector("#background")!.style.background = response.data.backgroundStyle;
 
-                const invitedUser = response.data.RSVP.find((r: rsvp) => r.user.id === userId);
+                    const invitedUser = response.data.RSVP.find((r: rsvp) => r.user.id === userId);
 
-                if(invitedUser){
-                    // user is invited
-                    setRSVP(invitedUser);
-                    form.setValue("response", invitedUser.response)
-                    form.setValue("guests", invitedUser.guests)
-                }
-            })
-            .catch((error) => {
-                console.log(error.status); // event not found, access denied, or need login
-                document.querySelector("#background")!.style.background = "black";
-            });
+                    if (invitedUser) {
+                        setRSVP(invitedUser);
+                        form.setValue("response", invitedUser.response);
+                        form.setValue("guests", invitedUser.guests);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error.status);
+                    document.querySelector("#background")!.style.background = "black";
+                }),
 
-        await axios.get("/api/user/info")
-            .then((response) => {
-                setUserInfo(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-                setUserInfo(null);
-            });
+            axios.get("/api/user/info")
+                .then((response) => {
+                    setUserInfo(response.data);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    setUserInfo(null);
+                }),
+
+            axios.get(`/api/events/notify/get/${eventId}`)
+                .then((response) => {
+                    const notifyData: NoisyRSVP = response.data;
+                    setNotificationAmount(notifyData.notify_amount);
+                })
+                .catch((error) => {
+                    console.log(error);
+                })
+        ]);
 
         setLoading(false);
     }
@@ -222,7 +233,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                 </Link>
 
                                                 <NotificationSelect
-                                                    value={userInfo?.discordConnection?.defaultFreq ?? null}
+                                                    value={notificationAmount}
                                                     onSelect={(freq) => {
                                                         updateNotification(freq)
                                                     }}

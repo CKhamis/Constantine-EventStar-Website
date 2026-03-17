@@ -242,7 +242,7 @@ export async function POST(request: NextRequest) {
 
             if(!event || !event.author.discordConnection){
                 // This should never happen
-                return NextResponse.json("Author has not set up Discord on their account. No notifications will be sent.", { status: 400 });
+                return NextResponse.json("Event has been created without Discord notifications.", { status: 200 });
             }
 
             // Send event information to Noisy
