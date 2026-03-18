@@ -11,18 +11,9 @@ export type GetGuestResponseRequest = {
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
-    const session =  await auth();
-
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {    const session =  await auth();
     const resolvedParams = await params;
     const eventId = resolvedParams.id;
-
-    const body = await request.json();
-    const validation = notificationSchema.safeParse(body);
-
-    if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
-    }
 
     if(!session || !session.user || !session.user.id){
         return NextResponse.json("Sign in is needed", {status: 400});
@@ -41,7 +32,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         }
 
         const payload:GetGuestResponseRequest = {
-            user_id: session.user.id,
+            user_id: connection.discordId,
             event_id: eventId
         }
 
@@ -50,6 +41,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return NextResponse.json(res.data, { status: 202 });
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: "An error occurred while setting the notification" }, { status: 500 });
+        return NextResponse.json({ error: "An error occurred while getting the notification" }, { status: 500 });
     }
 }

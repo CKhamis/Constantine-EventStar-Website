@@ -55,7 +55,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         }
 
         const payload:NoisyRSVP = {
-            user_id: session.user.id,
+            user_id: connection.discordId,
             responded: rsvp.response,
             notify_amount: body.notificationAmount,
             event_id: eventId
