@@ -46,7 +46,7 @@ export default async function MainNav({children}: PropsWithChildren){
                         ))}
                     </div>
                     <div>
-                        <AccountButton />
+                        <AccountButton session={session} />
                     </div>
                 </div>
                 <div className="border-b-2 w-100 flex-row justify-between flex lg:hidden sticky px-2 pt-1 backdrop-blur z-[10]">
@@ -61,7 +61,7 @@ export default async function MainNav({children}: PropsWithChildren){
                         </div>
                     ))}
                     <div className="p-2">
-                        <AccountButton/>
+                        <AccountButton session={session} />
                     </div>
                 </div>
                 <div className="h-100 flex-grow overflow-y-scroll">

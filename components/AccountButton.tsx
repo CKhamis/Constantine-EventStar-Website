@@ -9,15 +9,18 @@ import {Button} from "./ui/button";
 import {CircleUser, PersonStanding,} from "lucide-react"
 import Link from "next/link"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {auth} from "@/auth";
+import { Session } from "next-auth";
 
-export default async function AccountButton(){
-    const session = await auth();
+interface Props {
+    session: Session | null;
+}
+
+export default async function AccountButton({ session }: Props){
     if(session && session.user){
         return (
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="secondary" size="icon" className="rounded-full h-10 w-10">
+                    <Button suppressHydrationWarning variant="secondary" size="icon" className="rounded-full h-10 w-10">
                         <Avatar className="h-10 w-10 sm:flex">
                             {session.user.image && <AvatarImage src={session.user.image} alt={`${session.user.name}`}/>}
                             {session.user && <AvatarFallback>{session.user.name}</AvatarFallback>}
@@ -48,7 +51,7 @@ export default async function AccountButton(){
         return (
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="secondary" size="icon" className="rounded-full">
+                    <Button suppressHydrationWarning  variant="secondary" size="icon" className="rounded-full">
                         <CircleUser className="h-10 w-10"/>
                         <span className="sr-only">Toggle user menu</span>
                     </Button>
