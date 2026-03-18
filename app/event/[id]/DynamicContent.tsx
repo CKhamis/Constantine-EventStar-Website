@@ -58,6 +58,13 @@ export default function DynamicContent({eventId, userId}: Props) {
 	const [pendingSubmit, setPendingSubmit] = useState<z.infer<typeof rsvpSchema> | null>(null);
 	const [writeWarning, setWriteWarning] = useState(false);
 
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        refresh();
+    }, []);
+
 	function WICheck(data: z.infer<typeof rsvpSchema>) {
 		// Only intercept write-in guests that
 		if (!userId && eventInfo?.inviteVisibility === "FULL") {
@@ -80,7 +87,6 @@ export default function DynamicContent({eventId, userId}: Props) {
 		// No match → submit immediately
 		submitForm(data);
 	}
-
 
 	function closeGuestTutorial(){
         setCookie("guestsTutorial", false);
@@ -174,22 +180,19 @@ export default function DynamicContent({eventId, userId}: Props) {
         }
     }
 
-    useEffect(() => {
-        refresh()
-    }, []);
-
     return (
         <>
-            {loading && <LoadingIcon/>}
-	        <Sus open={writeWarning} onOpenChanged={setWriteWarning} eventId={eventId} submitAnyway={() => {
-		        if (pendingSubmit){
-			        submitForm(pendingSubmit);
-			        setPendingSubmit(null);
-					setWriteWarning(false);
-		        }
-
-	        }} />
-            {cookies.guestsTutorial !== false && (
+            {mounted && loading && <LoadingIcon/>}
+            {mounted && (
+                <Sus open={writeWarning} onOpenChanged={setWriteWarning} eventId={eventId} submitAnyway={() => {
+                    if (pendingSubmit) {
+                        submitForm(pendingSubmit);
+                        setPendingSubmit(null);
+                        setWriteWarning(false);
+                    }
+                }} />
+            )}
+            {mounted && cookies.guestsTutorial !== false && (
                 <GuestPopup setOpen={closeGuestTutorial} />
             )}
             <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
