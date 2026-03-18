@@ -238,7 +238,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                         updateNotification(freq)
                                                     }}
                                                     disabled={
-                                                        !eventInfo.RSVP.find((r) => r.user?.id === userId) || !userInfo?.discordConnection
+                                                        !eventInfo.RSVP.find((r) => r.user?.id === userId && r.response !== "NO_RESPONSE") || !userInfo?.discordConnection
                                                     }
                                                 />
 
