@@ -1,25 +1,46 @@
 services:
-  db:
-    # Defines the 'db' service for MySQL database
-    image: mysql:8.0 # Uses the MySQL 8.0 Docker image
+  es_db:
+    image: mysql:8.0
     environment:
-      # Sets environment variables for the database configuration
-      - MYSQL_DATABASE=appdb # Specifies the name of the database
-      - MYSQL_PASSWORD=pass123 # Sets the password for the MySQL user
-      - MYSQL_ROOT_PASSWORD=pass123 # Sets the root password for MySQL
+      - MYSQL_DATABASE=costi_online
+      - MYSQL_PASSWORD=0_0
+      - MYSQL_ROOT_PASSWORD=0_0
+      - NEXTAUTH_URL=http://localhost:3000
+      - AUTH_GITHUB_ID=admin
+      - AUTH_GITHUB_SECRET=admin
+      - AUTH_GOOGLE_ID=admin
+      - AUTH_GOOGLE_SECRET=admin
+      - AUTH_TRUST_HOST=true
+      - NEXTAUTH_SECRET=admin
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p0_0" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     ports:
-      - 8000:3306 # Maps the container's port 3306 to the host's port 3307
+      - 3308:3306
+    networks:
+      - shared_network
   app:
-      # Defines the 'app' service for the Next.js app
-      build:
-        # Builds the Next.js app using the provided Dockerfile
-        context: ./eventstar
-      environment:
-        NODE_ENV: production
-        HOSTNAME: "0.0.0.0"
-        PORT: 3000
-        DATABASE_URL: mysql://root:pass123@db:3306/appdb
-      ports:
-        - 3000:3000 # Maps the container's port 3000 to the host's port 3000
-      depends_on:
-        - db # Specifies that the 'app' service depends on the 'db' service
+    restart: unless-stopped
+    build:
+      context: ./
+      target: runner
+    environment:
+      NODE_ENV: production
+      HOSTNAME: "0.0.0.0"
+      PORT: 3000
+      DATABASE_URL: mysql://root:0_0@es_db:3306/costi_online
+    ports:
+      - 3000:3000
+    depends_on:
+      es_db:
+        condition: service_healthy
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    name: costi_online_network
+    external: true
