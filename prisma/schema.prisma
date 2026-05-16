@@ -133,6 +133,9 @@ model Rsvp {
   response  RsvpResponse @default(NO_RESPONSE)
   user      User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String?
+
+  @@unique([firstName, lastName, eventId])
+  @@unique([userId, eventId])
 }
 
 model Event {

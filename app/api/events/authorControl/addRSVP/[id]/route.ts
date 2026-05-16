@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import {Prisma, PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
 import {authorAddRsvpSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
@@ -112,7 +112,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         }
 
     } catch (error) {
+        if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === "P2002"
+        ) {
+            return NextResponse.json(
+                {error: "RSVP already exists for this user and event."},
+                {status: 409}
+            );
+        }
+
         console.error(error);
-        return NextResponse.json({ error: "An error occurred while creating RSVP" }, { status: 500 });
+        return NextResponse.json(
+            {error: "An error occurred while creating RSVP"},
+            {status: 500}
+        );
     }
 }
