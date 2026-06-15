@@ -21,7 +21,7 @@ export default async function MainNav({children}: PropsWithChildren){
         <TooltipProvider>
             <div className="flex flex-col lg:flex-row justify-start gap-0 m-0 p-0 h-screen w-screen overflow-y-hidden">
 	            {/* Main Nav Bar */}
-	            <div className="flex flex-row lg:flex-col justify-between align-center border-r-2 h-full left-0 p-2 gap-4">
+	            <div className="flex flex-row lg:flex-col justify-between align-center border-b-2 lg:border-b-0 lg:border-r-2 w-full lg:w-auto lg:h-full left-0 p-2 gap-10 lg:gap-4">
 		            <Tooltip>
 			            <TooltipTrigger>
 				            <Link href="/" className="">
@@ -33,7 +33,7 @@ export default async function MainNav({children}: PropsWithChildren){
 			            </TooltipContent>
 		            </Tooltip>
 
-		            <div className="flex flex-col gap-6 mt-2 overflow-y-auto no-scrollbar flex-grow">
+		            <div className="flex flex-row lg:flex-col gap-10 lg:gap-6 lg:mt-2 overflow-y-auto no-scrollbar flex-grow">
 			            {menuItems.map((item) => (
 				            <Tooltip key={item.title}>
 					            <TooltipTrigger>
@@ -48,11 +48,13 @@ export default async function MainNav({children}: PropsWithChildren){
 			            ))}
 		            </div>
 
-		            <div>
-			            <AccountButton />
-		            </div>
+		            <AccountButton />
 	            </div>
-            </div>
+	            {/* Content */}
+	            <div className="flex-grow  overflow-y-auto">
+	                {children}
+                </div>
+			</div>
         </TooltipProvider>
     )
 }
