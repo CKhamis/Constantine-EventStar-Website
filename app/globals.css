@@ -40,6 +40,14 @@
   @apply shadow-md bg-black/70 backdrop-blur-xl
 }
 
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
 @layer components{
   .hover-underline{
     @apply hover:underline hover:underline-offset-4 hover:opacity-100 opacity-80;
