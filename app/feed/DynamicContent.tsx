@@ -108,7 +108,7 @@ export default function DynamicContent() {
         <>
             {loading && <LoadingIcon/>}
             <div className="w-100 h-screen grid grid-cols-2 lg:grid-cols-3 gap-0 p-0">
-                <div className="w-100 col-span-2 items-center overflow-y-scroll">
+                <div className="w-100 col-span-2 items-center overflow-y-auto">
                     <div className="top-left-gradient">
                         <div className="container flex-col flex gap-3 py-3 max-w-3xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
@@ -160,7 +160,7 @@ export default function DynamicContent() {
                         ))}
                     </div>
                 </div>
-                <div className="hidden lg:flex overflow-y-scroll">
+                <div className="hidden lg:flex overflow-y-auto">
                     <div className="max-w-xl mx-auto">
                         <Card className="mt-5 rounded-none border-none">
                             <CardContent>
