@@ -28,7 +28,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import type { EVResponse } from "@/app/api/events/view/[id]/route"
 import ExcludedInvite from "@/app/eventDetails/ExcludedInvite"
-import { refresh } from "effect/Resource"
 import IncludedInvite from "@/app/eventDetails/IncludedInvite"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import Link from "next/link";
@@ -235,7 +234,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
         <>
             {loading && <LoadingIcon />}
             <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
-                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
+                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-auto lg:flex flex-col">
                     <div className="top-left-gradient">
                         <div className="container flex-row items-center justify-between flex gap-3 py-3 max-w-3xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
@@ -513,7 +512,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                     </div>
                 </div>
                 {editing ? (
-                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll flex flex-col justify-between">
+                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-auto flex flex-col justify-between">
                         <div>
                             <div className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
                                 <div className="flex flex-row justify-start items-center gap-3 h-[50]">
@@ -658,7 +657,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                         </div>
                     </div>
                 ) : (
-                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll flex flex-col justify-start">
+                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-auto flex flex-col justify-start">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src="/agent/loading.gif" className="w-1/2 my-7 mx-auto" alt="EventStar typing" />
 
