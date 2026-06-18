@@ -8,7 +8,18 @@ import {EVResponse} from "@/app/api/events/view/[id]/route";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {CalendarPlus, Car, Check, Clock, House, LetterText, MapPin, Pencil, View, X} from "lucide-react";
+import {
+	CalendarPlus,
+	Car,
+	Check,
+	Clock,
+	House,
+	LetterText,
+	MapPin,
+	Pencil,
+	View,
+	X
+} from "lucide-react";
 import {useForm} from "react-hook-form";
 import {z} from "zod";
 import {rsvpSchema} from "@/components/ValidationSchemas";
@@ -26,7 +37,6 @@ import {GuestPopup} from "@/components/tutorials/guests/guests";
 import GuestList from "@/app/event/[id]/GuestList";
 import {Sus} from "@/app/event/[id]/Sus";
 import { stringSimilarity } from "string-similarity-js";
-
 
 export interface Props {
     eventId: string,
@@ -158,9 +168,9 @@ export default function DynamicContent({eventId, userId}: Props) {
             {cookies.guestsTutorial !== false && (
                 <GuestPopup setOpen={closeGuestTutorial} />
             )}
-            <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
-                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
-                    <div className="top-left-gradient">
+            <div className="w-full lg:h-full flex flex-col lg:flex-row gap-0 p-0 lg:overflow-y-auto">
+                <div className="lg:w-[75%] lg:h-full lg:overflow-y-auto lg:flex flex-col">
+                    <div className="top-left-gradient border-b-2 border-[#451942]">
                         <div className="container flex-col flex gap-3 py-3 max-w-5xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
                                 <Image src="/icons/Events.svg" alt="Event icon" width={50} height={50}/>
@@ -259,8 +269,8 @@ export default function DynamicContent({eventId, userId}: Props) {
                         </div>
                     </div>
                 </div>
-                <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll">
-                    <div className="border-b-2 w-100 p-5">
+                <div className="border-l-2 white-gradient lg:h-full lg:overflow-y-auto lg:flex-grow">
+                    <div className="border-b-2 w-full p-5">
                         <div className="max-w-xl mx-auto">
                             <div className="flex flex-row justify-between items-center">
                                 <p className="text-2xl font-bold" id="rsvp">RSVP Status {!userId? "(Write-In)" : ""}</p>
@@ -386,7 +396,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                 if (userId && (eventInfo?.inviteVisibility === "FULL" || eventInfo?.RSVP.some(r => r.user && r.user.id === userId))) {
                                     return (
                                         <Form {...form}>
-                                            <form onSubmit={form.handleSubmit(submitForm)} className="space-y-6 mt-6">
+                                            <form onSubmit={form.handleSubmit(submitForm)} className="space-y-6 mt-6 relative">
                                                 {/* RSVP dropdown */}
                                                 <FormField
                                                     control={form.control}
@@ -464,7 +474,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                             })()}
                         </div>
                     </div>
-                    <div className="border-b-2 w-100 p-5">
+                    <div className="border-b-2 w-full p-5">
                         <div className="max-w-xl mx-auto">
                             <p className="text-2xl font-bold">Guest List</p>
                             {eventInfo? (
@@ -516,5 +526,5 @@ export default function DynamicContent({eventId, userId}: Props) {
                 </div>
             </div>
         </>
-    );
+);
 }
