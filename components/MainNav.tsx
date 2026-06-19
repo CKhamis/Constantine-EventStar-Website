@@ -21,7 +21,7 @@ export default async function MainNav({children}: PropsWithChildren){
         <TooltipProvider>
             <div className="flex flex-col lg:flex-row justify-start gap-0 m-0 p-0 h-screen w-screen overflow-y-hidden">
 	            {/* Main Nav Bar */}
-	            <div className="flex flex-row lg:flex-col justify-between align-center border-b-2 lg:border-b-0 lg:border-r-2 w-full lg:w-auto lg:h-full left-0 p-2 gap-10 lg:gap-4">
+	            <div className="flex flex-row lg:flex-col justify-between align-center border-b-2 lg:border-b-0 lg:border-r-2 w-full lg:w-auto lg:h-full left-0 px-4 py-2 lg:px-2 gap-10 lg:gap-4">
 		            <Tooltip>
 			            <TooltipTrigger>
 				            <Link href="/" className="">

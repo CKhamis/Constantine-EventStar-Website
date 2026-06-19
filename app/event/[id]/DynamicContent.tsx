@@ -173,14 +173,14 @@ export default function DynamicContent({eventId, userId}: Props) {
                     <div className="top-left-gradient border-b-2 border-[#451942]">
                         <div className="container flex-col flex gap-3 py-3 max-w-5xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
-                                <Image src="/icons/Events.svg" alt="Event icon" width={50} height={50}/>
+                                <Image src="/icons/Events.svg" alt="Event icon" width={40} height={40}/>
                                 <p className="text-3xl font-bold">Event Details</p>
                             </div>
                         </div>
                     </div>
                     <div id="background" className="flex-grow flex flex-col">
                         <div className="glass-dark w-100 flex-grow">
-                            <div className="container flex-col flex gap-3 py-3 max-w-5xl">
+                            <div className="container flex-col flex gap-3 py-3 max-w-xl lg:max-w-5xl">
                                 {eventInfo ? (
                                     <>
                                         <div className="flex flex-col lg:flex-row justify-between items-center mb-4 lg:mb-0 mt-4">
