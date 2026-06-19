@@ -37,6 +37,17 @@ import {GuestPopup} from "@/components/tutorials/guests/guests";
 import GuestList from "@/app/event/[id]/GuestList";
 import {Sus} from "@/app/event/[id]/Sus";
 import { stringSimilarity } from "string-similarity-js";
+import {
+	Drawer,
+	DrawerClose,
+	DrawerContent,
+	DrawerDescription,
+	DrawerFooter,
+	DrawerHeader,
+	DrawerTitle,
+	DrawerTrigger,
+} from "@/components/ui/drawer"
+import RsvpForm from "@/app/event/RsvpForm";
 
 export interface Props {
     eventId: string,
@@ -186,9 +197,45 @@ export default function DynamicContent({eventId, userId}: Props) {
                                         <div className="flex flex-col lg:flex-row justify-between items-center mb-4 lg:mb-0 mt-4">
                                             <p className="font-bold text-4xl">{eventInfo.title}</p>
                                             <div className="flex flex-row items-center justify-end gap-3 mt-5 lg:m-0">
-                                                <Link href="#rsvp" className="lg:hidden">
-                                                    <Button variant="outline" className="flex items-center justify-center gap-2 w-full"><Car/> RSVP</Button>
-                                                </Link>
+	                                            <div className="lg:hidden">
+		                                            <Drawer>
+			                                            <DrawerTrigger>
+				                                            {eventInfo && userId && (
+					                                            (() => {
+						                                            const rsvp = eventInfo.RSVP.find((r) => r.user && r.user.id === userId);
+						                                            if (!rsvp) return null;
+
+						                                            return rsvp.response !== "NO_RESPONSE" ? (
+							                                            <Button variant="outline" className="flex items-center justify-center gap-2 w-full"><Car/> RSVP</Button>
+						                                            ) : (
+							                                            <Button variant="default" className="flex items-center justify-center gap-2 w-full"><Car/> RSVP</Button>
+						                                            );
+					                                            })()
+				                                            )}
+			                                            </DrawerTrigger>
+			                                            <DrawerContent>
+				                                            <DrawerHeader>
+					                                            <DrawerTitle>Are You Able to Attend?</DrawerTitle>
+					                                            <DrawerDescription>Make sure to press Save when you&#39;re done!</DrawerDescription>
+				                                            </DrawerHeader>
+				                                            <DrawerFooter className="pb-20">
+					                                            <RsvpForm
+						                                            eventInfo={eventInfo}
+						                                            userId={userId}
+						                                            eventId={eventId}
+						                                            form={form}
+						                                            submitStatus={submitStatus}
+						                                            onWriteInSubmit={WICheck}
+						                                            onSubmit={submitForm}
+					                                            />
+					                                            {/*<DrawerClose>*/}
+					                                            {/*    <Button variant="outline">Cancel</Button>*/}
+					                                            {/*</DrawerClose>*/}
+				                                            </DrawerFooter>
+			                                            </DrawerContent>
+		                                            </Drawer>
+	                                            </div>
+
                                                 {userId === eventInfo.author.id? (
                                                     <Link target="_blank" href={`/eventDetails/${eventInfo.id}`}>
                                                         <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
@@ -270,7 +317,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                     </div>
                 </div>
                 <div className="border-t-2 lg:border-t-0 border-l-2 white-gradient lg:h-full lg:overflow-y-auto lg:flex-grow">
-                    <div className="border-b-2 w-full p-5">
+                    <div className="border-b-2 w-full p-5 hidden lg:block">
                         <div className="max-w-xl mx-auto">
                             <div className="flex flex-row justify-between items-center">
                                 <p className="text-2xl font-bold" id="rsvp">RSVP Status {!userId? "(Write-In)" : ""}</p>
@@ -287,191 +334,15 @@ export default function DynamicContent({eventId, userId}: Props) {
                                     })()
                                 )}
                             </div>
-                            {(() => {
-                                // helper: check if event is expired
-                                const isExpired = eventInfo ? new Date(eventInfo.rsvpDuedate) < new Date() : true;
-
-                                // CASE 1: no logged-in user, event is FULL
-                                if (!userId && eventInfo?.inviteVisibility === "FULL") {
-                                    return (
-                                        <Form {...form}>
-                                            <form onSubmit={form.handleSubmit(WICheck)} className="space-y-6">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="firstName"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>First Name</FormLabel>
-                                                            <FormControl>
-                                                                <Input type="text" placeholder="Enter your first name" disabled={isExpired} {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                <FormField
-                                                    control={form.control}
-                                                    name="lastName"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Last Name</FormLabel>
-                                                            <FormControl>
-                                                                <Input type="text" placeholder="Enter your last name" disabled={isExpired} {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                <FormField
-                                                    control={form.control}
-                                                    name="response"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Your Attendance</FormLabel>
-                                                            <Select onValueChange={field.onChange} value={field.value} disabled={isExpired}>
-                                                                <FormControl>
-                                                                    <SelectTrigger>
-                                                                        <SelectValue placeholder="Select your RSVP status" />
-                                                                    </SelectTrigger>
-                                                                </FormControl>
-                                                                <SelectContent>
-                                                                    <SelectItem value="YES">Yes</SelectItem>
-                                                                    <SelectItem value="NO">No</SelectItem>
-                                                                    <SelectItem value="MAYBE">Maybe</SelectItem>
-                                                                </SelectContent>
-                                                            </Select>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                {eventInfo.maxGuests > 0 && (
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="guests"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel>+1s (max {eventInfo.maxGuests} per invite)</FormLabel>
-                                                                <FormControl>
-                                                                    <Input
-                                                                        type="number"
-                                                                        disabled={isExpired}
-                                                                        min="0"
-                                                                        max={eventInfo.maxGuests}
-                                                                        placeholder="0"
-                                                                        {...field}
-                                                                        onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                                                                        value={field.value || 0}
-                                                                    />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                )}
-
-                                                <p className="text-foreground text-sm">Write the same first and last names to change your RSVP</p>
-                                                <p className="text-muted-foreground text-sm">
-                                                    {isExpired ? "too late to respond" : `Respond by ${format(new Date(eventInfo.rsvpDuedate), "PPP hh:mm a")}`}
-                                                </p>
-
-                                                <div className="flex flex-row gap-4 items-center justify-start">
-                                                    <Button type="submit" disabled={submitStatus === "loading" || isExpired}>
-                                                        {submitStatus === "loading" ? "Submitting..." : "Save"}
-                                                    </Button>
-                                                    <Link href={"/api/auth/signin?callbackUrl=/event/" + eventId}>
-                                                        <Button variant="secondary">I have an account</Button>
-                                                    </Link>
-                                                    {submitStatus === "success" && <Check className="h-4 w-4 text-green-500" />}
-                                                    {submitStatus === "error" && <X className="h-4 w-4 text-red-500" />}
-                                                </div>
-                                            </form>
-                                        </Form>
-                                    );
-                                }
-
-                                // CASE 2: logged-in user, event is FULL OR is an invited guest
-                                if (userId && (eventInfo?.inviteVisibility === "FULL" || eventInfo?.RSVP.some(r => r.user && r.user.id === userId))) {
-                                    return (
-                                        <Form {...form}>
-                                            <form onSubmit={form.handleSubmit(submitForm)} className="space-y-6 mt-6 relative">
-                                                {/* RSVP dropdown */}
-                                                <FormField
-                                                    control={form.control}
-                                                    name="response"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Your Attendance</FormLabel>
-                                                            <Select onValueChange={field.onChange} value={field.value} disabled={isExpired}>
-                                                                <FormControl>
-                                                                    <SelectTrigger>
-                                                                        <SelectValue placeholder="Select your RSVP status" />
-                                                                    </SelectTrigger>
-                                                                </FormControl>
-                                                                <SelectContent>
-                                                                    <SelectItem value="YES">Yes</SelectItem>
-                                                                    <SelectItem value="NO">No</SelectItem>
-                                                                    <SelectItem value="MAYBE">Maybe</SelectItem>
-                                                                </SelectContent>
-                                                            </Select>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                {eventInfo.maxGuests > 0 && (
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="guests"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel>+1s (max {eventInfo.maxGuests} per invite)</FormLabel>
-                                                                <FormControl>
-                                                                    <Input
-                                                                        type="number"
-                                                                        disabled={isExpired}
-                                                                        min="0"
-                                                                        max={eventInfo.maxGuests}
-                                                                        placeholder="0"
-                                                                        {...field}
-                                                                        onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
-                                                                        value={field.value || 0}
-                                                                    />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-                                                )}
-
-                                                <p className="text-muted-foreground text-sm">
-                                                    {isExpired ? "too late to respond" : `Respond by ${format(new Date(eventInfo.rsvpDuedate), "PPP hh:mm a")}`}
-                                                </p>
-
-                                                <div className="flex flex-row gap-4 items-center justify-start">
-                                                    <Button type="submit" disabled={submitStatus === "loading" || isExpired}>
-                                                        {submitStatus === "loading" ? "Submitting..." : "Save"}
-                                                    </Button>
-                                                    {submitStatus === "success" && <Check className="h-4 w-4 text-green-500" />}
-                                                    {submitStatus === "error" && <X className="h-4 w-4 text-red-500" />}
-                                                </div>
-                                            </form>
-                                        </Form>
-                                    );
-                                }
-
-                                // CASE 3: logged-in but no eventInfo, or not logged-in and not FULL
-                                return (
-                                    <div className="flex flex-col gap-5 mt-5">
-                                        <p>Please log in with an invited EventStar account to RSVP to this event!</p>
-                                        <Link href={"/api/auth/signin?callbackUrl=/event/" + eventId}>
-                                            <Button size="sm">Log in</Button>
-                                        </Link>
-                                    </div>
-                                );
-                            })()}
+	                        <RsvpForm
+		                        eventInfo={eventInfo}
+		                        userId={userId}
+		                        eventId={eventId}
+		                        form={form}
+		                        submitStatus={submitStatus}
+		                        onWriteInSubmit={WICheck}
+		                        onSubmit={submitForm}
+	                        />
                         </div>
                     </div>
                     <div className="border-b-2 w-full p-5">
