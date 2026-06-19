@@ -269,7 +269,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                         </div>
                     </div>
                 </div>
-                <div className="border-l-2 white-gradient lg:h-full lg:overflow-y-auto lg:flex-grow">
+                <div className="border-t-2 lg:border-t-0 border-l-2 white-gradient lg:h-full lg:overflow-y-auto lg:flex-grow">
                     <div className="border-b-2 w-full p-5">
                         <div className="max-w-xl mx-auto">
                             <div className="flex flex-row justify-between items-center">
