@@ -198,12 +198,13 @@ export default function DynamicContent({eventId, userId}: Props) {
                                             <p className="font-bold text-4xl">{eventInfo.title}</p>
                                             <div className="flex flex-row items-center justify-end gap-3 mt-5 lg:m-0">
 	                                            <div className="lg:hidden">
-		                                            <Drawer>
-			                                            <DrawerTrigger>
-				                                            {eventInfo && userId && (
+		                                            <Drawer repositionInputs={false}>
+			                                            <DrawerTrigger asChild>
+				                                            {eventInfo && (
 					                                            (() => {
-						                                            const rsvp = eventInfo.RSVP.find((r) => r.user && r.user.id === userId);
-						                                            if (!rsvp) return null;
+						                                            const rsvp = userId ? eventInfo.RSVP.find((r) => r.user && r.user.id === userId) : null;
+
+						                                            if (!rsvp) return <Button variant="default" className="flex items-center justify-center gap-2 w-full"><Car/> RSVP</Button>;
 
 						                                            return rsvp.response !== "NO_RESPONSE" ? (
 							                                            <Button variant="outline" className="flex items-center justify-center gap-2 w-full"><Car/> RSVP</Button>
@@ -212,8 +213,7 @@ export default function DynamicContent({eventId, userId}: Props) {
 						                                            );
 					                                            })()
 				                                            )}
-			                                            </DrawerTrigger>
-			                                            <DrawerContent>
+			                                            </DrawerTrigger>			                                            <DrawerContent>
 				                                            <DrawerHeader>
 					                                            <DrawerTitle>Are You Able to Attend?</DrawerTitle>
 					                                            <DrawerDescription>Make sure to press Save when you&#39;re done!</DrawerDescription>
