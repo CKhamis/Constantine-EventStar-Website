@@ -12,7 +12,7 @@ import { GradientPicker } from "@/components/ui/GradientPicker"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { CalendarIcon, Check, ChevronsUpDown, Loader2, X } from "lucide-react"
+import {CalendarIcon, Check, ChevronsUpDown, Copy, Loader2, X} from "lucide-react"
 import { format } from "date-fns"
 import { Calendar } from "@/components/ui/calendar"
 import { TimestampPicker } from "@/components/ui/timestamp-picker"
@@ -230,6 +230,17 @@ export default function DynamicContent({ eventId, userId }: Props) {
         }
     }
 
+	async function copyEventLink() {
+		const url = `${window.location.origin}/event/${currentEventId}`;
+		try {
+			await navigator.clipboard.writeText(url);
+			toast("Link copied", { description: "Event link copied to clipboard" });
+		} catch (e) {
+			console.log(e);
+			toast("Error", { description: "Unable to copy link" });
+		}
+	}
+
     return (
         <>
             {loading && <LoadingIcon />}
@@ -241,7 +252,13 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                 <Image src="/icons/NewEvent.svg" alt="New Event" width={50} height={50} />
                                 <p className="text-3xl font-bold">{editing ? "Edit Event" : "Create New Event"}</p>
                             </div>
-                            <Link href={"/event/" + currentEventId}><Button variant="secondary" size="lg">View Event</Button></Link>
+	                        {editing && (
+		                        <div className="flex flex-row justify-end gap-3">
+			                        <Link href={"/event/" + currentEventId}><Button variant="secondary" size="default">View Event</Button></Link>
+			                        <Button variant="default" size="icon" onClick={copyEventLink}><Copy /></Button>
+		                        </div>
+	                        )}
+
                         </div>
                     </div>
                     <div className="container flex-col flex gap-3 py-3 max-w-3xl mt-4">
