@@ -12,7 +12,7 @@ import { GradientPicker } from "@/components/ui/GradientPicker"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { CalendarIcon, Check, ChevronsUpDown, Loader2, X } from "lucide-react"
+import {CalendarIcon, Check, ChevronsUpDown, Copy, Loader2, X} from "lucide-react"
 import { format } from "date-fns"
 import { Calendar } from "@/components/ui/calendar"
 import { TimestampPicker } from "@/components/ui/timestamp-picker"
@@ -230,23 +230,40 @@ export default function DynamicContent({ eventId, userId }: Props) {
         }
     }
 
+	async function copyEventLink() {
+		const url = `${window.location.origin}/event/${currentEventId}`;
+		try {
+			await navigator.clipboard.writeText(url);
+			toast("Link copied", { description: "Event link copied to clipboard" });
+		} catch (e) {
+			console.log(e);
+			toast("Error", { description: "Unable to copy link" });
+		}
+	}
+
     return (
         <>
             {loading && <LoadingIcon />}
             <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
-                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
-                    <div className="top-left-gradient">
+                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-auto lg:flex flex-col">
+                    <div className="top-left-gradient border-b-2 border-[#451942]">
                         <div className="container flex-row items-center justify-between flex gap-3 py-3 max-w-3xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
                                 <Image src="/icons/NewEvent.svg" alt="New Event" width={50} height={50} />
                                 <p className="text-3xl font-bold">{editing ? "Edit Event" : "Create New Event"}</p>
                             </div>
-                            <Link href={"/event/" + currentEventId}><Button variant="secondary" size="lg">View Event</Button></Link>
+	                        {editing && (
+		                        <div className="flex flex-row justify-end gap-3">
+			                        <Link href={"/event/" + currentEventId}><Button variant="secondary" size="default">View Event</Button></Link>
+			                        <Button variant="default" size="icon" onClick={copyEventLink}><Copy /></Button>
+		                        </div>
+	                        )}
+
                         </div>
                     </div>
                     <div className="container flex-col flex gap-3 py-3 max-w-3xl mt-4">
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="relative">
                                 <FormField
                                     control={form.control}
                                     name="title"
@@ -512,7 +529,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                     </div>
                 </div>
                 {editing ? (
-                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll flex flex-col justify-between">
+                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-auto hidden lg:flex flex-col justify-between">
                         <div>
                             <div className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
                                 <div className="flex flex-row justify-start items-center gap-3 h-[50]">
@@ -657,7 +674,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                         </div>
                     </div>
                 ) : (
-                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll flex flex-col justify-start">
+                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-auto hidden lg:flex flex-col justify-start">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src="/agent/loading.gif" className="w-1/2 my-7 mx-auto" alt="EventStar typing" />
 

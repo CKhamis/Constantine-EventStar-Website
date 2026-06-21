@@ -8,7 +8,18 @@ import {EVResponse} from "@/app/api/events/view/[id]/route";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {CalendarPlus, Car, Check, Clock, House, LetterText, MapPin, Pencil, View, X} from "lucide-react";
+import {
+	CalendarPlus,
+	Car,
+	Check,
+	Clock,
+	House,
+	LetterText,
+	MapPin,
+	Pencil,
+	View,
+	X
+} from "lucide-react";
 import {useForm} from "react-hook-form";
 import {z} from "zod";
 import {notificationSchema, rsvpSchema} from "@/components/ValidationSchemas";
@@ -30,6 +41,16 @@ import {NotificationSelect} from "@/app/event/[id]/notificationSelect";
 import {toast} from "sonner";
 import {NoisyRSVP} from "@/app/api/events/notify/set/[id]/route";
 
+import {
+	Drawer,
+	DrawerContent,
+	DrawerDescription,
+	DrawerFooter,
+	DrawerHeader,
+	DrawerTitle,
+	DrawerTrigger,
+} from "@/components/ui/drawer"
+import RsvpForm from "@/app/event/RsvpForm";
 
 export interface Props {
     eventId: string,
@@ -195,27 +216,63 @@ export default function DynamicContent({eventId, userId}: Props) {
             {mounted && cookies.guestsTutorial !== false && (
                 <GuestPopup setOpen={closeGuestTutorial} />
             )}
-            <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
-                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-scroll lg:flex flex-col">
-                    <div className="top-left-gradient">
+            <div className="w-full lg:h-full flex flex-col lg:flex-row gap-0 p-0 lg:overflow-y-auto">
+                <div className="lg:w-[75%] lg:h-full lg:overflow-y-auto lg:flex flex-col">
+                    <div className="top-left-gradient border-b-2 border-[#451942]">
                         <div className="container flex-col flex gap-3 py-3 max-w-5xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
-                                <Image src="/icons/Events.svg" alt="Event icon" width={50} height={50}/>
+                                <Image src="/icons/Events.svg" alt="Event icon" width={40} height={40}/>
                                 <p className="text-3xl font-bold">Event Details</p>
                             </div>
                         </div>
                     </div>
                     <div id="background" className="flex-grow flex flex-col">
                         <div className="glass-dark w-100 flex-grow">
-                            <div className="container flex-col flex gap-3 py-3 max-w-5xl">
+                            <div className="container flex-col flex gap-3 py-3 max-w-xl lg:max-w-5xl">
                                 {eventInfo ? (
                                     <>
                                         <div className="flex flex-col lg:flex-row justify-between items-center mb-4 lg:mb-0 mt-4">
                                             <p className="font-bold text-4xl">{eventInfo.title}</p>
                                             <div className="flex flex-row items-center justify-end gap-3 mt-5 lg:m-0">
-                                                <Link href="#rsvp" className="lg:hidden">
-                                                    <Button variant="outline" className="flex items-center justify-center gap-2 w-full"><Car/> RSVP</Button>
-                                                </Link>
+	                                            <div className="lg:hidden">
+		                                            <Drawer repositionInputs={false}>
+			                                            <DrawerTrigger asChild>
+				                                            {eventInfo && (
+					                                            (() => {
+						                                            const rsvp = userId ? eventInfo.RSVP.find((r) => r.user && r.user.id === userId) : null;
+
+						                                            if (!rsvp) return <Button variant="default" className="flex items-center justify-center gap-2 w-full"><Car/> RSVP</Button>;
+
+						                                            return rsvp.response !== "NO_RESPONSE" ? (
+							                                            <Button variant="outline" className="flex items-center justify-center gap-2 w-full"><Car/> RSVP</Button>
+						                                            ) : (
+							                                            <Button variant="default" className="flex items-center justify-center gap-2 w-full"><Car/> RSVP</Button>
+						                                            );
+					                                            })()
+				                                            )}
+			                                            </DrawerTrigger>			                                            <DrawerContent>
+				                                            <DrawerHeader>
+					                                            <DrawerTitle>Are You Able to Attend?</DrawerTitle>
+					                                            <DrawerDescription>Make sure to press Save when you&#39;re done!</DrawerDescription>
+				                                            </DrawerHeader>
+				                                            <DrawerFooter className="pb-20">
+					                                            <RsvpForm
+						                                            eventInfo={eventInfo}
+						                                            userId={userId}
+						                                            eventId={eventId}
+						                                            form={form}
+						                                            submitStatus={submitStatus}
+						                                            onWriteInSubmit={WICheck}
+						                                            onSubmit={submitForm}
+					                                            />
+					                                            {/*<DrawerClose>*/}
+					                                            {/*    <Button variant="outline">Cancel</Button>*/}
+					                                            {/*</DrawerClose>*/}
+				                                            </DrawerFooter>
+			                                            </DrawerContent>
+		                                            </Drawer>
+	                                            </div>
+
                                                 {userId === eventInfo.author.id? (
                                                     <Link target="_blank" href={`/eventDetails/${eventInfo.id}`}>
                                                         <Button variant="outline" className="flex items-center justify-center gap-2 w-full">
@@ -307,8 +364,8 @@ export default function DynamicContent({eventId, userId}: Props) {
                         </div>
                     </div>
                 </div>
-                <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-scroll">
-                    <div className="border-b-2 w-100 p-5">
+                <div className="border-t-2 lg:border-t-0 border-l-2 white-gradient lg:h-full lg:overflow-y-auto lg:flex-grow">
+                    <div className="border-b-2 w-full p-5 hidden lg:block">
                         <div className="max-w-xl mx-auto">
                             <div className="flex flex-row justify-between items-center">
                                 <p className="text-2xl font-bold" id="rsvp">RSVP Status {!userId? "(Write-In)" : ""}</p>
@@ -512,7 +569,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                             })()}
                         </div>
                     </div>
-                    <div className="border-b-2 w-100 p-5">
+                    <div className="border-b-2 w-full p-5">
                         <div className="max-w-xl mx-auto">
                             <p className="text-2xl font-bold">Guest List</p>
                             {eventInfo? (
@@ -564,5 +621,5 @@ export default function DynamicContent({eventId, userId}: Props) {
                 </div>
             </div>
         </>
-    );
+);
 }

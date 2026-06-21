@@ -228,7 +228,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 			<p className="text-2xl font-bold mt-5">3. Combine User Information</p>
 			<Card className="p-5 mt-3">
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
+					<form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5 relative">
 						<input type="hidden" {...form.register("hostId")} />
 						<input type="hidden" {...form.register("secondaryId")} />
 

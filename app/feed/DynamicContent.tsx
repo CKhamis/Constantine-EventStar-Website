@@ -108,11 +108,11 @@ export default function DynamicContent() {
         <>
             {loading && <LoadingIcon/>}
             <div className="w-100 h-screen grid grid-cols-2 lg:grid-cols-3 gap-0 p-0">
-                <div className="w-100 col-span-2 items-center overflow-y-scroll">
-                    <div className="top-left-gradient">
+                <div className="w-100 col-span-2 items-center lg:overflow-y-auto">
+                    <div className="top-left-gradient border-b-2 border-[#451942]">
                         <div className="container flex-col flex gap-3 py-3 max-w-3xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
-                                <Image src="/icons/Feed.svg" alt="Feed icon" width={50} height={50}/>
+                                <Image src="/icons/Feed.svg" alt="Feed icon" width={40} height={40}/>
                                 <p className="text-3xl font-bold">Upcoming Events</p>
                             </div>
                         </div>
@@ -160,7 +160,7 @@ export default function DynamicContent() {
                         ))}
                     </div>
                 </div>
-                <div className="hidden lg:flex overflow-y-scroll">
+                <div className="hidden lg:flex overflow-y-auto border-s-2">
                     <div className="max-w-xl mx-auto">
                         <Card className="mt-5 rounded-none border-none">
                             <CardContent>
