@@ -48,7 +48,7 @@ export default async function MainNav({children}: PropsWithChildren){
 			            ))}
 		            </div>
 
-		            <AccountButton />
+		            <AccountButton session={session} />
 	            </div>
 	            {/* Content */}
 	            <div className="flex-grow  overflow-y-auto">
