@@ -157,7 +157,7 @@ export default function DynamicContent({eventId, userId}: Props) {
 
     async function submitForm(data: z.infer<typeof rsvpSchema>) {
         setSubmitStatus('loading')
-        try {//todo: either add in the default notification amount here or add in a dropdown or implement this in backend!
+        try {
             await axios.post(`/api/events/rsvp/${eventId}`, {response: data.response, guests: data.guests, firstName: data.firstName, lastName: data.lastName})
             setSubmitStatus('success')
         } catch (e) {

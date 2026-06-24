@@ -54,15 +54,23 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             return NextResponse.json("User does not have an existing RSVP", { status: 404 });
         }
 
-        const payload:NoisyRSVP = {
-            user_id: connection.discordId,
-            responded: rsvp.response,
-            notify_amount: body.notificationAmount,
-            event_id: eventId
-        }
+        // Check if Noisy is set up
+        if (process.env.NOISY_URL) {
+            try{
+                const payload:NoisyRSVP = {
+                    user_id: connection.discordId,
+                    responded: rsvp.response,
+                    notify_amount: body.notificationAmount,
+                    event_id: eventId
+                }
 
-        const res =  await axios.post(`${process.env.NOISY_URL}/set_guest_response`, payload);
-        console.log(res);
+                // Transmit RSVP information
+                await axios.post(`${process.env.NOISY_URL}/set_guest_response`, payload);
+            } catch (noisyError) {
+                console.error("Noisy notification failed:", noisyError);
+            }
+
+        }
 
         return NextResponse.json("Notification amount saved.", { status: 202 });
     } catch (error) {

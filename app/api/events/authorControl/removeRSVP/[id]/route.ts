@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
 import {uuidSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
+import {NoisyRSVP} from "@/app/api/events/notify/set/[id]/route";
+import axios from "axios";
 
 const prisma = new PrismaClient();
 
@@ -68,7 +70,37 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
             where: {
                 id: optionalRSVP.id
             }
-        })
+        });
+
+        // Is Noisy enabled?
+        if (process.env.NOISY_URL) {
+            try {
+                const discord = await prisma.discordConnection.findFirst({
+                    where: {
+                        userId: session.user.id,
+                    },
+                    select: {
+                        defaultFreq: true,
+                        discordId: true,
+                    }
+                });
+
+                if (discord && discord.discordId && discord.defaultFreq) {
+                    // Just need to know if they HAVE a discord connection at all, so it can be disabled here
+                    const payload: NoisyRSVP = {
+                        user_id: discord.discordId,
+                        responded: 'NO_RESPONSE',
+                        notify_amount: 0,
+                        event_id: eventId
+                    };
+
+                    // Transmit RSVP information
+                    await axios.post(`${process.env.NOISY_URL}/set_guest_response`, payload);
+                }
+            } catch (noisyError) {
+                console.error("Noisy notification failed:", noisyError);
+            }
+        }
 
         return NextResponse.json("You have removed an RSVP with " + optionalRSVP.guests + " +1s.", { status: 200 });
     } catch (error) {

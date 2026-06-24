@@ -197,7 +197,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
     async function createWriteInRSVP(data: z.infer<typeof rsvpSchema>) {
         setWriteInStatus("loading")
         try {
-            await axios.post("/api/events/authorControl/addRSVP/" + currentEventId, {
+            await axios.post(`/api/events/authorControl/addRSVP/${currentEventId}`, {
                 response: data.response,
                 guests: data.guests,
                 firstName: data.firstName,

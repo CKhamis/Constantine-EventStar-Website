@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
-import {notificationSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import axios from "axios";
 
