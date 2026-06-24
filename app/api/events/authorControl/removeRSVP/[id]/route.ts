@@ -89,7 +89,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
                     // Just need to know if they HAVE a discord connection at all, so it can be disabled here
                     const payload: NoisyRSVP = {
                         user_id: discord.discordId,
-                        responded: 'NO_RESPONSE',
+                        responded: NoisyGues,
                         notify_amount: 0,
                         event_id: eventId
                     };

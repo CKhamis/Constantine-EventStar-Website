@@ -137,18 +137,14 @@ export async function POST(request: NextRequest) {
                 },
             });
 
-            // Noisy not set up
-            if(process.env.NOISY_URL === "" || process.env.NOISY_URL === null){
-                return NextResponse.json(event, { status: 202 });
-            }
-
             if(!event || !event.author.discordConnection){
                 // This should never happen
                 return NextResponse.json("Author has not set up Discord on their account. No notifications will be sent.", { status: 400 });
             }
 
-            // Check if Noisy is set up
-            if (process.env.NOISY_URL) {
+            // Noisy not set up
+            if(process.env.NOISY_URL){
+
                 try {
                     // Send to Noisy
                     await axios.post(`${process.env.NOISY_URL}/new_event`, {
@@ -174,6 +170,7 @@ export async function POST(request: NextRequest) {
                 } catch (noisyError) {
                     console.error("Noisy notification failed:", noisyError);
                 }
+
             }
 
             return NextResponse.json(event, { status: 202 });
@@ -239,40 +236,52 @@ export async function POST(request: NextRequest) {
                 },
             });
 
-            // Noisy not set up
-            if(process.env.NOISY_URL === "" || process.env.NOISY_URL === null){
-                return NextResponse.json(event, { status: 201 });
-            }
-
-            // Send event to Noisy
-            //todo: make sure this CHECKS if noisy is connected
-
-            if(!event || !event.author.discordConnection){
-                // This should never happen
-                return NextResponse.json("Event has been created without Discord notifications.", { status: 200 });
-            }
-
-            // Send event information to Noisy
-            const response = await axios.post(`${process.env.NOISY_URL}/new_event`, {
-                event_id: newEvent.id,
-                start_time: formatTimestampNoTZ(new Date(newEvent.eventStart)),
-                end_time: formatTimestampNoTZ(new Date(newEvent.eventEnd)),
-                rsvp_due: formatTimestampNoTZ(new Date(newEvent.rsvpDuedate)),
-                event_type: newEvent.eventType,
-                event_title: newEvent.title,
-                guest_list: [
-                    {
-                        user_id: event.author.discordConnection.discordId,
-                        /// 0: no notifications at all
-                        /// 1: event created, 1 hour before event start
-                        /// 2: event created, 1 hour before RSVP due date, 1 day before event start, 1 hour before event start
-                        /// 3: event created, 1 day before RSVP due date, 1 hour before RSVP due date, 2 days before event start, 1 day before event start, 1 hour before event start
-                        notify_amount: 1,
-                        responded: 'NO_RESPONSE'
+            // Is Noisy set up?
+            if(process.env.NOISY_URL){
+                try {
+                    // Send event to Noisy
+                    if (!event || !event.author.discordConnection) {
+                        // This should never happen
+                        return NextResponse.json("Event has been created without Discord notifications.", {status: 200});
                     }
-                ],
-                notify_threads_spawned: false,
-            });
+
+                    // Check user's default Notification amount
+                    const discord = await prisma.discordConnection.findFirst({
+                        where: {
+                            userId: session.user.id,
+                        },
+                        select: {
+                            defaultFreq: true,
+                            discordId: true,
+                        }
+                    });
+
+                    // Send event information to Noisy
+                    const response = await axios.post(`${process.env.NOISY_URL}/new_event`, {
+                        event_id: newEvent.id,
+                        start_time: formatTimestampNoTZ(new Date(newEvent.eventStart)),
+                        end_time: formatTimestampNoTZ(new Date(newEvent.eventEnd)),
+                        rsvp_due: formatTimestampNoTZ(new Date(newEvent.rsvpDuedate)),
+                        event_type: newEvent.eventType,
+                        event_title: newEvent.title,
+                        guest_list: [
+                            {
+                                user_id: event.author.discordConnection.discordId,
+                                /// 0: no notifications at all
+                                /// 1: event created, 1 hour before event start
+                                /// 2: event created, 1 hour before RSVP due date, 1 day before event start, 1 hour before event start
+                                /// 3: event created, 1 day before RSVP due date, 1 hour before RSVP due date, 2 days before event start, 1 day before event start, 1 hour before event start
+                                notify_amount: discord? discord.defaultFreq : 3,
+                                responded: 'NO_RESPONSE'
+                            }
+                        ],
+                        notify_threads_spawned: false,
+                    });
+                } catch (noisyError){
+                    console.error("Noisy notification failed:", noisyError);
+                }
+            }
+
 
             return NextResponse.json(event, { status: 201 });
         }
