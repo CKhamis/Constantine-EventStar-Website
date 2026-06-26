@@ -4,6 +4,7 @@ import {uuidSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import {NoisyRSVP} from "@/app/api/events/notify/set/[id]/route";
 import axios from "axios";
+import {NoisyGuest} from "@/app/api/events/save/route";
 
 const prisma = new PrismaClient();
 
@@ -89,7 +90,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
                     // Just need to know if they HAVE a discord connection at all, so it can be disabled here
                     const payload: NoisyRSVP = {
                         user_id: discord.discordId,
-                        responded: NoisyGues,
+                        responded: 'NotGoing',
                         notify_amount: 0,
                         event_id: eventId
                     };
