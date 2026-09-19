@@ -33,7 +33,7 @@ export default async function MainNav({children}: PropsWithChildren){
 			            </TooltipContent>
 		            </Tooltip>
 
-		            <div className="flex flex-row lg:flex-col gap-10 lg:gap-6 lg:mt-2 overflow-y-auto no-scrollbar flex-grow">
+		            <div className="flex flex-row lg:flex-col gap-10 lg:gap-6 lg:mt-2 overflow-y-auto no-scrollbar grow">
 			            {menuItems.map((item) => (
 				            <Tooltip key={item.title}>
 					            <TooltipTrigger>
@@ -51,7 +51,7 @@ export default async function MainNav({children}: PropsWithChildren){
 		            <AccountButton session={session} />
 	            </div>
 	            {/* Content */}
-	            <div className="flex-grow  overflow-y-auto">
+	            <div className="grow overflow-y-auto">
 	                {children}
                 </div>
 			</div>
