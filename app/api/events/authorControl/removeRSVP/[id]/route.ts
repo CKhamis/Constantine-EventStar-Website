@@ -1,12 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from "@/prisma/client";
 import { NextResponse } from "next/server";
 import {uuidSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import {NoisyRSVP} from "@/app/api/events/notify/set/[id]/route";
 import axios from "axios";
-import {NoisyGuest} from "@/app/api/events/save/route";
-
-const prisma = new PrismaClient();
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const session =  await auth();

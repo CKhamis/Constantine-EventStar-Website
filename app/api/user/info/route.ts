@@ -1,8 +1,7 @@
-import {DiscordConnection, PrismaClient} from '@prisma/client';
+import prisma from "@/prisma/client";
+import {DiscordConnection} from '@prisma/client';
 import {NextResponse} from "next/server";
 import {auth} from "@/auth";
-
-const prisma = new PrismaClient();
 
 export type userInfoResponse = {
     createdAt: Date;

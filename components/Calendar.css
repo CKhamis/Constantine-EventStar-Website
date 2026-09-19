@@ -1,3 +1,9 @@
+@reference "../app/globals.css";
+
+.calendar {
+  @apply bg-accent;
+}
+
 .react-calendar {
   line-height: 1.125em;
 }

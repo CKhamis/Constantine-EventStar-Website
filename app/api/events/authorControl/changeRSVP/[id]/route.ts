@@ -1,10 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from "@/prisma/client";
 import { NextResponse } from "next/server";
 import {authorChangeRsvpSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
-import {options} from "axios";
-
-const prisma = new PrismaClient();
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const session =  await auth();

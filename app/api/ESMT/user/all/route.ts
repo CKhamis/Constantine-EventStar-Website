@@ -1,8 +1,7 @@
-import {Prisma, PrismaClient} from '@prisma/client';
+import {Prisma} from '@prisma/client';
+import prisma from "@/prisma/client";
 import {NextResponse} from "next/server";
 import {auth} from "@/auth";
-
-const prisma = new PrismaClient();
 
 const ESMTU = {
     id: true,

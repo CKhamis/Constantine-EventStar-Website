@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from "@/prisma/client";
 import { NextResponse } from "next/server";
 import {notificationSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
@@ -10,8 +10,6 @@ export type NoisyRSVP = {
     responded: string | null,
     notify_amount: number
 }
-
-const prisma = new PrismaClient();
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const session =  await auth();
