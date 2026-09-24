@@ -9,7 +9,7 @@ export default function About(){
             <p>EventStar sets itself apart through its account-based system. All guests will get their own account they can use to RSVP to events, view statistics about their event habits, follow event planners, or even become an event planner themselves.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <ul className="mt-4 flex flex-col gap-6 p-2">
-                    <p className="text-2xl font-bold w-100 border-b-2">Event Planners</p>
+                    <p className="text-2xl font-bold w-full border-b-2">Event Planners</p>
                     <li className="flex flex-row justify-start gap-5 mb-5">
                         <div className="flex-shrink-0">
                             <CalendarCheck className="w-10 h-10"/>
@@ -48,7 +48,7 @@ export default function About(){
                     {/*</li>*/}
                 </ul>
                 <ul className="mt-4 flex flex-col gap-6 p-2">
-                    <p className="text-2xl font-bold w-100 border-b-2">Guests</p>
+                    <p className="text-2xl font-bold w-full border-b-2">Guests</p>
                     <li className="flex flex-row justify-start gap-5 mb-5">
                         <div className="flex-shrink-0">
                             <Binoculars className="w-10 h-10"/>

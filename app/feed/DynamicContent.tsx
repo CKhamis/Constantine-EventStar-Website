@@ -107,8 +107,8 @@ export default function DynamicContent() {
     return (
         <>
             {loading && <LoadingIcon/>}
-            <div className="w-100 h-screen grid grid-cols-2 lg:grid-cols-3 gap-0 p-0">
-                <div className="w-100 col-span-2 items-center lg:overflow-y-auto">
+            <div className="w-full h-screen grid grid-cols-2 lg:grid-cols-3 gap-0 p-0">
+                <div className="w-full col-span-2 items-center lg:overflow-y-auto">
                     <div className="top-left-gradient border-b-2 border-[#451942]">
                         <div className="container flex-col flex gap-3 py-3 max-w-3xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">

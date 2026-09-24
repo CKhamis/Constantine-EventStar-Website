@@ -224,8 +224,8 @@ export default function DynamicContent({eventId, userId}: Props) {
                             </div>
                         </div>
                     </div>
-                    <div id="background" className="flex-grow flex flex-col">
-                        <div className="glass-dark w-100 flex-grow">
+                    <div id="background" className="grow flex flex-col">
+                        <div className="glass-dark w-full grow">
                             <div className="container flex-col flex gap-3 py-3 max-w-xl lg:max-w-5xl">
                                 {eventInfo ? (
                                     <>
@@ -353,7 +353,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                     </>
 
                                 ) : (
-                                    <div className="w-100 h-100 flex justify-center flex-col items-center">
+                                    <div className="w-full h-full flex justify-center flex-col items-center">
                                         <Image src="/agent/empty.png" height={200} width={200} alt="" className="mt-10" />
                                         <p className="font-bold text-3xl mb-5">Event not found</p>
                                     </div>

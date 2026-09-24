@@ -16,7 +16,7 @@ interface Props {
 export default function DiscordDashboard({page, setPage, logs, url}:Props) {
     if(logs === undefined || logs === null || url === undefined) {
         return (
-            <div className="flex flex-col w-100 items-center justify-center h-full">
+            <div className="flex flex-col w-full items-center justify-center h-full">
                 <Image src="/agent/empty.png" alt="No Logs" width={200} height={200} />
                 <p className="font-bold">OOPS!</p>
             </div>);

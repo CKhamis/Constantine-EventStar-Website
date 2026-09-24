@@ -244,8 +244,8 @@ export default function DynamicContent({ eventId, userId }: Props) {
     return (
         <>
             {loading && <LoadingIcon />}
-            <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
-                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-auto lg:flex flex-col">
+            <div className="w-full lg:h-screen grid grid-cols-1 lg:grid-cols-3">
+                <div className="lg:col-span-2 lg:h-full lg:overflow-y-auto lg:flex flex-col">
                     <div className="top-left-gradient border-b-2 border-[#451942]">
                         <div className="container flex-row items-center justify-between flex gap-3 py-3 max-w-3xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
@@ -529,7 +529,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                     </div>
                 </div>
                 {editing ? (
-                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-auto hidden lg:flex flex-col justify-between">
+                    <div className="h-full border-l-2 white-gradient lg:h-full lg:overflow-y-auto hidden lg:flex flex-col justify-between">
                         <div>
                             <div className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
                                 <div className="flex flex-row justify-start items-center gap-3 h-[50]">
@@ -674,7 +674,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                         </div>
                     </div>
                 ) : (
-                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-auto hidden lg:flex flex-col justify-start">
+                    <div className="h-full border-l-2 white-gradient lg:h-full lg:overflow-y-auto hidden lg:flex flex-col justify-start">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src="/agent/loading.gif" className="w-1/2 my-7 mx-auto" alt="EventStar typing" />
 

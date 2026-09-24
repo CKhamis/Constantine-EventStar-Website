@@ -168,7 +168,7 @@ export default function DynamicContent({session}: Props) {
     return (
         <>
             {loading && <LoadingIcon/>}
-            <div className="w-100 container p-5 flex flex-col gap-5">
+            <div className="w-full container p-5 flex flex-col gap-5">
                 <div className="flex justify-between items-center border-b-2 pb-5 overflow-x-hidden">
                     <div className="flex flex-row justify-start items-center gap-3">
                         <AvatarIcon size="large" image={session.user.image} name={session.user.name}/>
@@ -193,7 +193,7 @@ export default function DynamicContent({session}: Props) {
                     </div>
                 </div>
 
-                <Tabs defaultValue="events" className="w-100">
+                <Tabs defaultValue="events" className="w-full">
                     <TabsList>
                         <TabsTrigger value="events">Events</TabsTrigger>
                         <TabsTrigger value="followers">Followers</TabsTrigger>
@@ -202,7 +202,7 @@ export default function DynamicContent({session}: Props) {
                         <TabsTrigger value="notifications">Notifications</TabsTrigger>
                     </TabsList>
                     <TabsContent value="events" className="mt-5">
-                        <div className="w-100 flex flex-row justify-between items-center mb-5">
+                        <div className="w-full flex flex-row justify-between items-center mb-5">
                             <p className="text-3xl font-bold">Your Events</p>
                             <Link href="/editEvent"><Button>New Event</Button></Link>
                         </div>
@@ -248,7 +248,7 @@ export default function DynamicContent({session}: Props) {
                                 </Card>
                             ))}
                             {RSVPs.length === 0 && (
-                                <div className="w-100 h-100 flex justify-center flex-col items-center">
+                                <div className="w-full h-full flex justify-center flex-col items-center">
                                     <Image src="/agent/empty.png" height={200} width={200} alt="" className="mt-10"/>
                                     <p className="font-bold text-3xl mb-5">No Events Created</p>
                                     <p className="text-muted-foreground text-sm">Click on New Event to get started!</p>
@@ -257,7 +257,7 @@ export default function DynamicContent({session}: Props) {
                         </div>
                     </TabsContent>
                     <TabsContent value="followers" className="mt-5">
-                        <div className="w-100 flex flex-row justify-between items-center mb-5">
+                        <div className="w-full flex flex-row justify-between items-center mb-5">
                             <p className="text-3xl font-bold">Followers</p>
                             <FollowDialog />
                         </div>
@@ -273,14 +273,14 @@ export default function DynamicContent({session}: Props) {
                             ))}
                         </div>
                         {userInfo.followedBy.length === 0 && (
-                            <div className="w-100 h-100 flex justify-center flex-col items-center">
+                            <div className="w-full h-full flex justify-center flex-col items-center">
                                 <Image src="/agent/empty.png" height={200} width={200} alt="" className="mt-10"/>
                                 <p className="font-bold text-3xl mb-5">No Followers (Yet)</p>
                             </div>
                         )}
                     </TabsContent>
                     <TabsContent value="following" className="mt-5">
-                        <div className="w-100 flex flex-row justify-between items-center mb-5">
+                        <div className="w-full flex flex-row justify-between items-center mb-5">
                             <p className="text-3xl font-bold">Following</p>
                             <FollowDialog />
                         </div>
@@ -296,14 +296,14 @@ export default function DynamicContent({session}: Props) {
                             ))}
                         </div>
                         {userInfo.following.length === 0 && (
-                            <div className="w-100 h-100 flex justify-center flex-col items-center">
+                            <div className="w-full h-full flex justify-center flex-col items-center">
                                 <Image src="/agent/empty.png" height={200} width={200} alt="" className="mt-10"/>
                                 <p className="font-bold text-3xl mb-5">Not Following Anybody</p>
                             </div>
                         )}
                     </TabsContent>
                     <TabsContent value="requests" className="mt-5">
-                        <div className="w-100 flex flex-row justify-between items-center mb-5">
+                        <div className="w-full flex flex-row justify-between items-center mb-5">
                             <p className="text-3xl font-bold">Requests</p>
                             <FollowDialog />
                         </div>
@@ -322,14 +322,14 @@ export default function DynamicContent({session}: Props) {
                             ))}
                         </div>
                         {receivedFollows.length === 0 && (
-                            <div className="w-100 h-100 flex justify-center flex-col items-center">
+                            <div className="w-full h-full flex justify-center flex-col items-center">
                                 <Image src="/agent/empty.png" height={200} width={200} alt="" className="mt-10"/>
                                 <p className="font-bold text-3xl mb-5">No Follow Requests</p>
                             </div>
                         )}
                     </TabsContent>
                     <TabsContent value="notifications" className="mt-5">
-                        <div className="w-100 flex flex-row justify-between items-center mb-5">
+                        <div className="w-full flex flex-row justify-between items-center mb-5">
                             <p className="text-3xl font-bold">Notifications</p>
                         </div>
                         <div className="max-w-2xl mx-auto">
