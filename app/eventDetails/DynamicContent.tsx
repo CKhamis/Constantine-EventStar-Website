@@ -473,8 +473,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                         name="backgroundStyle"
                                         render={({ field }) => (
                                             <FormItem style={{ marginTop: "-8px" }}>
-                                                <FormLabel>Background Style</FormLabel>
-                                                <br />
+                                                <FormLabel className="mt-2">Background Style</FormLabel>
                                                 <FormControl>
                                                     <GradientPicker {...field} />
                                                 </FormControl>
