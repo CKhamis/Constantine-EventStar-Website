@@ -6,6 +6,7 @@ import {auth} from "@/auth";
 export async function POST(request: NextRequest){
     const session =  await auth();
 
+    // @ts-ignore
     if(!session || !session.user || session.user.role !== "OWNER" || !session.user.id){
         return NextResponse.json("Approved login required", {status: 401});
     }

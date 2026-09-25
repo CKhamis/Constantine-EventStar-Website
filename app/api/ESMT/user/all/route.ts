@@ -34,6 +34,7 @@ export type esmtUser = Prisma.UserGetPayload<{
 export async function GET(){
     const session =  await auth();
 
+    // @ts-ignore
     if(!session || !session.user || session.user.role !== "OWNER"){
         return NextResponse.json("Approved login required", {status: 401});
     }

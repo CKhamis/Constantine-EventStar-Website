@@ -115,6 +115,7 @@ export default function DynamicContent({eventId, userId}: Props) {
             axios.get("/api/events/view/" + eventId)
                 .then((response) => {
                     setEventInfo(response.data);
+                    // @ts-ignore
                     document.querySelector("#background")!.style.background = response.data.backgroundStyle;
 
                     const invitedUser = response.data.RSVP.find((r: rsvp) => r.user.id === userId);
@@ -127,6 +128,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                 })
                 .catch((error) => {
                     console.log(error.status);
+                    // @ts-ignore
                     document.querySelector("#background")!.style.background = "black";
                 }),
 

@@ -36,7 +36,7 @@ export const verificationSchema = z.object({
 });
 
 export const notificationFrequencySchema = z.object({
-    freq: z.coerce.number().min(0).max(3, {error: "Invalid frequency number"}),
+    freq: z.coerce.number<number>().min(0).max(3, {error: "Invalid frequency number"}),
 });
 
 export const discordUsernameSearch = z.object({
@@ -68,7 +68,7 @@ export const saveEventSchema = z.object({
     description: z.string().optional(),
     inviteVisibility: InviteVisibility,
     eventType: EventType,
-    maxGuests: z.coerce.number().int().min(0, {error: "Must be a positive number"}),
+    maxGuests: z.coerce.number<number>().int().min(0, {error: "Must be a positive number"}),
 })
 
 export const followRequestReplySchema = z.object({
@@ -82,7 +82,7 @@ export const uuidSchema = z.object({
 
 export const rsvpSchema = z.object({
     response: RsvpResponse,
-    guests: z.coerce.number().int().min(0, {error: "Must be a positive number"}).optional().or(z.literal(0)),
+    guests: z.coerce.number<number>().int().min(0, {error: "Must be a positive number"}).optional().or(z.literal(0)),
     firstName: z.string().max(20, {error: "First name too long"}).min(1, {error: "First name too short"}).optional().or(z.literal("")),
     lastName: z.string().max(20, {error: "Last name too long"}).min(1, {error: "Last name too short"}).optional().or(z.literal("")),
 })
@@ -95,7 +95,7 @@ export const notificationSchema = z.object({
 export const authorAddRsvpSchema = z.object({
     id: z.string().cuid().optional(), // user id
     response: RsvpResponseAll,
-    guests: z.coerce.number().int().min(0, "Must be a positive number"),
+    guests: z.coerce.number<number>().int().min(0, "Must be a positive number"),
     firstName: z.string().max(20, "First name too long").min(1, "First name too short").optional().or(z.literal("")),
     lastName: z.string().max(20, "Last name too long").min(1, "Last name too short").optional().or(z.literal("")),
 })
@@ -103,7 +103,7 @@ export const authorAddRsvpSchema = z.object({
 export const authorChangeRsvpSchema = z.object({
     response: RsvpResponseAll,
     id: z.uuid(), // UUD of RSVP itself, not user
-    guests: z.coerce.number().int().min(0, {error: "Must be a positive number"}).optional().or(z.literal(0)),
+    guests: z.coerce.number<number>().int().min(0, {error: "Must be a positive number"}).optional().or(z.literal(0)),
     firstName: z.string().max(20, {error: "First name too long"}).min(1, {error: "First name too short"}).optional().or(z.literal("")),
     lastName: z.string().max(20, {error: "Last name too long"}).min(1, {error: "Last name too short"}).optional().or(z.literal("")),
 })
