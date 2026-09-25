@@ -72,9 +72,9 @@ export default function RsvpForm({
 						render={({field}) => (
 							<FormItem>
 								<FormLabel>Your Attendance</FormLabel>
-								<Select onValueChange={field.onChange} value={field.value} disabled={isExpired}>
+								<Select  onValueChange={field.onChange} value={field.value} disabled={isExpired}>
 									<FormControl>
-										<SelectTrigger>
+										<SelectTrigger className="w-full">
 											<SelectValue placeholder="Select your RSVP status"/>
 										</SelectTrigger>
 									</FormControl>
@@ -147,7 +147,7 @@ export default function RsvpForm({
 								<FormLabel>Your Attendance</FormLabel>
 								<Select onValueChange={field.onChange} value={field.value} disabled={isExpired}>
 									<FormControl>
-										<SelectTrigger>
+										<SelectTrigger className="w-full">
 											<SelectValue placeholder="Select your RSVP status"/>
 										</SelectTrigger>
 									</FormControl>

@@ -351,7 +351,7 @@ export default function DynamicContent({session}: Props) {
                                         }
                                     </div>
                                 </CardHeader>
-                                <CardContent className="border-b">
+                                <CardContent>
                                     {!userInfo.discordConnection && <p>Set up your EventStar account to connect with your Discord account so you can get EventStar updates as they come in.</p>}
                                     {userInfo.discordConnection && discordInfo &&
                                         <div className="flex flex-row gap-4">
@@ -386,7 +386,7 @@ export default function DynamicContent({session}: Props) {
                                                                 onValueChange={(value) => field.onChange(value)}
                                                                 disabled={loading}
                                                             >
-                                                                <SelectTrigger className="w-full">
+                                                                <SelectTrigger className="m-0 py-0">
                                                                     <SelectValue placeholder="Select notification frequency" />
                                                                 </SelectTrigger>
                                                                 <NotificationAmounts />

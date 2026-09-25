@@ -10,7 +10,7 @@ import {
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import axios from "axios";
-import {useState} from "react";
+import {JSX, useState} from "react";
 import {Check, CircleHelp, Clock, X} from "lucide-react"
 import { toast } from "sonner"
 import {
