@@ -13,7 +13,8 @@ export default async function MainNav({children}: PropsWithChildren){
         {title: 'New Event', iconUrl: '/icons/NewEvent.svg', link: '/eventDetails'},
     ];
 
-    if(session && session.user && session.user.role === "OWNER"){
+    // @ts-ignore
+	if(session && session.user && session.user.role === "OWNER"){
         menuItems.push({title: 'ESMT', iconUrl: '/icons/ESMT.svg', link: '/ESMT'})
     }
 

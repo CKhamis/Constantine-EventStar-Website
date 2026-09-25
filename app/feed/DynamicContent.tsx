@@ -19,6 +19,7 @@ import {Badge} from "@/components/ui/badge";
 export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState<userInfoResponse>({
+        discordConnection: null,
         createdAt: new Date(),
         discordId: "",
         email: "",
