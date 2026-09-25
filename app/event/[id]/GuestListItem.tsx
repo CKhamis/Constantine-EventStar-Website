@@ -115,7 +115,7 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
             if(RSVP.user.id === authorId){
                 // Author is viewing their own RSVP
                 content = (
-                    <DialogContent className="sm:max-w-[425px]">
+                    <DialogContent className="sm:max-w-106.25">
                         <DialogHeader>
                             <div className="flex flex-col items-center space-y-4">
                                 <AvatarIcon name={nameSafe} image={imageSafe} size="large" />
@@ -126,7 +126,7 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
                         <div className="flex flex-col space-y-4 mt-5">
                             <div>
                                 <p className="text-center font-bold mb-2">Overwrite RSVP Status</p>
-                                <ToggleGroup type="single" defaultValue={RSVP.response}>
+                                <ToggleGroup type="single" className="mx-auto" defaultValue={RSVP.response}>
                                     <ToggleGroupItem value="YES" onClick={() => overwriteRSVP("YES")}>
                                         <Check className="h-8 w-8" />
                                     </ToggleGroupItem>
@@ -172,7 +172,7 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
                         <div className="flex flex-col space-y-4 mt-5">
                             <div>
                                 <p className="text-center font-bold mb-2">Overwrite RSVP Status</p>
-                                <ToggleGroup type="single" defaultValue={RSVP.response}>
+                                <ToggleGroup type="single" className="mx-auto" defaultValue={RSVP.response}>
                                     <ToggleGroupItem value="YES" onClick={() => overwriteRSVP("YES")}>
                                         <Check className="h-8 w-8" />
                                     </ToggleGroupItem>
@@ -235,7 +235,7 @@ export default function GuestListItem({RSVP, viewerRole, isFollowing, action, ev
                         <div className="flex flex-col space-y-4 mt-5">
                             <div>
                                 <p className="text-center font-bold mb-2">Overwrite RSVP Status</p>
-                                <ToggleGroup type="single" defaultValue={RSVP.response}>
+                                <ToggleGroup type="single" className="mx-auto" defaultValue={RSVP.response}>
                                     <ToggleGroupItem value="YES" onClick={() => overwriteRSVP("YES")}>
                                         <Check className="h-8 w-8"/>
                                     </ToggleGroupItem>
