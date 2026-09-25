@@ -5,13 +5,10 @@ import {LoadingIcon} from "@/components/LoadingIcon";
 import Image from "next/image";
 import axios from "axios";
 import {EVResponse} from "@/app/api/events/view/[id]/route";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {
 	CalendarPlus,
 	Car,
-	Check,
 	Clock,
 	House,
 	LetterText,
@@ -231,7 +228,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                     <>
                                         <div className="flex flex-col lg:flex-row justify-between items-center mb-4 lg:mb-0 mt-4">
                                             <p className="font-bold text-4xl">{eventInfo.title}</p>
-                                            <div className="flex flex-row items-center justify-end gap-3 mt-5 lg:m-0">
+                                            <div className="flex flex-row items-center justify-start lg:justify-end gap-3 mt-5 lg:m-0 overflow-x-auto max-w-full flex-nowrap">
 	                                            <div className="lg:hidden">
 		                                            <Drawer repositionInputs={false}>
 			                                            <DrawerTrigger asChild>
@@ -248,7 +245,8 @@ export default function DynamicContent({eventId, userId}: Props) {
 						                                            );
 					                                            })()
 				                                            )}
-			                                            </DrawerTrigger>			                                            <DrawerContent>
+			                                            </DrawerTrigger>
+                                                        <DrawerContent>
 				                                            <DrawerHeader>
 					                                            <DrawerTitle>Are You Able to Attend?</DrawerTitle>
 					                                            <DrawerDescription>Make sure to press Save when you&#39;re done!</DrawerDescription>

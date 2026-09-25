@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import {notificationFrequencySchema, verificationSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
-import {PrismaClient} from "@prisma/client";
-
-const prisma = new PrismaClient()
+import prisma from "@/prisma/client";
 
 /**
  * Changes the user's notification default frequency

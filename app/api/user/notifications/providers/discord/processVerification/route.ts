@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import {verificationSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
-import {PrismaClient} from "@prisma/client";
-
-const prisma = new PrismaClient()
+import prisma from "@/prisma/client";
 
 /**
  * Takes in the user OTP, verifies it with an existing, non-expired Discord connection token, and conditionally saves the connection

@@ -1,9 +1,7 @@
-import {Prisma, PrismaClient} from "@prisma/client"
+import prisma from "@/prisma/client";
 import { type NextRequest, NextResponse } from "next/server"
 import {esmtMergeFormSchema} from "@/components/ValidationSchemas"
 import { auth } from "@/auth"
-
-const prisma = new PrismaClient()
 
 const userInfo = {
 	id: true,

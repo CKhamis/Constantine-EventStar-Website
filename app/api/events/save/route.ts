@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client"
+import prisma from "@/prisma/client";
 import { type NextRequest, NextResponse } from "next/server"
 import { saveEventSchema } from "@/components/ValidationSchemas"
 import { auth } from "@/auth"
@@ -25,8 +25,6 @@ export type NoisyGuest = {
     notify_amount: number,
     responded: 'Going' | 'NotGoing' | 'NoResponse'
 }
-
-const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
     const session = await auth()

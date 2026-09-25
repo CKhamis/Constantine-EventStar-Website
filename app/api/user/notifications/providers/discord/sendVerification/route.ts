@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import {discordUsernameSendVerification} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import axios from 'axios';
-import {PrismaClient} from "@prisma/client";
-const prisma = new PrismaClient()
+import prisma from "@/prisma/client";
 
 /**
  * Uses Noisy to send a verification number to a Discord account. Also saves a token
