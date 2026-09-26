@@ -7,14 +7,14 @@ import axios from "axios";
 import {EVResponse} from "@/app/api/events/view/[id]/route";
 import {Button} from "@/components/ui/button";
 import {
-	CalendarPlus,
-	Car,
-	Clock,
-	House,
-	LetterText,
-	MapPin,
-	Pencil,
-	View,
+    CalendarPlus,
+    Car,
+    Clock,
+    House,
+    LetterText, LinkIcon,
+    MapPin,
+    Pencil,
+    View,
 } from "lucide-react";
 import {useForm} from "react-hook-form";
 import {z} from "zod";
@@ -198,6 +198,17 @@ export default function DynamicContent({eventId, userId}: Props) {
         }
     }
 
+    async function copyEventLink() {
+        const url = `${window.location.origin}/event/${eventId}`;
+        try {
+            await navigator.clipboard.writeText(url);
+            toast("Link copied", { description: "Event link copied to clipboard" });
+        } catch (e) {
+            console.log(e);
+            toast("Error", { description: "Unable to copy link" });
+        }
+    }
+
     return (
         <>
             {mounted && loading && <LoadingIcon/>}
@@ -289,6 +300,13 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                         Add to Calendar
                                                     </Button>
                                                 </Link>
+
+                                                <Button variant="outline"
+                                                        className="flex items-center justify-center gap-2"
+                                                        onClick={copyEventLink}>
+                                                    <LinkIcon/>
+                                                    Share
+                                                </Button>
 
                                                 <NotificationSelect
                                                     value={notificationAmount}

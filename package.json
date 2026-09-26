@@ -54,7 +54,6 @@
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.5.0",
     "lucide-react": "^1.47.0",
-    "mariadb": "^3.5.4",
     "next": "^16.3.5",
     "next-auth": "^5.0.0-beta.32",
     "next-remove-imports": "^1.0.13",
@@ -94,6 +93,7 @@
   },
   "overrides": {
     "deepmerge-ts": "8.0.2",
-    "mysql2": "3.24.4"
+    "mysql2": "3.24.4",
+    "mariadb": "3.5.4"
   }
 }
