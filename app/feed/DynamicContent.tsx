@@ -163,8 +163,8 @@ export default function DynamicContent() {
                 </div>
                 <div className="hidden lg:flex overflow-y-auto border-s-2">
                     <div className="max-w-xl mx-auto">
-                        <Card className="mt-5 rounded-none border-none">
-                            <CardContent>
+                        <div className="mt-5 rounded-none border-none">
+                            <div>
                                 <div className="flex flex-row gap-3 justify-start items-center  p-5">
                                     <AvatarIcon size="large" image={userInfo.image} name={userInfo.name}/>
                                     <div>
@@ -186,8 +186,8 @@ export default function DynamicContent() {
                                         <p className="text-center">Following</p>
                                     </div>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
                         {recievedFollows.length == 0? <></>: <p className="font-bold mt-6 px-0">Follow requests</p>}
                         {recievedFollows.map((followRequest:FRResponse) => (
                             <div className="flex flex-row items-center justify-between mb-3 px-0" key={followRequest.id}>
