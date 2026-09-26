@@ -1,8 +1,9 @@
-import { Prisma } from "@prisma/client";
+import prisma from "@/prisma/client";
 import { type NextRequest, NextResponse } from "next/server"
 import {esmtMergeFormSchema} from "@/components/ValidationSchemas"
 import { auth } from "@/auth"
 import z from "zod";
+import {Prisma} from "@prisma/client";
 
 const userInfo = {
 	id: true,
@@ -19,7 +20,6 @@ const userInfo = {
 	discordConnection: {
 		select: {
 			id: true,
-			name: true,
 			discordId: true,
 		},
 	},

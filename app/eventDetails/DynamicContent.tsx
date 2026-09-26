@@ -336,7 +336,6 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                             selected={field.value}
                                                             onSelect={field.onChange}
                                                             disabled={(date) => date < new Date()}
-                                                            initialFocus
                                                         />
                                                         <div className="p-3 border-t border-border">
                                                             <TimestampPicker setDate={field.onChange} date={field.value} />
@@ -373,7 +372,6 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                             selected={field.value}
                                                             onSelect={field.onChange}
                                                             disabled={(date) => date < new Date()}
-                                                            initialFocus
                                                         />
                                                         <div className="p-3 border-t border-border">
                                                             <TimestampPicker setDate={field.onChange} date={field.value} />
@@ -409,7 +407,6 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                             selected={field.value}
                                                             onSelect={field.onChange}
                                                             disabled={(date) => date < new Date()}
-                                                            initialFocus
                                                         />
                                                         <div className="p-3 border-t border-border">
                                                             <TimestampPicker setDate={field.onChange} date={field.value} />
