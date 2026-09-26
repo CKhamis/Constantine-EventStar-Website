@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {discordGetUser} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import axios from 'axios';
+import z from "zod";
 
 /**
  * Uses Noisy to batch retrieve for Discord usernames or names
@@ -11,7 +12,7 @@ import axios from 'axios';
 export async function POST(request: Request) {
     const session =  await auth();
 
-    if(!session || !session.user){
+    if(!session || !session.user || !session.user.id){
         return NextResponse.json("Please sign in", {status: 401});
     }
 
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
     const validation = discordGetUser.safeParse(body);
 
     if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {

@@ -2,6 +2,7 @@ import prisma from "@/prisma/client";
 import { NextResponse } from "next/server";
 import {authorChangeRsvpSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
+import z from "zod";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const session =  await auth();
@@ -20,7 +21,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const validation = authorChangeRsvpSchema.safeParse(body);
 
     if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {

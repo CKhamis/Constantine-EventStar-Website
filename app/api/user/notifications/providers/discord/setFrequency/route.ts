@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {notificationFrequencySchema, verificationSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import prisma from "@/prisma/client";
+import z from "zod";
 
 /**
  * Changes the user's notification default frequency
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
     const validation = notificationFrequencySchema.safeParse(body);
 
     if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {

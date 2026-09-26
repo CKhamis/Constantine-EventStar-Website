@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {notificationSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import axios from "axios";
+import z from "zod";
 
 export type NoisyRSVP = {
     event_id: string,
@@ -21,7 +22,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const validation = notificationSchema.safeParse(body);
 
     if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     if(!session || !session.user || !session.user.id){

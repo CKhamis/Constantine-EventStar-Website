@@ -5,6 +5,7 @@ import {authorAddRsvpSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import {NoisyRSVP} from "@/app/api/events/notify/set/[id]/route";
 import axios from "axios";
+import z from "zod";
 
 export async function POST(request: Request, {params}: { params: Promise<{ id: string }> }){
     const session = await auth();
@@ -23,7 +24,7 @@ export async function POST(request: Request, {params}: { params: Promise<{ id: s
     const validation = authorAddRsvpSchema.safeParse(body);
 
     if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {

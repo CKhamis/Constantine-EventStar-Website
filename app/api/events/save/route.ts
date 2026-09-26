@@ -4,6 +4,7 @@ import { saveEventSchema } from "@/components/ValidationSchemas"
 import { auth } from "@/auth"
 import axios from "axios";
 import {format} from "date-fns";
+import z from "zod";
 
 export type NoisyEvent = {
 	event_id: string,
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
     const validation = saveEventSchema.safeParse(body)
 
     if (!validation.success) {
-        return NextResponse.json(validation.error.format(), { status: 400 })
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {
