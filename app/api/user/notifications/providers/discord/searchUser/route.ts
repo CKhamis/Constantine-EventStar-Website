@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {discordUsernameSearch} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import axios from 'axios';
+import z from "zod";
 
 // Return types provided by noisy
 export type DiscordUsernameSearchResponse = {
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
     const validation = discordUsernameSearch.safeParse(body);
 
     if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {

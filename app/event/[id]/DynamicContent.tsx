@@ -5,19 +5,16 @@ import {LoadingIcon} from "@/components/LoadingIcon";
 import Image from "next/image";
 import axios from "axios";
 import {EVResponse} from "@/app/api/events/view/[id]/route";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
 import {
-	CalendarPlus,
-	Car,
-	Check,
-	Clock,
-	House,
-	LetterText,
-	MapPin,
-	Pencil,
-	View,
+    CalendarPlus,
+    Car,
+    Clock,
+    House,
+    LetterText, LinkIcon,
+    MapPin,
+    Pencil,
+    View,
 } from "lucide-react";
 import {useForm} from "react-hook-form";
 import {z} from "zod";
@@ -118,6 +115,7 @@ export default function DynamicContent({eventId, userId}: Props) {
             axios.get("/api/events/view/" + eventId)
                 .then((response) => {
                     setEventInfo(response.data);
+                    // @ts-ignore
                     document.querySelector("#background")!.style.background = response.data.backgroundStyle;
 
                     const invitedUser = response.data.RSVP.find((r: rsvp) => r.user.id === userId);
@@ -130,6 +128,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                 })
                 .catch((error) => {
                     console.log(error.status);
+                    // @ts-ignore
                     document.querySelector("#background")!.style.background = "black";
                 }),
 
@@ -199,6 +198,17 @@ export default function DynamicContent({eventId, userId}: Props) {
         }
     }
 
+    async function copyEventLink() {
+        const url = `${window.location.origin}/event/${eventId}`;
+        try {
+            await navigator.clipboard.writeText(url);
+            toast("Link copied", { description: "Event link copied to clipboard" });
+        } catch (e) {
+            console.log(e);
+            toast("Error", { description: "Unable to copy link" });
+        }
+    }
+
     return (
         <>
             {mounted && loading && <LoadingIcon/>}
@@ -224,14 +234,14 @@ export default function DynamicContent({eventId, userId}: Props) {
                             </div>
                         </div>
                     </div>
-                    <div id="background" className="flex-grow flex flex-col">
-                        <div className="glass-dark w-100 flex-grow">
+                    <div id="background" className="grow flex flex-col">
+                        <div className="glass-dark w-full grow">
                             <div className="container flex-col flex gap-3 py-3 max-w-xl lg:max-w-5xl">
                                 {eventInfo ? (
                                     <>
                                         <div className="flex flex-col lg:flex-row justify-between items-center mb-4 lg:mb-0 mt-4">
                                             <p className="font-bold text-4xl">{eventInfo.title}</p>
-                                            <div className="flex flex-row items-center justify-end gap-3 mt-5 lg:m-0">
+                                            <div className="flex flex-row items-center justify-start lg:justify-end gap-3 mt-5 lg:m-0 overflow-x-auto max-w-full flex-nowrap">
 	                                            <div className="lg:hidden">
 		                                            <Drawer repositionInputs={false}>
 			                                            <DrawerTrigger asChild>
@@ -248,7 +258,8 @@ export default function DynamicContent({eventId, userId}: Props) {
 						                                            );
 					                                            })()
 				                                            )}
-			                                            </DrawerTrigger>			                                            <DrawerContent>
+			                                            </DrawerTrigger>
+                                                        <DrawerContent>
 				                                            <DrawerHeader>
 					                                            <DrawerTitle>Are You Able to Attend?</DrawerTitle>
 					                                            <DrawerDescription>Make sure to press Save when you&#39;re done!</DrawerDescription>
@@ -289,6 +300,13 @@ export default function DynamicContent({eventId, userId}: Props) {
                                                         Add to Calendar
                                                     </Button>
                                                 </Link>
+
+                                                <Button variant="outline"
+                                                        className="flex items-center justify-center gap-2"
+                                                        onClick={copyEventLink}>
+                                                    <LinkIcon/>
+                                                    Share
+                                                </Button>
 
                                                 <NotificationSelect
                                                     value={notificationAmount}
@@ -353,7 +371,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                     </>
 
                                 ) : (
-                                    <div className="w-100 h-100 flex justify-center flex-col items-center">
+                                    <div className="w-full h-full flex justify-center flex-col items-center">
                                         <Image src="/agent/empty.png" height={200} width={200} alt="" className="mt-10" />
                                         <p className="font-bold text-3xl mb-5">Event not found</p>
                                     </div>

@@ -130,8 +130,8 @@ export default function DynamicContent({userId} : Props) {
     return (
         <>
             {loading && <LoadingIcon/>}
-            <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-4">
-                <div className="lg:col-span-3 lg:h-100 lg:overflow-y-auto lg:flex flex-col">
+            <div className="w-full lg:h-screen grid grid-cols-1 lg:grid-cols-4">
+                <div className="lg:col-span-3 lg:h-full lg:overflow-y-auto lg:flex flex-col">
                     {/*<div className="top-left-gradient">*/}
                     {/*    <div className="container flex-col flex gap-3 py-3">*/}
                     {/*        <div className="flex flex-row justify-start items-center gap-3">*/}
@@ -216,7 +216,7 @@ export default function DynamicContent({userId} : Props) {
                                         </div>
                                         <p className="font-bold text-xl">{followRequest.sender.name}</p>
                                     </div>
-                                    <div className="lg:flex flex-col items-center hidden h-100">
+                                    <div className="lg:flex flex-col items-center hidden h-full">
                                         <p className="text-center">{format(new Date(followRequest.updatedAt), "PPP")}</p>
                                     </div>
                                     <div className="flex flex-row justify-end items-center gap-3">
@@ -355,8 +355,8 @@ export default function DynamicContent({userId} : Props) {
                         <Footer/>
                     </div>
                 </div>
-                <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-auto hidden lg:block">
-                    <div className="border-b-2 w-100">
+                <div className="h-full border-l-2 white-gradient lg:h-full lg:overflow-y-auto hidden lg:block">
+                    <div className="border-b-2 w-full">
                         <div className="max-w-md mx-auto pb-4">
                             <Calendar calendarType="gregory" onChange={changeDate} value={selectedDate} tileClassName={highlightDates} />
                         </div>
@@ -367,7 +367,7 @@ export default function DynamicContent({userId} : Props) {
                         {RSVPs
                             .filter((e) => new Date(e.event.eventStart).getDate() === selectedDate.getDate() && new Date(e.event.eventStart).getMonth() === selectedDate.getMonth() && new Date(e.event.eventStart).getFullYear() === selectedDate.getFullYear())
                             .length === 0? (
-                            <div className="w-100 h-100 flex justify-center flex-col items-center">
+                            <div className="w-full h-full flex justify-center flex-col items-center">
                                 <Image src="/agent/empty.png" height={200} width={200} alt="" className="mt-10"/>
                                 <p className="font-bold text-3xl mb-5">Event not found</p>
                             </div>

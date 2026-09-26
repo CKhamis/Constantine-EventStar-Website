@@ -1,9 +1,9 @@
-import {Prisma, PrismaClient} from "@prisma/client"
+import prisma from "@/prisma/client";
 import { type NextRequest, NextResponse } from "next/server"
 import {esmtMergeFormSchema} from "@/components/ValidationSchemas"
 import { auth } from "@/auth"
-
-const prisma = new PrismaClient()
+import z from "zod";
+import {Prisma} from "@prisma/client";
 
 const userInfo = {
 	id: true,
@@ -20,7 +20,6 @@ const userInfo = {
 	discordConnection: {
 		select: {
 			id: true,
-			name: true,
 			discordId: true,
 		},
 	},
@@ -43,7 +42,7 @@ export async function POST(request: NextRequest) {
     const validation = esmtMergeFormSchema.safeParse(body)
 
     if (!validation.success) {
-        return NextResponse.json(validation.error.format(), { status: 400 })
+		return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
 	if(body.hostId === body.secondaryId){
@@ -118,7 +117,6 @@ export async function POST(request: NextRequest) {
 				    data: {
 					    name: body.name,
 					    email: body.email,
-					    discordId: body.discordId,
 					    phoneNumber: body.phone,
 				    }
 			    });

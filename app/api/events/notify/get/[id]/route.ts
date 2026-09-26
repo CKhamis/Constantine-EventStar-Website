@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from "@/prisma/client";
 import { NextResponse } from "next/server";
 import {auth} from "@/auth";
 import axios from "axios";
@@ -7,8 +7,6 @@ export type GetGuestResponseRequest = {
     event_id: string,
     user_id: string,
 }
-
-const prisma = new PrismaClient();
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {    const session =  await auth();
     const resolvedParams = await params;

@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from "@/prisma/client";
 import {NextResponse} from "next/server";
 import {auth} from "@/auth";
-
-const prisma = new PrismaClient();
 
 /**
  * Retrieves data of user inside the Email Form step in the tutorial

@@ -19,6 +19,7 @@ import {Badge} from "@/components/ui/badge";
 export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState<userInfoResponse>({
+        discordConnection: null,
         createdAt: new Date(),
         discordId: "",
         email: "",
@@ -107,8 +108,8 @@ export default function DynamicContent() {
     return (
         <>
             {loading && <LoadingIcon/>}
-            <div className="w-100 h-screen grid grid-cols-2 lg:grid-cols-3 gap-0 p-0">
-                <div className="w-100 col-span-2 items-center lg:overflow-y-auto">
+            <div className="w-full h-screen grid grid-cols-2 lg:grid-cols-3 gap-0 p-0">
+                <div className="w-full col-span-2 items-center lg:overflow-y-auto">
                     <div className="top-left-gradient border-b-2 border-[#451942]">
                         <div className="container flex-col flex gap-3 py-3 max-w-3xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
@@ -162,8 +163,8 @@ export default function DynamicContent() {
                 </div>
                 <div className="hidden lg:flex overflow-y-auto border-s-2">
                     <div className="max-w-xl mx-auto">
-                        <Card className="mt-5 rounded-none border-none">
-                            <CardContent>
+                        <div className="mt-5 rounded-none border-none">
+                            <div>
                                 <div className="flex flex-row gap-3 justify-start items-center  p-5">
                                     <AvatarIcon size="large" image={userInfo.image} name={userInfo.name}/>
                                     <div>
@@ -185,8 +186,8 @@ export default function DynamicContent() {
                                         <p className="text-center">Following</p>
                                     </div>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
                         {recievedFollows.length == 0? <></>: <p className="font-bold mt-6 px-0">Follow requests</p>}
                         {recievedFollows.map((followRequest:FRResponse) => (
                             <div className="flex flex-row items-center justify-between mb-3 px-0" key={followRequest.id}>

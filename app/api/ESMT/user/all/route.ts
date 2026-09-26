@@ -1,8 +1,7 @@
-import {Prisma, PrismaClient} from '@prisma/client';
+import {Prisma} from '@prisma/client';
+import prisma from "@/prisma/client";
 import {NextResponse} from "next/server";
 import {auth} from "@/auth";
-
-const prisma = new PrismaClient();
 
 const ESMTU = {
     id: true,
@@ -35,6 +34,7 @@ export type esmtUser = Prisma.UserGetPayload<{
 export async function GET(){
     const session =  await auth();
 
+    // @ts-ignore
     if(!session || !session.user || session.user.role !== "OWNER"){
         return NextResponse.json("Approved login required", {status: 401});
     }

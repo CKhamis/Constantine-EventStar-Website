@@ -5,9 +5,6 @@ const removeImports = createNextRemoveImports();
 export default removeImports({});
 
 const nextConfig: import('next').NextConfig = {
-    eslint:{
-        ignoreDuringBuilds: true,
-    },
     typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if

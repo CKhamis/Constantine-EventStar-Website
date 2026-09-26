@@ -71,7 +71,7 @@ export default function DynamicContent() {
     }
 
     return (
-        <div className="w-100" style={{
+        <div className="w-full" style={{
             backgroundImage: `url('/tiles/logoTiles.svg')`,
             backgroundSize: '120px',
         }}>

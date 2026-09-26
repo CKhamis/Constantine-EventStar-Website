@@ -63,7 +63,7 @@ export function NotificationSelect({value, onSelect, disabled}: Props) {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="outline" className="flex items-center justify-center gap-2 w-full" disabled={disabled}>
+                <Button variant="outline" className="flex items-center justify-center gap-2" disabled={disabled}>
                     Notifications
                     <Bell className="h-4 w-4" />
                 </Button>

@@ -1,9 +1,10 @@
-import { PrismaClient } from "@prisma/client"
+import prisma from "@/prisma/client";
 import { type NextRequest, NextResponse } from "next/server"
 import { saveEventSchema } from "@/components/ValidationSchemas"
 import { auth } from "@/auth"
 import axios from "axios";
 import {format} from "date-fns";
+import z from "zod";
 
 export type NoisyEvent = {
 	event_id: string,
@@ -26,8 +27,6 @@ export type NoisyGuest = {
     responded: 'Going' | 'NotGoing' | 'NoResponse'
 }
 
-const prisma = new PrismaClient()
-
 export async function POST(request: NextRequest) {
     const session = await auth()
 
@@ -45,7 +44,7 @@ export async function POST(request: NextRequest) {
     const validation = saveEventSchema.safeParse(body)
 
     if (!validation.success) {
-        return NextResponse.json(validation.error.format(), { status: 400 })
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {

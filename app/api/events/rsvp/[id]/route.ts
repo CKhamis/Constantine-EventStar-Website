@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from "@/prisma/client";
 import { NextResponse } from "next/server";
 import {rsvpSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import axios from "axios";
-
-const prisma = new PrismaClient();
+import z from "zod";
 
 export type GetGuestResponseRequest = {
     user_id: string,
@@ -28,7 +27,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const validation = rsvpSchema.safeParse(body);
 
     if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {

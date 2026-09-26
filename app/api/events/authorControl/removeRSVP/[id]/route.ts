@@ -1,18 +1,16 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from "@/prisma/client";
 import { NextResponse } from "next/server";
 import {uuidSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import {NoisyRSVP} from "@/app/api/events/notify/set/[id]/route";
 import axios from "axios";
-import {NoisyGuest} from "@/app/api/events/save/route";
-
-const prisma = new PrismaClient();
+import z from "zod";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const session =  await auth();
 
     // Require login
-    if(!session || !session.user){
+    if(!session || !session.user || !session.user.id){
         return NextResponse.json("Please sign in", {status: 401});
     }
 
@@ -25,7 +23,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const validation = uuidSchema.safeParse(body);
 
     if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {

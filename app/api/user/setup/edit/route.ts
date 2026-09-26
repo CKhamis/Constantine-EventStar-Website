@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from "@/prisma/client";
 import {NextRequest, NextResponse} from "next/server";
 import {editBasicUserInfoSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
-
-
-const prisma = new PrismaClient();
+import z from "zod";
 
 export async function POST(request: NextRequest){
     const session =  await auth();
@@ -17,7 +15,7 @@ export async function POST(request: NextRequest){
     const validation = editBasicUserInfoSchema.safeParse(body);
 
     if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {

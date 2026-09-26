@@ -72,9 +72,9 @@ export default function RsvpForm({
 						render={({field}) => (
 							<FormItem>
 								<FormLabel>Your Attendance</FormLabel>
-								<Select onValueChange={field.onChange} value={field.value} disabled={isExpired}>
+								<Select  onValueChange={field.onChange} value={field.value} disabled={isExpired}>
 									<FormControl>
-										<SelectTrigger>
+										<SelectTrigger className="w-full">
 											<SelectValue placeholder="Select your RSVP status"/>
 										</SelectTrigger>
 									</FormControl>
@@ -147,7 +147,7 @@ export default function RsvpForm({
 								<FormLabel>Your Attendance</FormLabel>
 								<Select onValueChange={field.onChange} value={field.value} disabled={isExpired}>
 									<FormControl>
-										<SelectTrigger>
+										<SelectTrigger className="w-full">
 											<SelectValue placeholder="Select your RSVP status"/>
 										</SelectTrigger>
 									</FormControl>
@@ -191,8 +191,8 @@ export default function RsvpForm({
 						{isExpired ? "too late to respond" : `Respond by ${format(new Date(eventInfo.rsvpDuedate), "PPP hh:mm a")}`}
 					</p>
 
-					<div className="flex flex-row gap-4 items-center justify-start">
-						<Button type="submit" disabled={submitStatus === "loading" || isExpired}>
+					<div className="flex flex-row gap-4 items-center justify-start w-full">
+						<Button type="submit" className="w-full" disabled={submitStatus === "loading" || isExpired}>
 							{submitStatus === "loading" ? "Submitting..." : "Save"}
 						</Button>
 						{submitStatus === "success" && <Check className="h-4 w-4 text-green-500"/>}
