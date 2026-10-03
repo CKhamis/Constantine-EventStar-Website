@@ -76,11 +76,6 @@ export default function DynamicContent({eventId, userId}: Props) {
 
     const [mounted, setMounted] = useState(false);
 
-    useEffect(() => {
-        setMounted(true);
-        refresh();
-    }, []);
-
 	function WICheck(data: z.infer<typeof rsvpSchema>) {
 		// Only intercept write-in guests that
 		if (!userId && eventInfo?.inviteVisibility === "FULL") {
@@ -115,7 +110,6 @@ export default function DynamicContent({eventId, userId}: Props) {
             axios.get("/api/events/view/" + eventId)
                 .then((response) => {
                     setEventInfo(response.data);
-                    // @ts-ignore
                     document.querySelector("#background")!.style.background = response.data.backgroundStyle;
 
                     const invitedUser = response.data.RSVP.find((r: rsvp) => r.user.id === userId);
@@ -128,7 +122,6 @@ export default function DynamicContent({eventId, userId}: Props) {
                 })
                 .catch((error) => {
                     console.log(error.status);
-                    // @ts-ignore
                     document.querySelector("#background")!.style.background = "black";
                 }),
 
@@ -208,6 +201,11 @@ export default function DynamicContent({eventId, userId}: Props) {
             toast("Error", { description: "Unable to copy link" });
         }
     }
+
+    useEffect(() => {
+        setMounted(true);
+        refresh();
+    }, []);
 
     return (
         <>

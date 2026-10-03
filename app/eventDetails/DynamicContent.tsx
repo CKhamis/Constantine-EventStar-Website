@@ -52,10 +52,6 @@ export default function DynamicContent({ eventId, userId }: Props) {
         { id: string; name: string; email: string; image: string; phoneNumber: string }[]
     >([]) // Included & Excluded
 
-    useEffect(() => {
-        refresh()
-    }, [])
-
     function refresh() {
         if (currentEventId) {
             fetchEvent(currentEventId)
@@ -240,6 +236,10 @@ export default function DynamicContent({ eventId, userId }: Props) {
 			toast("Error", { description: "Unable to copy link" });
 		}
 	}
+
+    useEffect(() => {
+        refresh()
+    }, [])
 
     return (
         <>

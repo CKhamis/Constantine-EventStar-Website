@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import Calendar from 'react-calendar'
 import '@/components/Calendar.css';
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import Image from "next/image";
 import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
@@ -69,63 +69,84 @@ export default function DynamicContent({userId} : Props) {
         }
     };
 
-    async function refresh(){
-        setLoading(true);
-
-        await axios.get("/api/user/connections/incoming")
-            .then((response) => {
+    const refresh = useCallback(async () => {
+        try {
+            try {
+                const response = await axios.get(
+                    "/api/user/connections/incoming"
+                );
                 setRecievedFollows(response.data);
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.log(error);
-            });
+            }
 
-        await axios.get("/api/events/next")
-            .then((response) => {
-                if(response.data.message){
-                    setNextEvent(null)
-                }else{
+            try {
+                const response = await axios.get("/api/events/next");
+
+                if (response.data.message) {
+                    setNextEvent(null);
+                } else {
                     setNextEvent(response.data);
                 }
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.log(error);
-            });
+            }
 
-        await axios.get("/api/events/invited")
-            .then((response) => {
+            try {
+                const response = await axios.get("/api/events/invited");
                 setRSVPs(response.data);
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.log(error);
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    async function updateRSVP(eventId: string, response: string) {
+        setLoading(true);
+
+        try {
+            await axios.post(`/api/events/rsvp/${eventId}`, {
+                response,
             });
 
-        setLoading(false);
-    }
+            toast("RSVP Updated", {
+                description: "Changed response to: " + response,
+            });
 
-    async function updateRSVP(eventId: string, response: string){
-        setLoading(true);
-        try{
-            await axios.post(`/api/events/rsvp/${eventId}`, {response: response})
-                .then(() => toast("RSVP Updated", {description: "Changed response to: " + response}))
-                .finally(refresh);
-        }catch (e){
-            console.log(e)
+            await refresh();
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
         }
     }
 
-    async function respondFR(response:boolean, senderId:string){
-        await axios.post("/api/user/connections/respond", {response: response, senderId: senderId, guests: 0})
-            .then(() => toast("Request" + (response? "Accepted" : "Rejected"), {description: "Request deleted"}))
-            .then(refresh)
-            .catch((error) => {
-                console.log(error);
+    async function respondFR(response: boolean, senderId: string) {
+        setLoading(true);
+
+        try {
+            await axios.post("/api/user/connections/respond", {
+                response,
+                senderId,
+                guests: 0,
             });
+
+            toast(
+                "Request" + (response ? " Accepted" : " Rejected"),
+                {description: "Request deleted"}
+            );
+
+            await refresh();
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
     }
 
     useEffect(() => {
-        refresh()
-    }, []);
+        void refresh();
+    }, [refresh]);
 
     return (
         <>

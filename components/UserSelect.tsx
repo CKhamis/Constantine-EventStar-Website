@@ -28,10 +28,6 @@ export default function UserSelect({ action, initialSelectedIds = [] }: Props) {
         }
     }, [initialSelectedIds])
 
-    useEffect(() => {
-        getFollowers()
-    }, [])
-
     async function getFollowers() {
         try {
             setIsLoading(true)
@@ -60,6 +56,10 @@ export default function UserSelect({ action, initialSelectedIds = [] }: Props) {
         action(Array.from(selectedGuests))
         setIsOpen(false)
     }
+
+    useEffect(() => {
+        getFollowers()
+    }, [])
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
