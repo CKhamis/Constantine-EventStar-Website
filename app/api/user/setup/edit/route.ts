@@ -39,7 +39,7 @@ export async function POST(request: NextRequest){
         });
 
         return NextResponse.json(updatedUser, { status: 202 });
-    } catch (e) {
+    } catch {
         //console.error(e);
         return NextResponse.json({ message: "An error occurred" }, { status: 500 });
     }

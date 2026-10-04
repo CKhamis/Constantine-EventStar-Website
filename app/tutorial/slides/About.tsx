@@ -1,4 +1,4 @@
-import {Bell, Binoculars, CalendarCheck, ChartSpline, IdCard, Star, UserCheck} from "lucide-react";
+import {Bell, Binoculars, CalendarCheck, ChartSpline, IdCard, UserCheck} from "lucide-react";
 
 export default function About(){
     return (

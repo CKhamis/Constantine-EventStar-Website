@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import {notificationFrequencySchema, verificationSchema} from "@/components/ValidationSchemas";
+import {notificationFrequencySchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
 import prisma from "@/prisma/client";
 import z from "zod";

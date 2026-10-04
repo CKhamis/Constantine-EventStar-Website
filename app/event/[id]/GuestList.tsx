@@ -1,6 +1,5 @@
 'use client'
 
-import {useState} from "react";
 import GuestListItem from "@/app/event/[id]/GuestListItem";
 
 export interface Props {

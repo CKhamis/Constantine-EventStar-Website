@@ -14,7 +14,7 @@ export default async function home(){
     const session = await auth();
 
     if(session && session.user && session.user.id){
-        // @ts-ignore
+        // @ts-expect-error The type here is inaccurate, the actual type in JS works
         if(session.user && session.user.tutorial){
             redirect("/tutorial");
         }

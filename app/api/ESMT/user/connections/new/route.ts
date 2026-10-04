@@ -7,7 +7,7 @@ import z from "zod";
 export async function POST(request: NextRequest){
     const session =  await auth();
 
-    // @ts-ignore
+    // @ts-expect-error The type here is inaccurate, the actual type in JS works
     if(!session || !session.user || session.user.role !== "OWNER" || !session.user.id){
         return NextResponse.json("Approved login required", {status: 401});
     }

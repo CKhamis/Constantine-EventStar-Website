@@ -13,7 +13,7 @@ export default async function MainNav({children}: PropsWithChildren){
         {title: 'New Event', iconUrl: '/icons/NewEvent.svg', link: '/eventDetails'},
     ];
 
-    // @ts-ignore
+	// @ts-expect-error The type here is inaccurate, the actual type in JS works
 	if(session && session.user && session.user.role === "OWNER"){
         menuItems.push({title: 'ESMT', iconUrl: '/icons/ESMT.svg', link: '/ESMT'})
     }

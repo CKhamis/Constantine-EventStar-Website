@@ -18,13 +18,12 @@ import Footer from "@/components/Footer";
 import {FRResponse} from "@/app/api/user/connections/incoming/route";
 import FollowDialog from "@/app/profile/FollowDialog";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {Select, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {useForm} from "react-hook-form";
 import {notificationFrequencySchema} from "@/components/ValidationSchemas";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {toast} from "sonner";
 import {
-    DiscordUsernameSearchResponse,
     DiscordUsernameSearchResult
 } from "@/app/api/user/notifications/providers/discord/searchUser/route";
 import z from "zod";

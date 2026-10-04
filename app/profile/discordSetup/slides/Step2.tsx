@@ -8,7 +8,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import z from "zod";
 import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
 import {REGEXP_ONLY_DIGITS} from "input-otp";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {Select, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Check, CheckCircle2, X} from "lucide-react";
 import {toast} from "sonner";
 import {NotificationAmounts} from "@/components/NotificationAmounts";

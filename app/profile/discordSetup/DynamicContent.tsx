@@ -11,17 +11,13 @@ import Step1 from "@/app/profile/discordSetup/slides/Step1";
 import Step2 from "@/app/profile/discordSetup/slides/Step2";
 import Outro from "@/app/profile/discordSetup/slides/Outro";
 
-interface Props {
-    id: string;
-}
-
 type Slide = {
     backAllowed: boolean,
     forwardAllowed: boolean,
     content: React.ReactNode,
 }
 
-export default function DynamicContent({id}: Props) {
+export default function DynamicContent() {
     const [selectedDiscordId, setSelectedDiscordId] = useState<string | null>(null);
 
     const slideDeck:Slide[] = [

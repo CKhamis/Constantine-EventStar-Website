@@ -1,7 +1,6 @@
 // WebSpy Interceptor
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import axios from "axios";
 
 // Request
 type RequestReport = {
@@ -72,7 +71,7 @@ export async function middleware(request: NextRequest) {
         } else {
             return NextResponse.error();
         }
-    } catch (e) {
+    } catch {
         return NextResponse.error();
     }
 }

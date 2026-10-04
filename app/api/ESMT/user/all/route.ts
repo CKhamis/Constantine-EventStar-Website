@@ -34,7 +34,7 @@ export type esmtUser = Prisma.UserGetPayload<{
 export async function GET(){
     const session =  await auth();
 
-    // @ts-ignore
+    // @ts-expect-error The type here is inaccurate, the actual type in JS works
     if(!session || !session.user || session.user.role !== "OWNER"){
         return NextResponse.json("Approved login required", {status: 401});
     }

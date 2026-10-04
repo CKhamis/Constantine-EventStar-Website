@@ -13,7 +13,7 @@ import {
     BellOff,
     Sparkles,
     CalendarClock,
-    Check, CalendarPlus,
+    Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

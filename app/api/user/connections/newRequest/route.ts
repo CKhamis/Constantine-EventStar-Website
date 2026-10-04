@@ -57,7 +57,7 @@ export async function POST(request: NextRequest){
         // todo: Check if user is already following
 
         // Create Follow Request
-        const newEvent = await prisma.followRequest.create({
+        await prisma.followRequest.create({
             data: {
                 createdAt: new Date(),
                 updatedAt: new Date(),
