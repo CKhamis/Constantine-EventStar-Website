@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image"
 import { LoadingIcon } from "@/components/LoadingIcon"
-import { useEffect, useState } from "react"
+import {useCallback, useEffect, useState} from "react"
 import { rsvpSchema, saveEventSchema } from "@/components/ValidationSchemas"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -40,7 +40,7 @@ export interface Props {
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false })
 
 export default function DynamicContent({ eventId, userId }: Props) {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [editing, setEditing] = useState(false)
     const router = useRouter()
     const [eventInfo, setEventInfo] = useState<EVResponse | null>(null)
@@ -52,25 +52,17 @@ export default function DynamicContent({ eventId, userId }: Props) {
         { id: string; name: string; email: string; image: string; phoneNumber: string }[]
     >([]) // Included & Excluded
 
-    function refresh() {
-        if (currentEventId) {
-            fetchEvent(currentEventId)
-            getFollowers()
-        }
-    }
-
-    async function getFollowers() {
+    const getFollowers = useCallback(async () => {
         try {
-            setLoading(true)
-            const response = await axios.get("/api/user/info")
-            setFollowers(response.data.followedBy)
-            setLoading(false)
-        } catch (err) {
-            toast("Catastrophic Error", { description: "Unable to fetch followers" })
-            console.error("Error fetching users:", err)
-            setLoading(false)
+            const response = await axios.get("/api/user/info");
+            setFollowers(response.data.followedBy);
+        } catch (error) {
+            toast("Catastrophic Error", {
+                description: "Unable to fetch followers",
+            });
+            console.error("Error fetching users:", error);
         }
-    }
+    }, []);
 
     const form = useForm<z.infer<typeof saveEventSchema>>({
         resolver: zodResolver(saveEventSchema),
@@ -98,37 +90,33 @@ export default function DynamicContent({ eventId, userId }: Props) {
             lastName: "",
         },
     })
-
-    async function fetchEvent(eventId: string) {
+    const fetchEvent = useCallback(async (eventId: string) => {
         try {
-            setLoading(true)
             await axios.get("/api/events/view/" + eventId).then((response) => {
                 if (!userId || (userId && response.data.author.id !== userId)) {
-                    router.replace("/event/" + eventId)
+                    router.replace("/event/" + eventId);
                 }
-                setEventInfo(response.data)
+                setEventInfo(response.data);
 
-                form.setValue("id", response.data.id)
-                form.setValue("title", response.data.title)
-                form.setValue("backgroundStyle", response.data.backgroundStyle)
-                form.setValue("address", response.data.address)
-                form.setValue("eventStart", new Date(response.data.eventStart))
-                form.setValue("eventEnd", new Date(response.data.eventEnd))
-                form.setValue("rsvpDuedate", new Date(response.data.rsvpDuedate))
-                form.setValue("description", response.data.description)
-                form.setValue("inviteVisibility", response.data.inviteVisibility)
-                form.setValue("eventType", response.data.eventType)
-                form.setValue("maxGuests", response.data.maxGuests)
+                form.setValue("id", response.data.id);
+                form.setValue("title", response.data.title);
+                form.setValue("backgroundStyle", response.data.backgroundStyle);
+                form.setValue("address", response.data.address);
+                form.setValue("eventStart", new Date(response.data.eventStart));
+                form.setValue("eventEnd", new Date(response.data.eventEnd));
+                form.setValue("rsvpDuedate", new Date(response.data.rsvpDuedate));
+                form.setValue("description", response.data.description);
+                form.setValue("inviteVisibility", response.data.inviteVisibility);
+                form.setValue("eventType", response.data.eventType);
+                form.setValue("maxGuests", response.data.maxGuests);
 
-                setEditing(true)
+                setEditing(true);
             })
         } catch (e) {
-            console.log(e)
-            toast("Catastrophic Error", { description: "Unable to find event" })
-        } finally {
-            setLoading(false)
+            console.log(e);
+            toast("Catastrophic Error", { description: "Unable to find event" });
         }
-    }
+    }, [form, router, userId]);
 
     async function onSubmit(values: z.infer<typeof saveEventSchema>) {
         try {
@@ -136,14 +124,15 @@ export default function DynamicContent({ eventId, userId }: Props) {
             const response = await axios.post("/api/events/save", values)
             toast("Event Saved", { description: "Event saved to your account" })
             form.setValue("id", response.data.id)
-            setEventInfo(response.data)
-            setEditing(true)
-            getFollowers()
+            setEventInfo(response.data);
+            setEditing(true);
+
+            await getFollowers();
         } catch (e) {
-            console.log(e)
-            toast("Catastrophic Error", { description: "Unable to save event" })
+            console.log(e);
+            toast("Catastrophic Error", { description: "Unable to save event" });
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
@@ -165,7 +154,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
         } catch (e) {
             console.log(e)
         } finally {
-            refresh()
+            await refresh()
         }
     }
 
@@ -186,7 +175,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
         } catch (e) {
             console.log(e)
         } finally {
-            refresh()
+            await refresh()
         }
     }
 
@@ -204,7 +193,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
             console.log(e)
             setWriteInStatus("error")
         } finally {
-            refresh()
+            await refresh()
         }
     }
 
@@ -222,7 +211,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                 description: "There was an error with adding RSVP. Check the console for more info.",
             })
         } finally {
-            refresh()
+            await refresh()
         }
     }
 
@@ -237,9 +226,47 @@ export default function DynamicContent({ eventId, userId }: Props) {
 		}
 	}
 
+    async function refresh() {
+        setLoading(true);
+
+        try {
+            if (currentEventId) {
+                await fetchEvent(currentEventId);
+                await getFollowers();
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
-        refresh()
-    }, [])
+        if (!currentEventId) {
+            return;
+        }
+
+        let cancelled = false;
+
+        async function loadInitialData() {
+            if (!currentEventId) {
+                return;
+            }
+
+            try {
+                await fetchEvent(currentEventId);
+                await getFollowers();
+            } finally {
+                if (!cancelled) {
+                    setLoading(false);
+                }
+            }
+        }
+
+        void loadInitialData();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [currentEventId, fetchEvent, getFollowers]);
 
     return (
         <>

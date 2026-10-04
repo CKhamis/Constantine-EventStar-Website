@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import Image from "next/image";
 import axios from "axios";
@@ -103,63 +103,6 @@ export default function DynamicContent({eventId, userId}: Props) {
         setCookie("guestsTutorial", false);
     }
 
-    async function refresh() {
-        setLoading(true);
-
-        await Promise.all([
-            axios.get("/api/events/view/" + eventId)
-                .then((response) => {
-                    setEventInfo(response.data);
-                    document.querySelector("#background")!.style.background = response.data.backgroundStyle;
-
-                    const invitedUser = response.data.RSVP.find((r: rsvp) => r.user.id === userId);
-
-                    if (invitedUser) {
-                        setRSVP(invitedUser);
-                        form.setValue("response", invitedUser.response);
-                        form.setValue("guests", invitedUser.guests);
-                    }
-                })
-                .catch((error) => {
-                    console.log(error.status);
-                    document.querySelector("#background")!.style.background = "black";
-                }),
-
-            axios.get("/api/user/info")
-                .then((response) => {
-                    setUserInfo(response.data);
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setUserInfo(null);
-                }),
-
-            axios.get(`/api/events/notify/get/${eventId}`)
-                .then((response) => {
-                    const notifyData: NoisyRSVP = response.data;
-                    setNotificationAmount(notifyData.notify_amount);
-                })
-                .catch((error) => {
-                    console.log(error);
-                })
-        ]);
-
-        setLoading(false);
-    }
-
-    async function submitForm(data: z.infer<typeof rsvpSchema>) {
-        setSubmitStatus('loading')
-        try {
-            await axios.post(`/api/events/rsvp/${eventId}`, {response: data.response, guests: data.guests, firstName: data.firstName, lastName: data.lastName})
-            setSubmitStatus('success')
-        } catch (e) {
-            console.log(e);
-            setSubmitStatus('error')
-        } finally {
-            refresh();
-        }
-    }
-
     const form = useForm<z.infer<typeof rsvpSchema>>({
         resolver: zodResolver(rsvpSchema),
         defaultValues: {
@@ -170,7 +113,65 @@ export default function DynamicContent({eventId, userId}: Props) {
         },
     })
 
+    const refresh = useCallback(async () => {
+        try{
+            try{
+                const response = await axios.get("/api/events/view/" + eventId);
+
+                setEventInfo(response.data);
+                // @ts-expect-error Fake error lol
+                document.querySelector("#background")!.style.background = response.data.backgroundStyle;
+
+                const invitedUser = response.data.RSVP.find((r: rsvp) => r.user.id === userId);
+
+                if (invitedUser) {
+                    setRSVP(invitedUser);
+                    form.setValue("response", invitedUser.response);
+                    form.setValue("guests", invitedUser.guests);
+                }
+            }catch(error){
+                console.log(error);
+                // @ts-expect-error Modifies DOM directly, but still works lol
+                document.querySelector("#background")!.style.background = "black";
+            }
+
+            try{
+                const response = await axios.get("/api/user/info");
+                setUserInfo(response.data);
+            }catch(error){
+                console.log(error);
+                setUserInfo(null);
+            }
+
+            try{
+                const response = await axios.get(`/api/events/notify/get/${eventId}`);
+                const notifyData: NoisyRSVP = response.data;
+                setNotificationAmount(notifyData.notify_amount);
+
+            }catch (error){
+                console.log(error);
+            }
+        } finally {
+            setLoading(false);
+            setMounted(true);
+        }
+    }, [eventId, userId, form]);
+
+    async function submitForm(data: z.infer<typeof rsvpSchema>) {
+        setSubmitStatus('loading')
+        try {
+            await axios.post(`/api/events/rsvp/${eventId}`, {response: data.response, guests: data.guests, firstName: data.firstName, lastName: data.lastName})
+            setSubmitStatus('success')
+        } catch (e) {
+            console.log(e);
+            setSubmitStatus('error')
+        } finally {
+            await refresh();
+        }
+    }
+
     async function updateNotification(amount: number) {
+        setLoading(true);
         try {
             await axios.post(`/api/events/notify/set/${eventId}`, {notificationAmount: amount})
                 .then((r: { data: string }) => {
@@ -187,7 +188,7 @@ export default function DynamicContent({eventId, userId}: Props) {
         } catch (e) {
             console.log(e);
         } finally {
-            refresh();
+            await refresh();
         }
     }
 
@@ -203,9 +204,8 @@ export default function DynamicContent({eventId, userId}: Props) {
     }
 
     useEffect(() => {
-        setMounted(true);
-        refresh();
-    }, []);
+        void refresh();
+    }, [refresh]);
 
     return (
         <>

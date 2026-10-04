@@ -1,6 +1,6 @@
 import {notificationFrequencySchema, verificationSchema} from "@/components/ValidationSchemas";
 import axios from "axios";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {Button} from "@/components/ui/button";
 import {useForm} from "react-hook-form";
@@ -73,22 +73,21 @@ export default function Step2({selectedDiscordId, enableNextAction}: Props) {
         }
     }
 
-    async function submitVerification(){
+    const submitVerification = useCallback(async () => {
         try{
-            setLoading(true);
-            const response = await axios.post('/api/user/notifications/providers/discord/sendVerification', {id: selectedDiscordId});
-            console.log(response.data);
+            await axios.post('/api/user/notifications/providers/discord/sendVerification', {id: selectedDiscordId});
         }catch(e){
             console.log(e)
         }finally {
             setLoading(false);
         }
-    }
+    }, [selectedDiscordId]);
 
     useEffect(() => {
         // Immediate send
-        submitVerification();
-    }, []);
+        setLoading(true);
+        void submitVerification();
+    }, [submitVerification]);
 
     if(state == 0){
         return (
