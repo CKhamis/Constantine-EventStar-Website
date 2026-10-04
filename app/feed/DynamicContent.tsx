@@ -3,7 +3,7 @@
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import AvatarIcon from "@/components/AvatarIcon";
 import axios from "axios";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import {userInfoResponse} from "@/app/api/user/info/route";
 import {format} from "date-fns";
@@ -37,73 +37,75 @@ export default function DynamicContent() {
         event: []
     });
     const [RSVPs, setRSVPs] = useState<EIResponse[]>([]);
-    const [recievedFollows, setRecievedFollows] = useState([]);
-    const [nextEvent, setNextEvent] = useState<EIResponse | null>();
+    const [receivedFollows, setReceivedFollows] = useState<FRResponse[]>([]);
+    const [nextEvent, setNextEvent] = useState<EIResponse | null>(null);
 
-    async function refresh(){
-        setLoading(true);
-        await axios.get("/api/user/info")
-            .then((response) => {
+    const refresh = useCallback(async () => {
+        try{
+            try{
+                const response = await axios.get("/api/user/info");
                 setUserInfo(response.data);
-            })
-            .catch((error) => {
+            }catch(error){
                 console.log(error);
-            });
+            }
 
-        await axios.get("/api/events/invited")
-            .then((response) => {
+            try{
+                const response = await axios.get("/api/events/invited")
                 setRSVPs(response.data);
-            })
-            .catch((error) => {
+            }catch(error){
                 console.log(error);
-            });
+            }
 
-        await axios.get("/api/events/next")
-            .then((response) => {
+            try{
+                const response = await axios.get("/api/events/next")
                 if(response.data.message){
                     setNextEvent(null)
                 }else{
                     setNextEvent(response.data);
                 }
-            })
-            .catch((error) => {
+            }catch(error){
                 console.log(error);
-            });
+            }
 
-        await axios.get("/api/user/connections/incoming")
-            .then((response) => {
-                setRecievedFollows(response.data);
-            })
-            .catch((error) => {
+            try{
+                const response = await axios.get("/api/user/connections/incoming")
+                setReceivedFollows(response.data);
+            }catch(error){
                 console.log(error);
-            });
-
-        setLoading(false);
-    }
+            }
+        }finally {
+            setLoading(false);
+        }
+    }, []);
 
     async function respondFR(response:boolean, senderId:string){
-        await axios.post("/api/user/connections/respond", {response: response, senderId: senderId})
-            .then(() => {
-                refresh()
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        setLoading(true);
+
+        try{
+            await axios.post("/api/user/connections/respond", {response: response, senderId: senderId});
+
+            await refresh();
+        } catch(error){
+            console.log(error);
+            setLoading(false);
+        }
     }
 
     async function updateRSVP(eventId: string, response: string){
         setLoading(true);
         try{
-            await axios.post(`/api/events/rsvp/${eventId}`, {response: response})
-                .finally(refresh);
+            await axios.post(`/api/events/rsvp/${eventId}`, {response: response});
+
+            await refresh();
         }catch (e){
-            console.log(e)
+            console.log(e);
+            setLoading(false);
         }
     }
 
     useEffect(() => {
-        refresh()
-    }, []);
+        void refresh();
+    }, [refresh]);
 
     return (
         <>
@@ -188,8 +190,8 @@ export default function DynamicContent() {
                                 </div>
                             </div>
                         </div>
-                        {recievedFollows.length == 0? <></>: <p className="font-bold mt-6 px-0">Follow requests</p>}
-                        {recievedFollows.map((followRequest:FRResponse) => (
+                        {receivedFollows.length == 0? <></>: <p className="font-bold mt-6 px-0">Follow requests</p>}
+                        {receivedFollows.map((followRequest:FRResponse) => (
                             <div className="flex flex-row items-center justify-between mb-3 px-0" key={followRequest.id}>
                                 <div className="flex flex-row justify-start items-center mt-5 gap-3">
                                     <div>

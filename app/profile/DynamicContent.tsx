@@ -4,7 +4,7 @@ import AvatarIcon from "@/components/AvatarIcon";
 import {Button} from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import axios from "axios";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {userInfoResponse} from "@/app/api/user/info/route";
 import {EIResponse} from "@/app/api/events/invited/route";
 import {LoadingIcon} from "@/components/LoadingIcon";
@@ -42,86 +42,97 @@ export default function DynamicContent({session}: Props) {
     const [notificationResponse, setNotificationResponse] = useState<number>(0);
     const [discordInfo, setDiscordInfo] = useState<DiscordUsernameSearchResult | null>(null);
 
-    async function refresh(){
-        setLoading(true);
-        await axios.get("/api/user/info")
-            .then((response) => {
+    const refresh = useCallback(async () => {
+        try{
+            try{
+                const response = await axios.get("/api/user/info");
+
                 setUserInfo(response.data);
-                return response.data;
-            })
-            .then((data) => {
-                if(data.discordId){
-                    axios.post("/api/user/notifications/providers/discord/getUsers", {list: [data.discordId]})
-                        .then((response) => {
-                            if(response.data.results.length > 0){
-                                setDiscordInfo(response.data.results[0]);
-                            }
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                        });
+
+                if(response.data.discordId){
+                    const discordStats = await axios.post("/api/user/notifications/providers/discord/getUsers", {list: [response.data.discordId]});
+
+                    if(discordStats.data.results.length > 0){
+                        setDiscordInfo(discordStats.data.results[0]);
+                    }
                 }
-            })
-            .catch((error) => {
+            } catch(error){
                 console.log(error);
-            });
+            }
 
-        await axios.get("/api/events/authored")
-            .then((response) => {
+            try{
+                const response = await axios.get("/api/events/authored");
+
                 setRSVPs(response.data);
-            })
-            .catch((error) => {
+            } catch(error){
                 console.log(error);
-            });
+            }
 
-        await axios.get("/api/user/connections/incoming")
-            .then((response) => {
+            try{
+                const response = await axios.get("/api/user/connections/incoming");
+
                 setReceivedFollows(response.data);
-            })
-            .catch((error) => {
+            }catch(error){
                 console.log(error);
-            });
-
-        setLoading(false);
-    }
+            }
+        }finally {
+            setLoading(false);
+        }
+    }, []);
 
     async function respondFR(response:boolean, senderId:string){
-        await axios.post("/api/user/connections/respond", {response: response, senderId: senderId})
-            .then(() => {
-                refresh();
-            })
-            .catch((error) => {
-                console.log(error);
+        setLoading(true);
+
+        try {
+            await axios.post("/api/user/connections/respond", {
+                response,
+                senderId,
+                guests: 0,
             });
+
+            toast(
+                "Request" + (response ? " Accepted" : " Rejected"),
+                {description: "Request deleted"}
+            );
+
+            await refresh();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async function removeFollower(senderId:string){
-        await axios.post("/api/user/connections/delete/follower", {id: senderId})
-            .then(() => {
-                refresh()
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        setLoading(true);
+
+        try{
+            await axios.post("/api/user/connections/delete/follower", {id: senderId});
+
+            await refresh();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async function removeFollowing(senderId:string){
-        await axios.post("/api/user/connections/delete/following", {id: senderId})
-            .then(() => {
-                refresh()
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        setLoading(true);
+
+        try{
+            await axios.post("/api/user/connections/delete/following", {id: senderId});
+
+            await refresh();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async function updateRSVP(eventId: string, response: string){
         setLoading(true);
         try{
-            await axios.post(`/api/events/rsvp/${eventId}`, {response: response})
-                .finally(refresh);
-        }catch (e){
-            console.log(e)
+            await axios.post(`/api/events/rsvp/${eventId}`, {response: response});
+
+            await refresh();
+        } catch (error) {
+            console.log(error);
         }
     }
 
@@ -149,13 +160,12 @@ export default function DynamicContent({session}: Props) {
             console.log(e);
         } finally {
             await refresh();
-            setLoading(false);
         }
     }
 
     useEffect(() => {
-        refresh()
-    }, []);
+        void refresh()
+    }, [refresh]);
 
     if(userInfo == null){
         return (

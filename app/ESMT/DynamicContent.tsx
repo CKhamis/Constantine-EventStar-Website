@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Image from "next/image";
@@ -12,6 +12,7 @@ import {esmtUser} from "@/app/api/ESMT/user/all/route";
 import UserMerge from "@/app/ESMT/UserMerge";
 import DiscordDashboard from "@/app/ESMT/DiscordDashboard";
 import {DiscordLogResponse} from "@/app/api/ESMT/providers/discord/logs/[page]/route";
+import {toast} from "sonner";
 
 interface Props {
     id: string,
@@ -25,45 +26,59 @@ export default function DynamicContent({id, noisyUrl}: Props) {
     const [noisyLog, setNoisyLog] = useState<DiscordLogResponse | null>(null);
     const noisyEnabled:boolean = noisyUrl !== undefined;
 
-    async function refresh(){
-        setLoading(true);
-        await axios.get("/api/ESMT/user/all")
-            .then((response) => {
-                // Event exists, but need to know if user was invited
-                setUserList(response.data);
-            })
-            .catch((error) => {
-                console.log(error.status); // event not found, access denied, or need login
-            });
-        setLoading(false);
-    }
-
-    async function getNoisyLogs(){
-        setLoading(true);
-        await axios.get(`/api/ESMT/providers/discord/logs/${logPage}`)
-            .then((response) => {
-                setNoisyLog(response.data);
-            })
-            .catch((error) => {
-                console.log(error.status);
-            });
-        setLoading(false);
-    }
-
-    useEffect(() => {
-        refresh()
-    }, []);
-
-    useEffect(() => {
-        if (!noisyEnabled) return;
-        getNoisyLogs();
-    }, [logPage, noisyEnabled]);
-
     // Search
     const [searchTerm, setSearchTerm] = useState('')
     const filteredUsers = userList.filter(user =>
         `${user.name}`.toLowerCase().includes(searchTerm.toLowerCase())
     )
+
+
+    const refresh = useCallback(async () => {
+        try{
+            try{
+                const response = await axios.get("/api/ESMT/user/all");
+
+                if (response.data.message) {
+                    // Event exists, but need to know if user was invited
+                    setUserList(response.data);
+                } else {
+                    toast("Issue Getting Logs", {
+                        description: "Please check if you are logged in.",
+                    });
+                }
+            }catch (error){
+                console.log(error);
+            }
+
+            if (noisyEnabled) {
+                try {
+                    const response = await axios.get(`/api/ESMT/providers/discord/logs/${logPage}`);
+
+                    if (response.data) {
+                        setNoisyLog(response.data);
+
+                    } else {
+                        toast("Issue Getting Logs", {
+                            description: "Please check if you are logged in.",
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error loading Discord logs:", error);
+
+                    toast("Issue Getting Logs", {
+                        description: "Please check if you are logged in.",
+                    });
+                }
+            }
+
+        }finally {
+            setLoading(false);
+        }
+    }, [logPage, noisyEnabled]);
+
+    useEffect(() => {
+        void refresh();
+    }, [refresh]);
 
     return (
         <div className="container">
