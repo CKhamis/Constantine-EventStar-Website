@@ -3,7 +3,7 @@ import axios from "axios";
 import {useCallback, useEffect, useState} from "react";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {Button} from "@/components/ui/button";
-import {useForm} from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import z from "zod";
 import {InputOTP, InputOTPGroup, InputOTPSlot} from "@/components/ui/input-otp";
@@ -19,7 +19,7 @@ export type Props = {
 }
 
 export default function Step2({selectedDiscordId, enableNextAction}: Props) {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [state, setState] = useState<number>(0);
     const [notificationResponse, setNotificationResponse] = useState<number>(0);
 
@@ -29,6 +29,11 @@ export default function Step2({selectedDiscordId, enableNextAction}: Props) {
             vn: "",
         },
         mode: "onSubmit",
+    });
+
+    const vn = useWatch({
+        control: form.control,
+        name: "vn",
     });
 
     const freqForm = useForm<z.infer<typeof notificationFrequencySchema>>({
@@ -85,7 +90,6 @@ export default function Step2({selectedDiscordId, enableNextAction}: Props) {
 
     useEffect(() => {
         // Immediate send
-        setLoading(true);
         void submitVerification();
     }, [submitVerification]);
 
@@ -132,7 +136,7 @@ export default function Step2({selectedDiscordId, enableNextAction}: Props) {
                                 <Button
                                     variant="default"
                                     type="submit"
-                                    disabled={form.watch("vn")?.length !== 4 || loading}
+                                    disabled={vn?.length !== 4 || loading}
                                 >
                                     Submit
                                 </Button>

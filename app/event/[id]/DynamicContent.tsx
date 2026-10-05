@@ -64,11 +64,10 @@ type rsvp = {
 
 export default function DynamicContent({eventId, userId}: Props) {
     const [loading, setLoading] = useState(true);
-    const [RSVP, setRSVP] = useState<rsvp | null>();
     const [eventInfo, setEventInfo] = useState<EVResponse | null>();
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [userInfo, setUserInfo] = useState<userInfoResponse | null>(null);
-    const [cookies, setCookie, removeCookie] = useCookies(['guestsTutorial']);
+    const [cookies, setCookie] = useCookies(['guestsTutorial']);
     const [notificationAmount, setNotificationAmount] = useState<number | null>(null)
 
 	const [pendingSubmit, setPendingSubmit] = useState<z.infer<typeof rsvpSchema> | null>(null);
@@ -125,7 +124,6 @@ export default function DynamicContent({eventId, userId}: Props) {
                 const invitedUser = response.data.RSVP.find((r: rsvp) => r.user.id === userId);
 
                 if (invitedUser) {
-                    setRSVP(invitedUser);
                     form.setValue("response", invitedUser.response);
                     form.setValue("guests", invitedUser.guests);
                 }
