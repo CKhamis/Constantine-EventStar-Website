@@ -27,7 +27,7 @@ type RequestReport = {
 
 
 // This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     if(!process.env.WEBSPY_URL || process.env.WEBSPY_URL === "" || process.env.WEBSPY_URL === undefined){
         return NextResponse.next();
     }
