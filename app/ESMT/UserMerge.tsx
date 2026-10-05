@@ -88,8 +88,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 		} catch (err) {
 			console.error(err);
 
-			const message =
-				err.response?.data?.message || "There was a problem merging users.";
+			const message = "There was a problem merging users.";
 
 			toast.error(message);
 		} finally {
