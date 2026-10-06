@@ -27,7 +27,7 @@ export type DiscordLogResponse = {
  * @param params
  * @constructor
  */
-export async function GET(request: Request, { params }: { params: { page: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ page: string }> }) {
     const session =  await auth();
 
     if(!session || !session.user){
@@ -39,10 +39,10 @@ export async function GET(request: Request, { params }: { params: { page: string
             return NextResponse.json("Noisy not set up", { status: 500 });
         }
 
+        const { page } = await params;
+
         // Forward response from Noisy
-        const response = await axios.get<DiscordLogResponse>(`${process.env.NOISY_URL}/get_logs/${params.page}`,);
-
-
+        const response = await axios.get<DiscordLogResponse>(`${process.env.NOISY_URL}/get_logs/${page}`,);
 
         return NextResponse.json(response.data, { status: 200 });
 

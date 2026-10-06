@@ -24,7 +24,7 @@ export type NoisyGuest = {
     /// 2: event created, 1 hour before RSVP due date, 1 day before event start, 1 hour before event start
     /// 3: event created, 1 day before RSVP due date, 1 hour before RSVP due date, 2 days before event start, 1 day before event start, 1 hour before event start
     notify_amount: number,
-    responded: 'Going' | 'NotGoing' | 'NoResponse'
+    responded: 'YES' | 'MAYBE' | 'NO_RESPONSE'
 }
 
 export async function POST(request: NextRequest) {
@@ -233,7 +233,7 @@ export async function POST(request: NextRequest) {
 							/// 2: event created, 1 hour before RSVP due date, 1 day before event start, 1 hour before event start
 							/// 3: event created, 1 day before RSVP due date, 1 hour before RSVP due date, 2 days before event start, 1 day before event start, 1 hour before event start
 							notify_amount: event.author.discordConnection.defaultFreq,
-							responded: 'NoResponse'
+							responded: 'NO_RESPONSE'
 						});
 					}
 

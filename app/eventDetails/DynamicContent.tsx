@@ -40,7 +40,7 @@ export interface Props {
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false })
 
 export default function DynamicContent({ eventId, userId }: Props) {
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(() => Boolean(eventId))
     const [editing, setEditing] = useState(false)
     const router = useRouter()
     const [eventInfo, setEventInfo] = useState<EVResponse | null>(null)
@@ -647,7 +647,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                         <FormLabel>Attendance</FormLabel>
                                                         <Select onValueChange={field.onChange} value={field.value}>
                                                             <FormControl>
-                                                                <SelectTrigger>
+                                                                <SelectTrigger className="w-full">
                                                                     <SelectValue placeholder="Select RSVP status" />
                                                                 </SelectTrigger>
                                                             </FormControl>
