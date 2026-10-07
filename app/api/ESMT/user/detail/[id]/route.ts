@@ -52,7 +52,6 @@ const optionalUserSelect = {
     discordConnection: {
         select: {
             id: true,
-            name: true,
             discordId: true,
         },
     },
@@ -79,6 +78,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const userId = resolvedParams.id
 
     try{
+        console.log(userId);
+
         const optionalUser = await prisma.user.findUnique({
             where: { id: userId },
             select: optionalUserSelect,

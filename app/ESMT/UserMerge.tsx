@@ -43,7 +43,9 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 
 
         } catch (err) {
-            console.error(err);
+			toast("Critical Error", {
+				description: "User details was unable to be retrieved.",
+			});            console.error(err);
             setHost(null);
         }
     };

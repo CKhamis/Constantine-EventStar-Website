@@ -37,11 +37,11 @@ export default function DynamicContent({id, noisyUrl}: Props) {
         try{
             try{
                 const response = await axios.get("/api/ESMT/user/all");
-
-                if (response.data.message) {
+                if (response.data) {
                     // Event exists, but need to know if user was invited
                     setUserList(response.data);
                 } else {
+                    console.log("rat6")
                     toast("Issue Getting Logs", {
                         description: "Please check if you are logged in.",
                     });

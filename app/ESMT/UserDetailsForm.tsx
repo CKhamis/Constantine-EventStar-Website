@@ -47,7 +47,7 @@ export default function UserDetailsForm({id, user, refresh}:Props){
     return (
         <Dialog key={user.id} open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-                <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-accent cursor-pointer">
+                <div className="flex items-center space-x-4 p-2 rounded-none hover:bg-accent cursor-pointer">
                     <AvatarIcon name={user.name} image={user.image} />
                     <div>
                         <p className="text-sm font-medium leading-none">{user.name}</p>
