@@ -57,9 +57,9 @@ type rsvp = {
     user: {
         email: string,
         name: string,
-        image: string
+        image: string,
         id: string,
-    }
+    } | null
 }
 
 export default function DynamicContent({eventId, userId}: Props) {
@@ -118,10 +118,27 @@ export default function DynamicContent({eventId, userId}: Props) {
                 const response = await axios.get("/api/events/view/" + eventId);
 
                 setEventInfo(response.data);
-                // @ts-expect-error Fake error lol
-                document.querySelector("#background")!.style.background = response.data.backgroundStyle;
 
-                const invitedUser = response.data.RSVP.find((r: rsvp) => r.user.id === userId);
+
+                const background = response.data.backgroundStyle;
+
+                console.log("Saved background:", background);
+
+                const element = document.querySelector("#background") as HTMLElement | null;
+
+                if (element) {
+                    element.style.background = background;
+
+                    console.log("Inline background:", element.style.background);
+                    console.log(
+                        "Computed background:",
+                        getComputedStyle(element).background
+                    );
+                }
+                // @ts-expect-error Fake error lol
+                document.querySelector("#background")!.style.background = response.data.backgroundStyle; //todo: this needs to be fixed!
+
+                const invitedUser = response.data.RSVP.find((r: rsvp) => r.user?.id === userId);
 
                 if (invitedUser) {
                     form.setValue("response", invitedUser.response);
@@ -129,8 +146,8 @@ export default function DynamicContent({eventId, userId}: Props) {
                 }
             }catch(error){
                 console.log(error);
-                // @ts-expect-error Modifies DOM directly, but still works lol
-                document.querySelector("#background")!.style.background = "black";
+                // // @ts-expect-error Modifies DOM directly, but still works lol
+                //document.querySelector("#background")!.style.background = "black";
             }
 
             try{
@@ -237,7 +254,7 @@ export default function DynamicContent({eventId, userId}: Props) {
                                     <>
                                         <div className="flex flex-col lg:flex-row justify-between items-center mb-4 lg:mb-0 mt-4">
                                             <p className="font-bold text-4xl">{eventInfo.title}</p>
-                                            <div className="flex flex-row items-center justify-start lg:justify-end gap-3 mt-5 lg:m-0 overflow-x-auto max-w-full flex-nowrap">
+                                            <div className="flex flex-row items-center justify-start lg:justify-end gap-3 mt-5 lg:m-0 overflow-x-auto lg:overflow-x-visible max-w-full flex-nowrap">
 	                                            <div className="lg:hidden">
 		                                            <Drawer repositionInputs={false}>
 			                                            <DrawerTrigger asChild>

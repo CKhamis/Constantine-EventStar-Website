@@ -192,7 +192,7 @@ export default function RsvpForm({
 					</p>
 
 					<div className="flex flex-row gap-4 items-center justify-start w-full">
-						<Button type="submit" className="w-full" disabled={submitStatus === "loading" || isExpired}>
+						<Button type="submit" className="" disabled={submitStatus === "loading" || isExpired}>
 							{submitStatus === "loading" ? "Submitting..." : "Save"}
 						</Button>
 						{submitStatus === "success" && <Check className="h-4 w-4 text-green-500"/>}
