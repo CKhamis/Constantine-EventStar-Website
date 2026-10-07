@@ -122,21 +122,13 @@ export default function DynamicContent({eventId, userId}: Props) {
 
                 const background = response.data.backgroundStyle;
 
-                console.log("Saved background:", background);
+                // console.log("Saved background:", background);
 
                 const element = document.querySelector("#background") as HTMLElement | null;
 
                 if (element) {
                     element.style.background = background;
-
-                    console.log("Inline background:", element.style.background);
-                    console.log(
-                        "Computed background:",
-                        getComputedStyle(element).background
-                    );
                 }
-                // @ts-expect-error Fake error lol
-                document.querySelector("#background")!.style.background = response.data.backgroundStyle; //todo: this needs to be fixed!
 
                 const invitedUser = response.data.RSVP.find((r: rsvp) => r.user?.id === userId);
 
