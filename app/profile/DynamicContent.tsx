@@ -348,7 +348,7 @@ export default function DynamicContent({session}: Props) {
                                         <div className="flex flex-row justify-start items-center gap-3">
                                             <Image src="/icons/COW Logo.svg" alt="Discord Logo" height={50} width={50} />
                                             <div>
-                                                <CardTitle className="text-2xl">Discord</CardTitle>
+                                                <CardTitle className="text-2xl">Discord Costifications (Beta)</CardTitle>
                                                 {!userInfo.discordConnection && <p className="text-muted-foreground">Get notifications straight to your DM&#39;s</p>}
                                                 {userInfo.discordConnection && <p className="text-muted-foreground">Connected on: {format(new Date(userInfo.discordConnection.createdAt), "M/dd/yyyy hh:mm a")}</p>}
                                             </div>

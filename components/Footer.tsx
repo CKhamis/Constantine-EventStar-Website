@@ -10,7 +10,7 @@ export default function Footer(){
                 <div className="mt-4">
                     <Image src={`/icons/Constantine Logo.svg`} alt={`Constantine Logo`} width={40} height={40}
                            className="mb-4"/>
-                    <p>Constantine EventStar is developed by Constantine Khamis. Linux support by Cory Robertson</p>
+                    <p>EventStar is designed & developed by Constantine Khamis.</p>
                 </div>
                 <div></div>
                 <div className="mt-4">

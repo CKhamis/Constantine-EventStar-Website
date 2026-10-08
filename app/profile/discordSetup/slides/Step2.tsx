@@ -99,7 +99,7 @@ export default function Step2({selectedDiscordId, enableNextAction}: Props) {
                 {loading ? (
                     <p className="text-4xl font-bold">Now Loading</p>
                 ) : (
-                    <div className="flex flex-col gap-5 items-start w-50">
+                    <div className="flex flex-col gap-5 items-start w-[50%]">
                         <p className="text-4xl font-bold">Verify Your Discord Account</p>
                         <p>You will receive a randomized number in your DMs. This number will be valid for the next 20 mins. Paste that number below:</p>
 
