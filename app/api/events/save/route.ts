@@ -1,9 +1,31 @@
-import { PrismaClient } from "@prisma/client"
+import prisma from "@/prisma/client";
 import { type NextRequest, NextResponse } from "next/server"
 import { saveEventSchema } from "@/components/ValidationSchemas"
 import { auth } from "@/auth"
+import axios from "axios";
+import {format} from "date-fns";
+import z from "zod";
 
-const prisma = new PrismaClient()
+export type NoisyEvent = {
+	event_id: string,
+	start_time: string,
+	end_time: string,
+	rsvp_due: string,
+	event_type: string,
+	event_title: string,
+	guest_list: NoisyGuest[],
+	notify_threads_spawned: boolean,
+}
+
+export type NoisyGuest = {
+    user_id: string,
+    /// 0: no notifications at all
+    /// 1: event created, 1 hour before event start
+    /// 2: event created, 1 hour before RSVP due date, 1 day before event start, 1 hour before event start
+    /// 3: event created, 1 day before RSVP due date, 1 hour before RSVP due date, 2 days before event start, 1 day before event start, 1 hour before event start
+    notify_amount: number,
+    responded: 'YES' | 'MAYBE' | 'NO_RESPONSE'
+}
 
 export async function POST(request: NextRequest) {
     const session = await auth()
@@ -22,7 +44,7 @@ export async function POST(request: NextRequest) {
     const validation = saveEventSchema.safeParse(body)
 
     if (!validation.success) {
-        return NextResponse.json(validation.error.format(), { status: 400 })
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {
@@ -78,9 +100,64 @@ export async function POST(request: NextRequest) {
                         },
                     },
                 },
-            })
+            });
 
-            return NextResponse.json(updatedEvent, { status: 202 })
+            const event = await prisma.event.findFirst({
+                where: {
+                    id: body.id,
+                },
+                include: {
+                    author: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            image: true,
+                            discordConnection: true
+                        },
+                    },
+                    RSVP: {
+                        select: {
+                            id: true,
+                            response: true,
+                            guests: true,
+                            firstName: true,
+                            lastName: true,
+                            user: {
+                                select: {
+                                    name: true,
+                                    email: true,
+                                    image: true,
+                                    id: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+			// Is Noisy enabled globally
+			if (process.env.NOISY_URL) {
+				try {
+					const noisyPayload: NoisyEvent = {
+						event_id: body.id,
+						start_time: formatTimestampNoTZ(new Date(updatedEvent.eventStart)),
+						end_time: formatTimestampNoTZ(new Date(updatedEvent.eventEnd)),
+						rsvp_due: formatTimestampNoTZ(new Date(updatedEvent.rsvpDuedate)),
+						event_type: updatedEvent.eventType,
+						event_title: updatedEvent.title,
+						guest_list: [],
+						notify_threads_spawned: false,
+					};
+
+					await axios.post(`${process.env.NOISY_URL}/new_event`, noisyPayload);
+				} catch (noisyError) {
+					console.error("Noisy notification failed:", noisyError);
+				}
+			}
+
+            return NextResponse.json(event, { status: 202 });
+
         } else {
             const newEvent = await prisma.event.create({
                 data: {
@@ -119,6 +196,7 @@ export async function POST(request: NextRequest) {
                             name: true,
                             email: true,
                             image: true,
+                            discordConnection: true
                         },
                     },
                     RSVP: {
@@ -139,12 +217,60 @@ export async function POST(request: NextRequest) {
                         },
                     },
                 },
-            })
+            });
 
-            return NextResponse.json(event, { status: 201 })
-        }
-    } catch (e) {
-        console.error(e)
-        return NextResponse.json({ message: "An error occurred" }, { status: 500 })
-    }
+			// Is Noisy enabled
+			if (process.env.NOISY_URL) {
+				try {
+					const guestList: NoisyGuest[] = [];
+
+					if (event?.author.discordConnection) {
+
+						guestList.push({
+							user_id: event.author.discordConnection.discordId,
+							/// 0: no notifications at all
+							/// 1: event created, 1 hour before event start
+							/// 2: event created, 1 hour before RSVP due date, 1 day before event start, 1 hour before event start
+							/// 3: event created, 1 day before RSVP due date, 1 hour before RSVP due date, 2 days before event start, 1 day before event start, 1 hour before event start
+							notify_amount: event.author.discordConnection.defaultFreq,
+							responded: 'NO_RESPONSE'
+						});
+					}
+
+					const noisyPayload: NoisyEvent = {
+						event_id: newEvent.id,
+						start_time: formatTimestampNoTZ(new Date(newEvent.eventStart)),
+						end_time: formatTimestampNoTZ(new Date(newEvent.eventEnd)),
+						rsvp_due: formatTimestampNoTZ(new Date(newEvent.rsvpDuedate)),
+						event_type: newEvent.eventType,
+						event_title: newEvent.title,
+						guest_list: guestList,
+						notify_threads_spawned: false,
+					};
+
+					await axios.post(`${process.env.NOISY_URL}/new_event`, noisyPayload);
+				} catch (noisyError){
+					console.error("Noisy notification failed:", noisyError);
+				}
+			}
+
+			return NextResponse.json(event, { status: 201 });
+		}
+	} catch (e) {
+		console.error(e)
+		return NextResponse.json({ message: "An error occurred" }, { status: 500 })
+	}
+}
+
+export function formatTimestampNoTZ(date: Date): string {
+    // Base ISO without timezone
+    const base = format(date, "yyyy-MM-dd'T'HH:mm:ss");
+
+    // Milliseconds (3 digits)
+    const ms = format(date, "SSS");
+
+    // Pad to 9 digits (fake nanoseconds)
+    const nano = ms.padEnd(9, "0");
+
+    return `${base}.${nano}`;
 }

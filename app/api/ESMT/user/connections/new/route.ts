@@ -1,14 +1,13 @@
-import {PrismaClient} from '@prisma/client';
+import prisma from "@/prisma/client";
 import {NextRequest, NextResponse} from "next/server";
 import {cuidSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
-
-
-const prisma = new PrismaClient();
+import z from "zod";
 
 export async function POST(request: NextRequest){
     const session =  await auth();
 
+    // @ts-expect-error The type here is inaccurate, the actual type in JS works
     if(!session || !session.user || session.user.role !== "OWNER" || !session.user.id){
         return NextResponse.json("Approved login required", {status: 401});
     }
@@ -17,7 +16,7 @@ export async function POST(request: NextRequest){
     const validation = cuidSchema.safeParse(body);
 
     if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {

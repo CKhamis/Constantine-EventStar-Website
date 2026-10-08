@@ -13,7 +13,7 @@ import EmailForm from "@/app/tutorial/slides/EmailForm";
 import FollowPrompt from "@/app/tutorial/slides/FollowPrompt";
 import Final from "@/app/tutorial/slides/Final";
 
-export type Slide = {
+type Slide = {
     backAllowed: boolean,
     forwardAllowed: boolean,
     content: React.ReactNode,
@@ -71,7 +71,7 @@ export default function DynamicContent() {
     }
 
     return (
-        <div className="w-100" style={{
+        <div className="w-full" style={{
             backgroundImage: `url('/tiles/logoTiles.svg')`,
             backgroundSize: '120px',
         }}>

@@ -10,7 +10,6 @@ const optionalUserSelect = {
     email: true,
     image: true,
     phoneNumber: true,
-    discordId: true,
     event: {
         select: {
             id: true,
@@ -50,6 +49,12 @@ const optionalUserSelect = {
             response: true,
         },
     },
+    discordConnection: {
+        select: {
+            id: true,
+            discordId: true,
+        },
+    },
 } satisfies Prisma.UserSelect;
 
 export type ESMTUserDetails = Prisma.UserGetPayload<{
@@ -73,6 +78,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const userId = resolvedParams.id
 
     try{
+        console.log(userId);
+
         const optionalUser = await prisma.user.findUnique({
             where: { id: userId },
             select: optionalUserSelect,

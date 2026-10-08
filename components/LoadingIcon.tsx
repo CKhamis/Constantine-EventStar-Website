@@ -1,5 +1,5 @@
 import Image from "next/image";
-import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
 
 export function LoadingIcon() {
     return (
@@ -8,13 +8,10 @@ export function LoadingIcon() {
                 <CardHeader>
 
                 </CardHeader>
-                <CardContent className="flex flex-col items-center justify-center">
+                <CardContent className="flex flex-col items-center justify-center mb-5">
                     <Image src="/agent/loading.gif" alt="loading" width={400} height={400} unoptimized={true} />
                     <p className="text-4xl font-bold text-center">Now Loading</p>
                 </CardContent>
-                <CardFooter>
-
-                </CardFooter>
             </Card>
 
         </div>

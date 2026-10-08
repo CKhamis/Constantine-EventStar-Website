@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from "@/prisma/client";
+import {DiscordConnection} from '@prisma/client';
 import {NextResponse} from "next/server";
 import {auth} from "@/auth";
-
-const prisma = new PrismaClient();
 
 export type userInfoResponse = {
     createdAt: Date;
@@ -17,9 +16,10 @@ export type userInfoResponse = {
     newEventEmails: boolean,
     phoneNumber: string,
     role: string,
-    tutorial: boolean
-    updatedAt: Date
-    event: Event[]
+    tutorial: boolean,
+    updatedAt: Date,
+    event: Event[],
+    discordConnection: DiscordConnection | null,
 }
 
 export async function GET(){
@@ -30,7 +30,7 @@ export async function GET(){
     }
 
     try{
-        const user = await prisma.user.findFirstOrThrow({
+        const user = await prisma.user.findUniqueOrThrow({
             where: {
                 id: session.user.id
             },
@@ -53,10 +53,18 @@ export async function GET(){
                         phoneNumber: true,
                     }
                 },
-                event: true
+                event: true,
+                discordConnection: true
             },
         });
-        return NextResponse.json(user, {status: 201});
+
+        return NextResponse.json(
+            {
+                ...user,
+                discordId: user.discordConnection?.discordId ?? null,
+            },
+            { status: 200 }
+        );
 
     }catch(e){
         // This should never happen

@@ -1,9 +1,29 @@
-import { PrismaClient } from "@prisma/client"
+import prisma from "@/prisma/client";
 import { type NextRequest, NextResponse } from "next/server"
 import {esmtMergeFormSchema} from "@/components/ValidationSchemas"
 import { auth } from "@/auth"
+import z from "zod";
+import {Prisma} from "@prisma/client";
 
-const prisma = new PrismaClient()
+const userInfo = {
+	id: true,
+	name: true,
+	email: true,
+	phoneNumber: true,
+	event: true,
+	rsvp: true,
+	following: true,
+	followedBy: true,
+	accounts: true,
+	recievedRequests: true,
+	sentRequests: true,
+	discordConnection: {
+		select: {
+			id: true,
+			discordId: true,
+		},
+	},
+} satisfies Prisma.UserSelect;
 
 /**
  * Very powerful endpoint that combines two users. This includes accounts, RSVPs
@@ -22,7 +42,7 @@ export async function POST(request: NextRequest) {
     const validation = esmtMergeFormSchema.safeParse(body)
 
     if (!validation.success) {
-        return NextResponse.json(validation.error.format(), { status: 400 })
+		return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
 	if(body.hostId === body.secondaryId){
@@ -36,39 +56,13 @@ export async function POST(request: NextRequest) {
 			    where: {
 				    id: body.hostId
 			    },
-			    select:{
-					id: true,
-				    name: true,
-				    email: true,
-				    discordId: true,
-				    phoneNumber: true,
-				    event: true,
-				    rsvp: true,
-				    following: true,
-				    followedBy: true,
-				    accounts: true,
-				    recievedRequests: true,
-				    sentRequests: true,
-			    }
+			    select: userInfo,
 		    }),
 		    prisma.user.findUniqueOrThrow({
 			    where: {
 				    id: body.secondaryId
 			    },
-			    select:{
-				    id: true,
-				    name: true,
-				    email: true,
-				    discordId: true,
-				    phoneNumber: true,
-				    event: true,
-				    rsvp: true,
-				    following: true,
-				    followedBy: true,
-				    accounts: true,
-				    recievedRequests: true,
-				    sentRequests: true,
-			    }
+			    select: userInfo
 		    })
 	    ])
 
@@ -76,30 +70,70 @@ export async function POST(request: NextRequest) {
 		    // Transaction for an all-or-nothing procedure
 		    await prisma.$transaction(async (tx) => {
 
-			    // 1. Update host's basic fields
+				// Handle Discord merge decision
+				if(body.discord === "HOST"){
+
+					// Delete second user's connection if exists
+					if (secondary.discordConnection) {
+						await tx.discordConnection.delete({
+							where: { id: secondary.discordConnection.id }
+						});
+					}
+				}else if(body.discord === "SECOND"){
+
+					// If host already has a connection, remove it
+					if (host.discordConnection) {
+						await tx.discordConnection.delete({
+							where: { id: host.discordConnection.id }
+						});
+					}
+
+					// Transfer ownership of Discord connection to host
+					if (secondary.discordConnection) {
+						await tx.discordConnection.update({
+							where: { id: secondary.discordConnection.id },
+							data: { userId: host.id }
+						});
+					}
+				}else if (body.discord === "NEITHER") {
+					// Remove both connections regardless
+
+					if (host.discordConnection) {
+						await tx.discordConnection.delete({
+							where: { id: host.discordConnection.id }
+						});
+					}
+
+					if (secondary.discordConnection) {
+						await tx.discordConnection.delete({
+							where: { id: secondary.discordConnection.id }
+						});
+					}
+				}
+
+			    // Update host's basic fields
 			    await tx.user.update({
 				    where: { id: host.id },
 				    data: {
 					    name: body.name,
 					    email: body.email,
-					    discordId: body.discordId,
 					    phoneNumber: body.phone,
 				    }
 			    });
 
-			    // 2. Transfer all events
+			    // Transfer all events
 			    await tx.event.updateMany({
 				    where: { authorId: secondary.id },
 				    data: { authorId: host.id }
 			    });
 
-			    // 3. Transfer Auth / Accounts
+			    // Transfer Auth / Accounts
 			    await tx.account.updateMany({
 				    where: { userId: secondary.id },
 				    data: { userId: host.id }
 			    });
 
-			    // 4. Transfer RSVPs (skip duplicates)
+			    // Transfer RSVPs (skip duplicates)
 			    const hostEventIds = host.rsvp.map(r => r.eventId);
 
 			    // Delete duplicates
@@ -116,7 +150,7 @@ export async function POST(request: NextRequest) {
 				    data: { userId: host.id }
 			    });
 
-			    // 5. Transfer Followers
+			    // Transfer Followers
 			    const hostFollowerIds = host.followedBy.map(u => u.id);
 			    const secondaryFollowerIds = secondary.followedBy.map(u => u.id);
 
@@ -146,7 +180,7 @@ export async function POST(request: NextRequest) {
 				    });
 			    }
 
-			    // 6. Transfer Following
+			    // Transfer Following
 			    const hostFollowingIds = host.following.map(u => u.id);
 			    const secondaryFollowingIds = secondary.following.map(u => u.id);
 
@@ -174,7 +208,7 @@ export async function POST(request: NextRequest) {
 				    });
 			    }
 
-			    // 7. Transfer Follow Requests
+			    // Transfer Follow Requests
 			    for (const req of secondary.recievedRequests) {
 				    // Avoid duplicate request relationships
 				    await tx.followRequest.update({
@@ -190,7 +224,7 @@ export async function POST(request: NextRequest) {
 				    });
 			    }
 
-			    // 8. Delete secondary user
+			    // Delete secondary user
 			    await tx.user.delete({
 				    where: { id: secondary.id }
 			    });

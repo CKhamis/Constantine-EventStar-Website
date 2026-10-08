@@ -1,7 +1,6 @@
 'use client'
 
 import z from 'zod'
-import {basicUserInfo} from "@/components/Types";
 import AvatarIcon from "@/components/AvatarIcon";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {editBasicUserInfoSchema} from "@/components/ValidationSchemas";
@@ -24,32 +23,11 @@ export default function EmailForm({enableNextAction}: Props){
         defaultValues: {
             phoneNumber: "",
             name: "",
-            discordId: "",
         },
     });
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [imageUrl, setImageUrl] = useState<string>("");
     const [name, setName] = useState<string>("New User");
-
-
-    async function loadUserData() {
-        try{
-            setLoading(true);
-            await axios.get('/api/user/setup/info')
-                .then((response) => {
-                    const userInfo = response.data;
-                    form.setValue("name", userInfo.name || "");
-                    form.setValue("discordId", userInfo.discordId || "");
-                    form.setValue("phoneNumber", userInfo.phoneNumber || "");
-                    setName(userInfo.name);
-                    setImageUrl(userInfo.image);
-                });
-        }catch(e){
-            console.log(e)
-        }finally {
-            setLoading(false);
-        }
-    }
 
     async function onSubmit(values: z.infer<typeof editBasicUserInfoSchema>) {
         try{
@@ -64,8 +42,42 @@ export default function EmailForm({enableNextAction}: Props){
     }
 
     useEffect(() => {
-        loadUserData();
-    }, []);
+        let cancelled = false;
+
+        async function loadUserData() {
+            try {
+                const response = await axios.get("/api/user/setup/info");
+
+                if (cancelled) {
+                    return;
+                }
+
+                const userInfo = response.data;
+
+                form.reset({
+                    name: userInfo.name ?? "",
+                    phoneNumber: userInfo.phoneNumber ?? "",
+                });
+
+                setName(userInfo.name ?? "New User");
+                setImageUrl(userInfo.image ?? "");
+            } catch (error) {
+                if (!cancelled) {
+                    console.error(error);
+                }
+            } finally {
+                if (!cancelled) {
+                    setLoading(false);
+                }
+            }
+        }
+
+        void loadUserData();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [form]);
 
     return (
         <div className="flex flex-col justify-center items-center">
@@ -110,19 +122,6 @@ export default function EmailForm({enableNextAction}: Props){
                                         <FormLabel>Phone number</FormLabel>
                                         <FormControl>
                                             <Input type="tel" placeholder="5058425662" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="discordId"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Discord ID</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="costiboasty" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

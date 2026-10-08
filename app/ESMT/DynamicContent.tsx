@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Image from "next/image";
@@ -10,31 +10,21 @@ import {Input} from "@/components/ui/input";
 import UserDetailsForm from "@/app/ESMT/UserDetailsForm";
 import {esmtUser} from "@/app/api/ESMT/user/all/route";
 import UserMerge from "@/app/ESMT/UserMerge";
+import DiscordDashboard from "@/app/ESMT/DiscordDashboard";
+import {DiscordLogResponse} from "@/app/api/ESMT/providers/discord/logs/[page]/route";
+import {toast} from "sonner";
 
 interface Props {
-    id: string;
+    id: string,
+    noisyUrl: string | undefined,
 }
 
-export default function DynamicContent({id}: Props) {
+export default function DynamicContent({id, noisyUrl}: Props) {
     const [loading, setLoading] = useState(true);
     const [userList, setUserList] = useState<esmtUser[]>([]);
-
-    async function refresh(){
-        setLoading(true);
-        await axios.get("/api/ESMT/user/all")
-            .then((response) => {
-                // Event exists, but need to know if user was invited
-                setUserList(response.data);
-            })
-            .catch((error) => {
-                console.log(error.status); // event not found, access denied, or need login
-            });
-        setLoading(false);
-    }
-
-    useEffect(() => {
-        refresh()
-    }, []);
+    const [logPage, setLogPage] = useState(0);
+    const [noisyLog, setNoisyLog] = useState<DiscordLogResponse | null>(null);
+    const noisyEnabled:boolean = noisyUrl !== undefined;
 
     // Search
     const [searchTerm, setSearchTerm] = useState('')
@@ -42,48 +32,99 @@ export default function DynamicContent({id}: Props) {
         `${user.name}`.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
+
+    const refresh = useCallback(async () => {
+        try{
+            try{
+                const response = await axios.get("/api/ESMT/user/all");
+                if (response.data) {
+                    // Event exists, but need to know if user was invited
+                    setUserList(response.data);
+                } else {
+                    console.log("rat6")
+                    toast("Issue Getting Logs", {
+                        description: "Please check if you are logged in.",
+                    });
+                }
+            }catch (error){
+                console.log(error);
+            }
+
+            if (noisyEnabled) {
+                try {
+                    const response = await axios.get(`/api/ESMT/providers/discord/logs/${logPage}`);
+
+                    if (response.data) {
+                        setNoisyLog(response.data);
+
+                    } else {
+                        toast("Issue Getting Logs", {
+                            description: "Please check if you are logged in.",
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error loading Discord logs:", error);
+
+                    toast("Issue Getting Logs", {
+                        description: "Please check if you are logged in.",
+                    });
+                }
+            }
+
+        }finally {
+            setLoading(false);
+        }
+    }, [logPage, noisyEnabled]);
+
+    useEffect(() => {
+        void refresh();
+    }, [refresh]);
+
     return (
-        <>
+        <div className="container">
             {loading && <LoadingIcon/>}
-            <div className="container">
-                <div className="flex justify-between items-center border-b-2 pb-5 py-5 mb-5">
-                    <div className="flex flex-row justify-start items-center gap-3">
-                        <Image src="/icons/ESMT.svg" alt="ESMT logo" width={50} height={50} />
-                        <div>
-                            <p className="text-3xl font-bold">EventStar Management Terminal</p>
-                            <p>Administrator tools</p>
-                        </div>
+            <div className="flex justify-between items-center border-b-2 pb-5 overflow-x-hidden py-5 mb-5">
+                <div className="flex flex-row justify-start items-center gap-3">
+                    <Image src="/icons/ESMT.svg" alt="ESMT logo" width={50} height={50} />
+                    <div>
+                        <p className="text-3xl font-bold">EventStar Management Terminal</p>
+                        <p>Administrator tools</p>
                     </div>
                 </div>
-                <div>
-                    <Tabs defaultValue="account">
-                        <TabsList>
-                            <TabsTrigger value="account">User Accounts</TabsTrigger>
-                            <TabsTrigger value="merge">Merge Users</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="account">
-                            <div className="relative max-w-sm mb-4">
-                                <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
-                                <Input
-                                    type="search"
-                                    placeholder="Search users..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-8"
-                                />
-                            </div>
-                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                {filteredUsers.map((user) => (
-                                    <UserDetailsForm id={id} user={user} key={user.id} refresh={refresh} />
-                                ))}
-                            </div>
-                        </TabsContent>
-                        <TabsContent value="merge">
-                            <UserMerge users={userList} setLoading={setLoading} refresh={refresh} />
-                        </TabsContent>
-                    </Tabs>
-                </div>
             </div>
-        </>
+            <div>
+                <Tabs defaultValue="account" className="w-full">
+                    <TabsList>
+                        <TabsTrigger value="account">User Accounts</TabsTrigger>
+                        <TabsTrigger value="merge">Merge Users</TabsTrigger>
+                        {noisyEnabled && <TabsTrigger value="noisy">Noisy</TabsTrigger>}
+                    </TabsList>
+                    <TabsContent value="account">
+                        <div className="relative max-w-sm mb-4">
+                            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"/>
+                            <Input
+                                type="search"
+                                placeholder="Search users..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-8"
+                            />
+                        </div>
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            {filteredUsers.map((user) => (
+                                <UserDetailsForm id={id} user={user} key={user.id} refresh={refresh} />
+                            ))}
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="merge">
+	                    <UserMerge users={userList} setLoading={setLoading} refresh={refresh} />
+                    </TabsContent>
+                    <TabsContent value="noisy">
+                        {noisyEnabled && <DiscordDashboard page={logPage} url={noisyUrl} setPage={setLogPage} logs={noisyLog} />}
+                        {!noisyEnabled && <p>Noisy has not been set up with EventStar. You must specify the connection first.</p>}
+                    </TabsContent>
+                </Tabs>
+            </div>
+        </div>
     );
 }

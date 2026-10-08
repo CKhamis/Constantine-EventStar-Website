@@ -12,7 +12,7 @@ export default async function page(){
 
     return(
         <MainNav>
-            <DynamicContent id={session.user.id} />
+            <DynamicContent id={session.user.id} noisyUrl={process.env.NOISY_URL} />
         </MainNav>
     )
 }

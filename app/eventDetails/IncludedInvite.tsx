@@ -3,8 +3,6 @@ import AvatarIcon from "@/components/AvatarIcon";
 import {X} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
-import axios from "axios";
-import {toast} from "sonner";
 
 export interface Props {
 	id: string, // for already existing RSVP and write-ins

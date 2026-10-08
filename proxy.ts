@@ -1,7 +1,6 @@
 // WebSpy Interceptor
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import axios from "axios";
 
 // Request
 type RequestReport = {
@@ -28,7 +27,7 @@ type RequestReport = {
 
 
 // This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     if(!process.env.WEBSPY_URL || process.env.WEBSPY_URL === "" || process.env.WEBSPY_URL === undefined){
         return NextResponse.next();
     }
@@ -51,6 +50,11 @@ export async function middleware(request: NextRequest) {
     }
 
     try {
+        // Removes WebSpy requirement if WebSpy is not set up
+        if(process.env.WEBSPY_URL.length === 0){
+            return NextResponse.next();
+        }
+
         // Axios is not supported in the Edge runtime for some reason
         const response = await fetch(process.env.WEBSPY_URL, {
             method: "POST",
@@ -67,7 +71,7 @@ export async function middleware(request: NextRequest) {
         } else {
             return NextResponse.error();
         }
-    } catch (e) {
+    } catch {
         return NextResponse.error();
     }
 }

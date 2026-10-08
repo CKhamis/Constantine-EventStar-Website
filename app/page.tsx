@@ -14,6 +14,7 @@ export default async function home(){
     const session = await auth();
 
     if(session && session.user && session.user.id){
+        // @ts-expect-error The type here is inaccurate, the actual type in JS works
         if(session.user && session.user.tutorial){
             redirect("/tutorial");
         }
@@ -44,7 +45,7 @@ export default async function home(){
                             </CarouselItem>
                         </CarouselContent>
                     </Carousel>
-                    <p className="text-muted-foreground text-xs">Version 6.0.0</p>
+                    <p className="text-muted-foreground text-xs">Version 6.5.0</p>
                     <br className="my-10"/>
                     <Card className="p-5 top-left-gradient">
                         <div className="flex flex-col md:flex-row justify-start items-center mb:items-start gap-10">

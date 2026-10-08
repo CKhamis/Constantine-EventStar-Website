@@ -32,8 +32,8 @@ export function Sus({eventId, open, onOpenChanged, submitAnyway}: Props) {
 				</DialogDescription>
 
 				<DialogFooter className="w-full flex items-center justify-center gap-4">
-					<Link href={"/api/auth/signin?callbackUrl=/event/" + eventId}><Button>Ok FINE, I'll sign in</Button></Link>
-					<Button variant="secondary"onClick={submitAnyway}>I don't have one</Button>
+					<Link href={"/api/auth/signin?callbackUrl=/event/" + eventId}><Button>Ok FINE, I&apos;ll sign in</Button></Link>
+					<Button variant="secondary"onClick={submitAnyway}>I don&apos;t have one</Button>
 					<DialogClose asChild>
 						<Button variant="outline">Cancel</Button>
 					</DialogClose>

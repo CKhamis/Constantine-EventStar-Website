@@ -7,7 +7,6 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
 }
 
 // Costi Online Accounts
@@ -34,7 +33,6 @@ model User {
   emailVerified DateTime?
   image         String?
   phoneNumber   String?   @db.VarChar(10)
-  discordId     String?
   event         Event[]
   rsvp          Rsvp[]
   role          UserRole  @default(USER)
@@ -48,6 +46,9 @@ model User {
   sessions         Session[]
   recievedRequests FollowRequest[] @relation("recievedFR")
   sentRequests     FollowRequest[] @relation("sentFR")
+
+  discordConnection DiscordConnection?
+  discordTokens DiscordToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -97,6 +98,26 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model DiscordConnection {
+  id        String       @id @default(uuid())
+  userId      String  @unique
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  defaultFreq Int @default(1)
+  discordId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DiscordToken {
+  id String @id @default(uuid())
+  userId      String  @unique
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  discordId  String
+  verificationNumber String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Rsvp {
   id        String       @id @default(uuid())
   firstName String?
@@ -111,6 +132,9 @@ model Rsvp {
   response  RsvpResponse @default(NO_RESPONSE)
   user      User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String?
+
+  @@unique([firstName, lastName, eventId])
+  @@unique([userId, eventId])
 }
 
 model Event {

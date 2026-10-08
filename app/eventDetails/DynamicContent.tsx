@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image"
 import { LoadingIcon } from "@/components/LoadingIcon"
-import { useEffect, useState } from "react"
+import {useCallback, useEffect, useState} from "react"
 import { rsvpSchema, saveEventSchema } from "@/components/ValidationSchemas"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -12,7 +12,7 @@ import { GradientPicker } from "@/components/ui/GradientPicker"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { CalendarIcon, Check, ChevronsUpDown, Loader2, X } from "lucide-react"
+import {CalendarIcon, Check, ChevronsUpDown, Copy, Loader2, X} from "lucide-react"
 import { format } from "date-fns"
 import { Calendar } from "@/components/ui/calendar"
 import { TimestampPicker } from "@/components/ui/timestamp-picker"
@@ -28,7 +28,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import type { EVResponse } from "@/app/api/events/view/[id]/route"
 import ExcludedInvite from "@/app/eventDetails/ExcludedInvite"
-import { refresh } from "effect/Resource"
 import IncludedInvite from "@/app/eventDetails/IncludedInvite"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import Link from "next/link";
@@ -41,7 +40,7 @@ export interface Props {
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false })
 
 export default function DynamicContent({ eventId, userId }: Props) {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(() => Boolean(eventId))
     const [editing, setEditing] = useState(false)
     const router = useRouter()
     const [eventInfo, setEventInfo] = useState<EVResponse | null>(null)
@@ -53,29 +52,17 @@ export default function DynamicContent({ eventId, userId }: Props) {
         { id: string; name: string; email: string; image: string; phoneNumber: string }[]
     >([]) // Included & Excluded
 
-    useEffect(() => {
-        refresh()
-    }, [])
-
-    function refresh() {
-        if (currentEventId) {
-            fetchEvent(currentEventId)
-            getFollowers()
-        }
-    }
-
-    async function getFollowers() {
+    const getFollowers = useCallback(async () => {
         try {
-            setLoading(true)
-            const response = await axios.get("/api/user/info")
-            setFollowers(response.data.followedBy)
-            setLoading(false)
-        } catch (err) {
-            toast("Catastrophic Error", { description: "Unable to fetch followers" })
-            console.error("Error fetching users:", err)
-            setLoading(false)
+            const response = await axios.get("/api/user/info");
+            setFollowers(response.data.followedBy);
+        } catch (error) {
+            toast("Catastrophic Error", {
+                description: "Unable to fetch followers",
+            });
+            console.error("Error fetching users:", error);
         }
-    }
+    }, []);
 
     const form = useForm<z.infer<typeof saveEventSchema>>({
         resolver: zodResolver(saveEventSchema),
@@ -103,37 +90,33 @@ export default function DynamicContent({ eventId, userId }: Props) {
             lastName: "",
         },
     })
-
-    async function fetchEvent(eventId: string) {
+    const fetchEvent = useCallback(async (eventId: string) => {
         try {
-            setLoading(true)
             await axios.get("/api/events/view/" + eventId).then((response) => {
                 if (!userId || (userId && response.data.author.id !== userId)) {
-                    router.replace("/event/" + eventId)
+                    router.replace("/event/" + eventId);
                 }
-                setEventInfo(response.data)
+                setEventInfo(response.data);
 
-                form.setValue("id", response.data.id)
-                form.setValue("title", response.data.title)
-                form.setValue("backgroundStyle", response.data.backgroundStyle)
-                form.setValue("address", response.data.address)
-                form.setValue("eventStart", new Date(response.data.eventStart))
-                form.setValue("eventEnd", new Date(response.data.eventEnd))
-                form.setValue("rsvpDuedate", new Date(response.data.rsvpDuedate))
-                form.setValue("description", response.data.description)
-                form.setValue("inviteVisibility", response.data.inviteVisibility)
-                form.setValue("eventType", response.data.eventType)
-                form.setValue("maxGuests", response.data.maxGuests)
+                form.setValue("id", response.data.id);
+                form.setValue("title", response.data.title);
+                form.setValue("backgroundStyle", response.data.backgroundStyle);
+                form.setValue("address", response.data.address);
+                form.setValue("eventStart", new Date(response.data.eventStart));
+                form.setValue("eventEnd", new Date(response.data.eventEnd));
+                form.setValue("rsvpDuedate", new Date(response.data.rsvpDuedate));
+                form.setValue("description", response.data.description);
+                form.setValue("inviteVisibility", response.data.inviteVisibility);
+                form.setValue("eventType", response.data.eventType);
+                form.setValue("maxGuests", response.data.maxGuests);
 
-                setEditing(true)
+                setEditing(true);
             })
         } catch (e) {
-            console.log(e)
-            toast("Catastrophic Error", { description: "Unable to find event" })
-        } finally {
-            setLoading(false)
+            console.log(e);
+            toast("Catastrophic Error", { description: "Unable to find event" });
         }
-    }
+    }, [form, router, userId]);
 
     async function onSubmit(values: z.infer<typeof saveEventSchema>) {
         try {
@@ -141,14 +124,15 @@ export default function DynamicContent({ eventId, userId }: Props) {
             const response = await axios.post("/api/events/save", values)
             toast("Event Saved", { description: "Event saved to your account" })
             form.setValue("id", response.data.id)
-            setEventInfo(response.data)
-            setEditing(true)
-            getFollowers()
+            setEventInfo(response.data);
+            setEditing(true);
+
+            await getFollowers();
         } catch (e) {
-            console.log(e)
-            toast("Catastrophic Error", { description: "Unable to save event" })
+            console.log(e);
+            toast("Catastrophic Error", { description: "Unable to save event" });
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     }
 
@@ -170,7 +154,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
         } catch (e) {
             console.log(e)
         } finally {
-            refresh()
+            await refresh()
         }
     }
 
@@ -191,14 +175,14 @@ export default function DynamicContent({ eventId, userId }: Props) {
         } catch (e) {
             console.log(e)
         } finally {
-            refresh()
+            await refresh()
         }
     }
 
     async function createWriteInRSVP(data: z.infer<typeof rsvpSchema>) {
         setWriteInStatus("loading")
         try {
-            await axios.post("/api/events/authorControl/addRSVP/" + currentEventId, {
+            await axios.post(`/api/events/authorControl/addRSVP/${currentEventId}`, {
                 response: data.response,
                 guests: data.guests,
                 firstName: data.firstName,
@@ -209,7 +193,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
             console.log(e)
             setWriteInStatus("error")
         } finally {
-            refresh()
+            await refresh()
         }
     }
 
@@ -227,27 +211,86 @@ export default function DynamicContent({ eventId, userId }: Props) {
                 description: "There was an error with adding RSVP. Check the console for more info.",
             })
         } finally {
-            refresh()
+            await refresh()
         }
     }
+
+	async function copyEventLink() {
+		const url = `${window.location.origin}/event/${currentEventId}`;
+		try {
+			await navigator.clipboard.writeText(url);
+			toast("Link copied", { description: "Event link copied to clipboard" });
+		} catch (e) {
+			console.log(e);
+			toast("Error", { description: "Unable to copy link" });
+		}
+	}
+
+    async function refresh() {
+        setLoading(true);
+
+        try {
+            if (currentEventId) {
+                await fetchEvent(currentEventId);
+                await getFollowers();
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        if (!currentEventId) {
+            return;
+        }
+
+        let cancelled = false;
+
+        async function loadInitialData() {
+            if (!currentEventId) {
+                return;
+            }
+
+            try {
+                await fetchEvent(currentEventId);
+                await getFollowers();
+            } finally {
+                if (!cancelled) {
+                    setLoading(false);
+                }
+            }
+        }
+
+        void loadInitialData();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [currentEventId, fetchEvent, getFollowers]);
 
     return (
         <>
             {loading && <LoadingIcon />}
-            <div className="w-100 lg:h-screen grid grid-cols-1 lg:grid-cols-3">
-                <div className="lg:col-span-2 lg:h-100 lg:overflow-y-auto lg:flex flex-col">
-                    <div className="top-left-gradient">
+            <div className="w-full lg:h-screen grid grid-cols-1 lg:grid-cols-3">
+                <div className="lg:col-span-2 lg:h-full lg:overflow-y-auto lg:flex flex-col">
+                    <div className="top-left-gradient border-b-2 border-[#451942]">
                         <div className="container flex-row items-center justify-between flex gap-3 py-3 max-w-3xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
                                 <Image src="/icons/NewEvent.svg" alt="New Event" width={50} height={50} />
                                 <p className="text-3xl font-bold">{editing ? "Edit Event" : "Create New Event"}</p>
                             </div>
-                            <Link href={"/event/" + currentEventId}><Button variant="secondary" size="lg">View Event</Button></Link>
+	                        {editing && (
+		                        <div className="flex flex-row justify-end gap-3">
+			                        <Link href={"/event/" + currentEventId}><Button variant="secondary" size="default">View Event</Button></Link>
+			                        <Button variant="default" size="icon" onClick={copyEventLink}><Copy /></Button>
+		                        </div>
+	                        )}
+
                         </div>
                     </div>
                     <div className="container flex-col flex gap-3 py-3 max-w-3xl mt-4">
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="relative">
                                 <FormField
                                     control={form.control}
                                     name="title"
@@ -320,7 +363,6 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                             selected={field.value}
                                                             onSelect={field.onChange}
                                                             disabled={(date) => date < new Date()}
-                                                            initialFocus
                                                         />
                                                         <div className="p-3 border-t border-border">
                                                             <TimestampPicker setDate={field.onChange} date={field.value} />
@@ -357,7 +399,6 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                             selected={field.value}
                                                             onSelect={field.onChange}
                                                             disabled={(date) => date < new Date()}
-                                                            initialFocus
                                                         />
                                                         <div className="p-3 border-t border-border">
                                                             <TimestampPicker setDate={field.onChange} date={field.value} />
@@ -393,7 +434,6 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                             selected={field.value}
                                                             onSelect={field.onChange}
                                                             disabled={(date) => date < new Date()}
-                                                            initialFocus
                                                         />
                                                         <div className="p-3 border-t border-border">
                                                             <TimestampPicker setDate={field.onChange} date={field.value} />
@@ -457,8 +497,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                         name="backgroundStyle"
                                         render={({ field }) => (
                                             <FormItem style={{ marginTop: "-8px" }}>
-                                                <FormLabel>Background Style</FormLabel>
-                                                <br />
+                                                <FormLabel className="mt-2">Background Style</FormLabel>
                                                 <FormControl>
                                                     <GradientPicker {...field} />
                                                 </FormControl>
@@ -513,7 +552,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                     </div>
                 </div>
                 {editing ? (
-                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-auto flex flex-col justify-between">
+                    <div className="h-full border-l-2 white-gradient lg:h-full lg:overflow-y-auto hidden lg:flex flex-col justify-between">
                         <div>
                             <div className="container flex-col flex gap-3 py-3 max-w-3xl p-5">
                                 <div className="flex flex-row justify-start items-center gap-3 h-[50]">
@@ -608,7 +647,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                                                         <FormLabel>Attendance</FormLabel>
                                                         <Select onValueChange={field.onChange} value={field.value}>
                                                             <FormControl>
-                                                                <SelectTrigger>
+                                                                <SelectTrigger className="w-full">
                                                                     <SelectValue placeholder="Select RSVP status" />
                                                                 </SelectTrigger>
                                                             </FormControl>
@@ -658,7 +697,7 @@ export default function DynamicContent({ eventId, userId }: Props) {
                         </div>
                     </div>
                 ) : (
-                    <div className="h-100 border-l-2 white-gradient lg:h-100 lg:overflow-y-auto flex flex-col justify-start">
+                    <div className="h-full border-l-2 white-gradient lg:h-full lg:overflow-y-auto hidden lg:flex flex-col justify-start">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src="/agent/loading.gif" className="w-1/2 my-7 mx-auto" alt="EventStar typing" />
 

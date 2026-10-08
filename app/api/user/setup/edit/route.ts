@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from "@/prisma/client";
 import {NextRequest, NextResponse} from "next/server";
 import {editBasicUserInfoSchema} from "@/components/ValidationSchemas";
 import {auth} from "@/auth";
-
-
-const prisma = new PrismaClient();
+import z from "zod";
 
 export async function POST(request: NextRequest){
     const session =  await auth();
@@ -17,7 +15,7 @@ export async function POST(request: NextRequest){
     const validation = editBasicUserInfoSchema.safeParse(body);
 
     if(!validation.success){
-        return NextResponse.json(validation.error.format(), {status: 400});
+        return NextResponse.json(z.treeifyError(validation.error), { status: 400 });
     }
 
     try {
@@ -36,13 +34,12 @@ export async function POST(request: NextRequest){
             where: { id: session.user.id },
             data: {
                 name: body.name,
-                discordId: body.discordId,
                 phoneNumber: body.phoneNumber,
             },
         });
 
         return NextResponse.json(updatedUser, { status: 202 });
-    } catch (e) {
+    } catch {
         //console.error(e);
         return NextResponse.json({ message: "An error occurred" }, { status: 500 });
     }

@@ -13,61 +13,49 @@ export default async function MainNav({children}: PropsWithChildren){
         {title: 'New Event', iconUrl: '/icons/NewEvent.svg', link: '/eventDetails'},
     ];
 
-    if(session && session.user && session.user.role === "OWNER"){
+	// @ts-expect-error The type here is inaccurate, the actual type in JS works
+	if(session && session.user && session.user.role === "OWNER"){
         menuItems.push({title: 'ESMT', iconUrl: '/icons/ESMT.svg', link: '/ESMT'})
     }
 
     return(
         <TooltipProvider>
-            <div className="flex flex-col lg:flex-row justify-start gap-0 m-0 p-0 h-screen w-full overflow-hidden">
-                <div className="border-r-2 h-full flex-col justify-between p-2 hidden lg:flex">
-                    <div className="flex flex-col align-middle content-center gap-6 mt-2">
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <Link href="/" className="">
-                                    <Image src="/icons/Logo.svg" alt="rat" width={40} height={40} className="m-0 hover-minimize"/>
-                                </Link>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Terence</p>
-                            </TooltipContent>
-                        </Tooltip>
-                        {menuItems.map((item) => (
-                            <Tooltip key={item.title}>
-                                <TooltipTrigger>
-                                    <Link href={item.link} className="p-0">
-                                        <Image src={item.iconUrl} alt={item.title} width={40} height={40} className="m-0 hover-minimize"/>
-                                    </Link>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>{item.title}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        ))}
-                    </div>
-                    <div>
-                        <AccountButton />
-                    </div>
+            <div className="flex flex-col lg:flex-row justify-start gap-0 m-0 p-0 h-screen w-screen overflow-y-hidden">
+	            {/* Main Nav Bar */}
+	            <div className="flex flex-row lg:flex-col justify-between items-center border-b-2 lg:border-b-0 lg:border-r-2 w-full lg:w-auto lg:h-full left-0 px-4 py-2 lg:px-2 gap-10 lg:gap-4">
+		            <Tooltip>
+			            <TooltipTrigger>
+				            <Link href="/" className="">
+					            <Image src="/icons/Logo.svg" alt="rat" width={40} height={40} className="m-0 hover-minimize"/>
+				            </Link>
+			            </TooltipTrigger>
+			            <TooltipContent>
+				            <p>EventStar</p>
+			            </TooltipContent>
+		            </Tooltip>
+
+		            <div className="flex flex-row lg:flex-col gap-10 lg:gap-6 lg:mt-2 overflow-y-auto no-scrollbar grow">
+			            {menuItems.map((item) => (
+				            <Tooltip key={item.title}>
+					            <TooltipTrigger>
+						            <Link href={item.link} className="p-0">
+							            <Image src={item.iconUrl} alt={item.title} width={40} height={40} className="m-0 hover-minimize"/>
+						            </Link>
+					            </TooltipTrigger>
+					            <TooltipContent>
+						            <p>{item.title}</p>
+					            </TooltipContent>
+				            </Tooltip>
+			            ))}
+		            </div>
+
+		            <AccountButton session={session} />
+	            </div>
+	            {/* Content */}
+	            <div className="grow overflow-y-auto">
+	                {children}
                 </div>
-                <div className="border-b-2 w-full flex-row justify-between flex lg:hidden sticky px-2 pt-1 backdrop-blur z-[10]">
-                    <Link href="/" className="p-2">
-                        <Image src="/icons/Logo.svg" alt="rat" width={40} height={40} className="m-0"/>
-                    </Link>
-                    {menuItems.map((item) => (
-                        <div className="p-2" key={item.title}>
-                            <Link href={item.link}  className="p-0">
-                                <Image src={item.iconUrl} alt={item.title} width={40} height={40} className="m-0 hover-minimize"/>
-                            </Link>
-                        </div>
-                    ))}
-                    <div className="p-2">
-                        <AccountButton/>
-                    </div>
-                </div>
-                <div className="h-full flex-grow overflow-y-auto">
-                {children}
-                </div>
-            </div>
+			</div>
         </TooltipProvider>
     )
 }

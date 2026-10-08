@@ -3,7 +3,7 @@
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import AvatarIcon from "@/components/AvatarIcon";
 import axios from "axios";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {LoadingIcon} from "@/components/LoadingIcon";
 import {userInfoResponse} from "@/app/api/user/info/route";
 import {format} from "date-fns";
@@ -19,6 +19,7 @@ import {Badge} from "@/components/ui/badge";
 export default function DynamicContent() {
     const [loading, setLoading] = useState(true);
     const [userInfo, setUserInfo] = useState<userInfoResponse>({
+        discordConnection: null,
         createdAt: new Date(),
         discordId: "",
         email: "",
@@ -36,83 +37,85 @@ export default function DynamicContent() {
         event: []
     });
     const [RSVPs, setRSVPs] = useState<EIResponse[]>([]);
-    const [recievedFollows, setRecievedFollows] = useState([]);
-    const [nextEvent, setNextEvent] = useState<EIResponse | null>();
+    const [receivedFollows, setReceivedFollows] = useState<FRResponse[]>([]);
+    const [nextEvent, setNextEvent] = useState<EIResponse | null>(null);
 
-    async function refresh(){
-        setLoading(true);
-        await axios.get("/api/user/info")
-            .then((response) => {
+    const refresh = useCallback(async () => {
+        try{
+            try{
+                const response = await axios.get("/api/user/info");
                 setUserInfo(response.data);
-            })
-            .catch((error) => {
+            }catch(error){
                 console.log(error);
-            });
+            }
 
-        await axios.get("/api/events/invited")
-            .then((response) => {
+            try{
+                const response = await axios.get("/api/events/invited")
                 setRSVPs(response.data);
-            })
-            .catch((error) => {
+            }catch(error){
                 console.log(error);
-            });
+            }
 
-        await axios.get("/api/events/next")
-            .then((response) => {
+            try{
+                const response = await axios.get("/api/events/next")
                 if(response.data.message){
                     setNextEvent(null)
                 }else{
                     setNextEvent(response.data);
                 }
-            })
-            .catch((error) => {
+            }catch(error){
                 console.log(error);
-            });
+            }
 
-        await axios.get("/api/user/connections/incoming")
-            .then((response) => {
-                setRecievedFollows(response.data);
-            })
-            .catch((error) => {
+            try{
+                const response = await axios.get("/api/user/connections/incoming")
+                setReceivedFollows(response.data);
+            }catch(error){
                 console.log(error);
-            });
-
-        setLoading(false);
-    }
+            }
+        }finally {
+            setLoading(false);
+        }
+    }, []);
 
     async function respondFR(response:boolean, senderId:string){
-        await axios.post("/api/user/connections/respond", {response: response, senderId: senderId})
-            .then(() => {
-                refresh()
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        setLoading(true);
+
+        try{
+            await axios.post("/api/user/connections/respond", {response: response, senderId: senderId});
+
+            await refresh();
+        } catch(error){
+            console.log(error);
+            setLoading(false);
+        }
     }
 
     async function updateRSVP(eventId: string, response: string){
         setLoading(true);
         try{
-            await axios.post(`/api/events/rsvp/${eventId}`, {response: response})
-                .finally(refresh);
+            await axios.post(`/api/events/rsvp/${eventId}`, {response: response});
+
+            await refresh();
         }catch (e){
-            console.log(e)
+            console.log(e);
+            setLoading(false);
         }
     }
 
     useEffect(() => {
-        refresh()
-    }, []);
+        void refresh();
+    }, [refresh]);
 
     return (
         <>
             {loading && <LoadingIcon/>}
-            <div className="w-full h-full grid grid-cols-2 lg:grid-cols-3 gap-0 p-0">
-                <div className="w-100 col-span-2 items-center overflow-y-scroll">
-                    <div className="top-left-gradient">
+            <div className="w-full h-screen grid grid-cols-2 lg:grid-cols-3 gap-0 p-0">
+                <div className="w-full col-span-2 items-center lg:overflow-y-auto">
+                    <div className="top-left-gradient border-b-2 border-[#451942]">
                         <div className="container flex-col flex gap-3 py-3 max-w-3xl">
                             <div className="flex flex-row justify-start items-center gap-3 ">
-                                <Image src="/icons/Feed.svg" alt="Feed icon" width={50} height={50}/>
+                                <Image src="/icons/Feed.svg" alt="Feed icon" width={40} height={40}/>
                                 <p className="text-3xl font-bold">Upcoming Events</p>
                             </div>
                         </div>
@@ -160,10 +163,10 @@ export default function DynamicContent() {
                         ))}
                     </div>
                 </div>
-                <div className="hidden lg:flex overflow-y-auto">
+                <div className="hidden lg:flex overflow-y-auto border-s-2">
                     <div className="max-w-xl mx-auto">
-                        <Card className="mt-5 rounded-none border-none">
-                            <CardContent>
+                        <div className="mt-5 rounded-none border-none">
+                            <div>
                                 <div className="flex flex-row gap-3 justify-start items-center  p-5">
                                     <AvatarIcon size="large" image={userInfo.image} name={userInfo.name}/>
                                     <div>
@@ -185,10 +188,10 @@ export default function DynamicContent() {
                                         <p className="text-center">Following</p>
                                     </div>
                                 </div>
-                            </CardContent>
-                        </Card>
-                        {recievedFollows.length == 0? <></>: <p className="font-bold mt-6 px-0">Follow requests</p>}
-                        {recievedFollows.map((followRequest:FRResponse) => (
+                            </div>
+                        </div>
+                        {receivedFollows.length == 0? <></>: <p className="font-bold mt-6 px-0">Follow requests</p>}
+                        {receivedFollows.map((followRequest:FRResponse) => (
                             <div className="flex flex-row items-center justify-between mb-3 px-0" key={followRequest.id}>
                                 <div className="flex flex-row justify-start items-center mt-5 gap-3">
                                     <div>

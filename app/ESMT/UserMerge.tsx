@@ -38,13 +38,14 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 
 	        form.setValue("name", data.name ?? "");
 	        form.setValue("email", data.email ?? "");
-	        form.setValue("discordId", data.discordId ?? "");
 	        form.setValue("phone", data.phoneNumber ?? "");
 	        form.setValue("hostId", data.id ?? "");
 
 
         } catch (err) {
-            console.error(err);
+			toast("Critical Error", {
+				description: "User details was unable to be retrieved.",
+			});            console.error(err);
             setHost(null);
         }
     };
@@ -70,14 +71,14 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 			name: "",
 			email: "",
 			phone: "",
-			discordId: "",
-
+			discord: "HOST",
 			hostId: "",
 			secondaryId: "",
 		},
 	});
 
 	const onSubmit = async (values: z.infer<typeof esmtMergeFormSchema>) => {
+
 		setLoading(true);
 
 		try {
@@ -86,11 +87,10 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 			console.log("Merge successful:", response.data);
 
 			toast.success("Users successfully merged! Please refresh this page.");
-		} catch (err: any) {
+		} catch (err) {
 			console.error(err);
 
-			const message =
-				err.response?.data?.message || "There was a problem merging users.";
+			const message = "There was a problem merging users.";
 
 			toast.error(message);
 		} finally {
@@ -110,7 +110,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 				<p>This setting merges two separate EventStar accounts and turns it into one. This will combine all sign-in options, event invitations, RSVPs, followers, following, and other data points. This process cannot be reversed. Please make sure to back up database before.</p>
 			</Card>
 			<p className="text-2xl font-bold mt-5">1. Select Host Account</p>
-			<div className="md:grid-cols-3 grid w-100 mt-2 gap-5">
+			<div className="md:grid-cols-3 grid w-full mt-2 gap-5">
 				<Select onValueChange={(e) => changeHost(e)}>
 					<SelectTrigger>
 						<SelectValue placeholder="Choose User" />
@@ -124,7 +124,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
                         <AvatarIcon name={host?.name} key={host?.id} size="small" image={host?.image} />
                         <p className="text-xl font-bold">{host? host.name : "None Selected"}</p>
                     </div>
-                    <div className="flex flex-row justify-evenly align-center items-center gap-5 overflow-x-auto pb-5">
+                    <div className="flex flex-row justify-evenly align-center items-center gap-5 pb-5">
 	                    <div className="flex flex-col justify-center align-center items-center">
                             <p className="text-bold text-2xl">{host? host.followedBy.length : "?"}</p>
                             <p className="text-sm">Followers</p>
@@ -163,7 +163,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 			</div>
 
 			<p className="text-2xl font-bold mt-5">2. Select Secondary Account</p>
-			<div className="md:grid-cols-3 grid w-100 mt-2 gap-5">
+			<div className="md:grid-cols-3 grid w-full mt-2 gap-5">
 				<div>
 					<Select onValueChange={(e) => changeSecondary(e)}>
 						<SelectTrigger>
@@ -229,7 +229,7 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 			<p className="text-2xl font-bold mt-5">3. Combine User Information</p>
 			<Card className="p-5 mt-3">
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
+					<form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5 relative">
 						<input type="hidden" {...form.register("hostId")} />
 						<input type="hidden" {...form.register("secondaryId")} />
 
@@ -277,14 +277,28 @@ export default function UserMerge({users, setLoading, refresh}:Props){
 
 						<FormField
 							control={form.control}
-							name="discordId"
+							name="discord"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Discord ID</FormLabel>
+									<FormLabel>Discord Connection</FormLabel>
 									<FormControl>
-										<Input placeholder="Optional" {...field} />
+										<Select onValueChange={field.onChange} defaultValue="HOST">
+											<SelectTrigger>
+												<SelectValue placeholder="Select invite visibility" />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem key="HOST" value="HOST">
+													{"Keep host's account" + (host != null? (host.discordConnection? " ("+ host.discordConnection.name + ")" : " (None Connected)") : "")}
+												</SelectItem>
+												<SelectItem key="SECOND" value="SECOND">
+													{"Keep secondary's account" + (secondary != null? (secondary.discordConnection? " ("+ secondary.discordConnection.name + ")" : " (None Connected)") : "")}
+												</SelectItem>
+												<SelectItem key="NIETHER" value="NIETHER">
+													{"Keep neither"}
+												</SelectItem>
+											</SelectContent>
+										</Select>
 									</FormControl>
-									<FormMessage />
 								</FormItem>
 							)}
 						/>

@@ -1,9 +1,11 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from "@/prisma/client";
 import {NextResponse} from "next/server";
 import {auth} from "@/auth";
 
-const prisma = new PrismaClient();
-
+/**
+ * Retrieves data of user inside the Email Form step in the tutorial
+ * @constructor
+ */
 export async function GET(){
     const session =  await auth();
 
@@ -17,13 +19,19 @@ export async function GET(){
                 id: session.user.id
             },
             select:{
-                discordId: true,
                 name: true,
                 phoneNumber: true,
-                image:true
+                image:true,
+                discordConnection: true,
             }
         });
-        return NextResponse.json(user, {status: 201});
+
+        const { discordConnection, ...rest } = user;
+
+        return NextResponse.json({
+            ...rest,
+            discordId: discordConnection?.discordId ?? null
+        }, {status: 201});
 
     }catch(e){
         // This should never happen
