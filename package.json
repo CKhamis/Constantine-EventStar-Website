@@ -48,7 +48,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "cn": "^0.3.0",
+    "cn": "^0.4.0",
     "date-fns": "^4.4.0",
     "dotenv": "^18.0.1",
     "embla-carousel-react": "^8.6.0",
@@ -85,7 +85,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9.39.5",
-    "eslint-config-next": "16.3.5",
+    "eslint-config-next": "^16.4.0",
     "postcss": "^8",
     "prisma": "^7.10.0",
     "tailwindcss": "^4.3.3",
@@ -94,6 +94,7 @@
   "overrides": {
     "deepmerge-ts": "8.0.2",
     "mysql2": "3.24.4",
-    "mariadb": "3.5.4"
+    "mariadb": "3.5.4",
+    "braces": "3.0.3"
   }
 }
